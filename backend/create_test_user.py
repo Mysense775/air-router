@@ -17,7 +17,7 @@ from sqlalchemy.orm import sessionmaker
 from app.models import User, ApiKey, Balance
 from app.db.session import Base
 
-# Database URL (same as in config)
+# Database URL (asyncpg driver)
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/ai_router"
 
 async def create_test_user():
@@ -85,21 +85,21 @@ async def create_test_user():
         
         if existing_balance:
             print(f"Balance already exists: ${existing_balance.balance_usd}")
-            # Update balance to $10
-            existing_balance.balance_usd = Decimal("10.00")
+            # Update balance to $100
+            existing_balance.balance_usd = Decimal("100.00")
             await db.commit()
-            print(f"Updated balance to $10.00")
+            print(f"Updated balance to $100.00")
         else:
             # Create balance
             balance = Balance(
                 user_id=user.id,
-                balance_usd=Decimal("10.00"),
+                balance_usd=Decimal("100.00"),
                 lifetime_spent=Decimal("0.00"),
-                lifetime_earned=Decimal("10.00")
+                lifetime_earned=Decimal("100.00")
             )
             db.add(balance)
             await db.commit()
-            print(f"Created balance: $10.00")
+            print(f"Created balance: $100.00")
         
         print("\n" + "="*50)
         print("Test user created successfully!")
@@ -107,7 +107,7 @@ async def create_test_user():
         print(f"Email: test@example.com")
         print(f"Password: test123")
         print(f"API Key: sk-ar-test-key-123456789")
-        print(f"Balance: $10.00")
+        print(f"Balance: $100.00")
         print("="*50)
 
 if __name__ == "__main__":
