@@ -15,7 +15,8 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def get_url():
-    return settings.DATABASE_URL
+    # Use localhost:5433 for Docker development
+    return "postgresql://postgres:postgres@localhost:5433/ai_router"
 
 
 def run_migrations_offline() -> None:

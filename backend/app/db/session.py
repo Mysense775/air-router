@@ -5,17 +5,12 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-# Convert sync URL to async
-DATABASE_URL = settings.DATABASE_URL.replace(
-    "postgresql://", 
-    "postgresql+asyncpg://"
-)
+# Use DATABASE_URL from settings
+DATABASE_URL = settings.DATABASE_URL
 
 # Create async engine
 engine = create_async_engine(
     DATABASE_URL,
-    pool_size=10,
-    max_overflow=20,
     pool_pre_ping=True,
     echo=False,
 )
