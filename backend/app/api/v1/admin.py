@@ -17,9 +17,27 @@ router = APIRouter()
 class MasterAccountCreate(BaseModel):
     name: str
     api_key: str
-    discount_percent: int = 70
+    account_type: str = "discounted"  # "discounted" или "regular"
+    discount_percent: int = 70  # legacy, для совместимости
     monthly_limit_usd: float | None = None
     priority: int = 0
+    
+    def get_account_params(self):
+        """Возвращает параметры в зависимости от типа аккаунта"""
+        if self.account_type == "discounted":
+            return {
+                "markup_percent": -20,  # Продаём дешевле номинала
+                "cost_basis": Decimal("0.30"),  # Платим 30% от номинала
+                "priority": 0,  # Высший приоритет
+                "discount_percent": 70
+            }
+        else:  # regular
+            return {
+                "markup_percent": 5,  # Продаём дороже номинала
+                "cost_basis": Decimal("1.00"),  # Платим 100% от номинала
+                "priority": 1,  # Резервный приоритет
+                "discount_percent": 0
+            }
 
 
 class UserCreate(BaseModel):
@@ -179,9 +197,16 @@ async def create_master_account(
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """Create new OpenRouter master account"""
-    from app.core.config import get_settings
-    settings = get_settings()
+    """Create new OpenRouter master account with type selection"""
+    # Validate account type
+    if data.account_type not in ["discounted", "regular"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="account_type must be 'discounted' or 'regular'"
+        )
+    
+    # Get parameters based on account type
+    params = data.get_account_params()
     
     # Simple encryption (in production use proper encryption)
     import base64
@@ -192,24 +217,36 @@ async def create_master_account(
         name=data.name,
         api_key_encrypted=api_key_encrypted,
         balance_usd=Decimal("0.00"),
-        discount_percent=data.discount_percent,
+        account_type=data.account_type,
+        markup_percent=params["markup_percent"],
+        cost_basis=params["cost_basis"],
+        priority=params["priority"],
+        discount_percent=params["discount_percent"],
         monthly_limit_usd=Decimal(str(data.monthly_limit_usd)) if data.monthly_limit_usd else None,
         monthly_used_usd=Decimal("0.00"),
         is_active=True,
-        priority=data.priority
+        usage_weight=0
     )
     db.add(account)
     await db.commit()
     await db.refresh(account)
     
+    # Determine margin message
+    if data.account_type == "discounted":
+        margin_msg = "Высокая маржа (166%) - покупаем за 30%, продаём за 80%"
+    else:
+        margin_msg = "Низкая маржа (5%) - покупаем за 100%, продаём за 105% (резерв)"
+    
     return {
         "id": str(account.id),
         "name": account.name,
+        "account_type": account.account_type,
         "balance_usd": float(account.balance_usd),
-        "discount_percent": account.discount_percent,
-        "is_active": account.is_active,
+        "markup_percent": account.markup_percent,
+        "cost_basis": float(account.cost_basis),
         "priority": account.priority,
-        "message": "Master account created successfully"
+        "is_active": account.is_active,
+        "message": f"Master account created successfully. {margin_msg}"
     }
 
 
@@ -558,3 +595,26 @@ async def get_dashboard(
         manual_deposits=manual_deposits,
         payment_deposits=payment_deposits
     )
+
+
+@router.get("/master-accounts/pools")
+async def get_master_account_pools(
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get master account pool statistics for monitoring"""
+    from app.services.master_selector import MasterAccountSelector
+    
+    selector = MasterAccountSelector(db)
+    stats = await selector.get_pool_stats()
+    alerts = await selector.check_low_balance_alerts()
+    
+    return {
+        "pools": stats,
+        "alerts": alerts,
+        "recommendations": [
+            "Пополняйте дисконтные аккаунты при балансе < $50 для сохранения высокой маржи",
+            "Обычные аккаунты используются только как резерв",
+            "Приоритет: дисконтные (маржа 166%) → обычные (маржа 5%)"
+        ]
+    }

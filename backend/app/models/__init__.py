@@ -67,12 +67,35 @@ class MasterAccount(Base):
     name = Column(String(100), nullable=False)
     api_key_encrypted = Column(Text, nullable=False)
     balance_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
+    
+    # Тип аккаунта: discounted (со скидкой) или regular (обычный)
+    account_type = Column(String(20), nullable=False, default="discounted")
+    # discounted: покупаем со скидкой 70%, продаем со скидкой 20%
+    # regular: покупаем без скидки, продаем с наценкой 5%
+    
+    # Наценка для клиента в процентах
+    # Для discounted: -20 (продаем дешевле номинала)
+    # Для regular: +5 (продаем дороже номинала)
+    markup_percent = Column(Integer, nullable=False, default=-20)
+    
+    # База стоимости: сколько мы реально платим OpenRouter
+    # discounted: 0.3 (30% от номинала)
+    # regular: 1.0 (100% от номинала)
+    cost_basis = Column(Numeric(4, 2), nullable=False, default=0.30)
+    
+    # Приоритет использования (0 = высший, 1 = резерв)
+    priority = Column(Integer, default=0)
+    
+    # Вес для round-robin внутри одного типа
+    usage_weight = Column(Integer, default=0)
+    
+    # Legacy поле (deprecated, используем markup_percent)
     discount_percent = Column(Integer, nullable=False, default=70)
+    
     monthly_limit_usd = Column(Numeric(12, 2))
     monthly_used_usd = Column(Numeric(12, 2), default=0.00)
     current_month = Column(String(7), default=lambda: datetime.utcnow().strftime("%Y-%m"))
     is_active = Column(Boolean, default=True)
-    priority = Column(Integer, default=0)
     last_check_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -100,6 +123,9 @@ class RequestLog(Base):
     cost_to_us_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
     cost_to_client_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
     profit_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
+    
+    # Тип использованного мастер-аккаунта (для аналитики)
+    account_type_used = Column(String(20))  # discounted или regular
     
     duration_ms = Column(Integer)
     status_code = Column(Integer)

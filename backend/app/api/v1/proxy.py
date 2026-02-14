@@ -10,35 +10,39 @@ from typing import Optional, Tuple
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.services.billing import BillingService, PricingService
+from app.services.master_selector import MasterAccountSelector, NoAvailableAccountError
 from app.models import ApiKey, User, MasterAccount
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from decimal import Decimal
 
 router = APIRouter()
 settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
-async def get_master_key(db: AsyncSession):
-    """Get active master key from database"""
-    from app.models import MasterAccount
+async def get_master_account_with_pricing(db: AsyncSession, estimated_cost: Decimal = Decimal("0")) -> Tuple[MasterAccount, str, Decimal]:
+    """
+    Get master account using priority queue and calculate pricing
+    
+    Returns:
+        - MasterAccount: selected account
+        - str: decrypted API key
+        - Decimal: price multiplier for client (0.8 for discounted, 1.05 for regular)
+    """
     import base64
-
-    result = await db.execute(
-        select(MasterAccount)
-        .where(MasterAccount.is_active == True)
-        .order_by(MasterAccount.priority.desc())
-        .limit(1)
-    )
-    account = result.scalar_one_or_none()
-
-    if not account:
-        raise HTTPException(500, "No master keys configured")
-
+    
+    selector = MasterAccountSelector(db)
+    
+    try:
+        account, price_multiplier = await selector.select_account(estimated_cost)
+    except NoAvailableAccountError:
+        raise HTTPException(500, "No master accounts available with sufficient balance")
+    
     # Decrypt API key
     try:
         api_key = base64.b64decode(account.api_key_encrypted).decode()
-        return api_key
+        return account, api_key, price_multiplier
     except Exception as e:
         logger.error(f"Failed to decrypt master key: {e}")
         raise HTTPException(500, "Master key decryption error")
@@ -127,7 +131,16 @@ async def chat_completions(
         estimated_tokens,
         pricing
     )
-    estimated_client_cost = estimated_cost["client_cost_usd"]
+    
+    # Получаем мастер-аккаунт с учетом приоритетной очереди
+    # и ценовым множителем (0.8 для discounted, 1.05 для regular)
+    account, master_key, price_multiplier = await get_master_account_with_pricing(
+        db, 
+        estimated_cost["real_cost_usd"]
+    )
+    
+    # Рассчитываем стоимость для клиента с учетом типа аккаунта
+    estimated_client_cost = estimated_cost["real_cost_usd"] * price_multiplier
     
     # Reserve balance BEFORE making the request
     reserved = await BillingService.reserve_balance(
@@ -145,19 +158,6 @@ async def chat_completions(
             }
         )
     reserved_amount = estimated_client_cost
-    
-    # Get master key from database
-    result = await db.execute(
-        select(MasterAccount)
-        .where(MasterAccount.is_active == True)
-        .order_by(MasterAccount.priority.desc())
-        .limit(1)
-    )
-    account = result.scalar_one_or_none()
-    if not account:
-        raise HTTPException(500, "No master keys configured")
-    import base64
-    master_key = base64.b64decode(account.api_key_encrypted).decode()
     
     # Proxy request to OpenRouter
     async with httpx.AsyncClient() as client:
@@ -182,47 +182,74 @@ async def chat_completions(
             prompt_tokens = usage.get("prompt_tokens", 0)
             completion_tokens = usage.get("completion_tokens", 0)
             
-            # Calculate actual cost
+            # Calculate actual cost from upstream
             cost_breakdown = BillingService.calculate_cost(
                 model,
                 prompt_tokens,
                 completion_tokens,
                 pricing
             )
-            actual_cost = cost_breakdown["client_cost_usd"]
+            
+            # Наши реальные затраты (зависят от типа аккаунта)
+            our_cost = cost_breakdown["real_cost_usd"] * account.cost_basis
+            
+            # Стоимость для клиента (с наценкой/скидкой)
+            actual_client_cost = cost_breakdown["real_cost_usd"] * price_multiplier
+            
+            # Прибыль
+            profit = actual_client_cost - our_cost
             
             # Handle billing: refund difference if actual < estimated
-            if reserved_amount > actual_cost:
-                refund_amount = reserved_amount - actual_cost
+            if reserved_amount > actual_client_cost:
+                refund_amount = reserved_amount - actual_client_cost
                 await BillingService.release_balance(db, user_id, refund_amount)
-                logger.info(f"Refunded {refund_amount} USD to user {user_id} (reserved: {reserved_amount}, actual: {actual_cost})")
+                logger.info(f"Refunded {refund_amount} USD to user {user_id} (reserved: {reserved_amount}, actual: {actual_client_cost})")
             
-            # Update lifetime_spent with actual cost (reserve already deducted)
-            await BillingService.deduct_balance(db, user_id, Decimal("0"))  # Just updates lifetime stats
+            # Если фактическая стоимость выше резерва — списываем дополнительно
+            if actual_client_cost > reserved_amount:
+                extra_charge = actual_client_cost - reserved_amount
+                await BillingService.deduct_balance(db, user_id, extra_charge)
+            
+            # Update lifetime_spent
+            await BillingService.deduct_balance(db, user_id, Decimal("0"))
+            
+            # Спишем с баланса мастер-аккаунта
+            account.balance_usd -= our_cost
+            await db.commit()
             
             # Log request
             await BillingService.log_request(
                 db=db,
                 user_id=user_id,
                 api_key_id=api_key_id,
-                master_account_id=None,  # TODO: Track which master key was used
+                master_account_id=str(account.id),
                 model=model,
                 endpoint="/chat/completions",
                 prompt_tokens=prompt_tokens,
                 completion_tokens=completion_tokens,
-                cost_breakdown=cost_breakdown,
+                cost_breakdown={
+                    "real_cost_usd": cost_breakdown["real_cost_usd"],
+                    "our_cost_usd": our_cost,
+                    "client_cost_usd": actual_client_cost,
+                    "profit_usd": profit
+                },
                 duration_ms=duration_ms,
                 status="success" if response.status_code == 200 else "error",
                 status_code=response.status_code
             )
+            
+            # Дополнительно сохраним тип аккаунта в лог (для аналитики)
+            # TODO: добавить поле account_type_used в RequestLog
             
             # Add cost info to response
             response_data["cost"] = {
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
                 "total_tokens": prompt_tokens + completion_tokens,
-                "cost_usd": float(actual_cost),
-                "currency": "USD"
+                "cost_usd": float(actual_client_cost),
+                "currency": "USD",
+                "account_type": account.account_type,
+                "pricing": f"{'-' if account.markup_percent < 0 else '+'}{abs(account.markup_percent)}%"
             }
             
             return response_data
@@ -287,18 +314,11 @@ async def chat_completions(
 
 @router.get("/models")
 async def list_models(db: AsyncSession = Depends(get_db)):
-    """List available models from OpenRouter"""
-    result = await db.execute(
-        select(MasterAccount)
-        .where(MasterAccount.is_active == True)
-        .order_by(MasterAccount.priority.desc())
-        .limit(1)
-    )
-    account = result.scalar_one_or_none()
-    if not account:
+    """List available models from OpenRouter using priority queue"""
+    try:
+        account, master_key, _ = await get_master_account_with_pricing(db)
+    except HTTPException:
         raise HTTPException(500, "No master keys configured")
-    import base64
-    master_key = base64.b64decode(account.api_key_encrypted).decode()
 
     async with httpx.AsyncClient() as client:
         response = await client.get(
