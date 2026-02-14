@@ -245,61 +245,6 @@ class ChangePasswordRequest(BaseModel):
     new_password: str
 
 
-@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
-async def register(
-    data: RegisterRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    """Register new user (no email confirmation required)"""
-    from app.models import Balance
-    
-    # Check if email already exists
-    result = await db.execute(select(User).where(User.email == data.email))
-    if result.scalar_one_or_none():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-    
-    # Validate password
-    if len(data.password) < 8:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password must be at least 8 characters"
-        )
-    
-    # Create user
-    user = User(
-        id=uuid4(),
-        email=data.email,
-        name=data.name,
-        password_hash=get_password_hash(data.password),
-        role="client",
-        status="active",
-        email_verified=True,  # No confirmation needed
-        force_password_change=False  # Password already set by user
-    )
-    db.add(user)
-    await db.flush()  # Get user.id without committing
-    
-    # Create empty balance
-    balance = Balance(
-        user_id=user.id,
-        balance_usd=Decimal("0.00"),
-        lifetime_spent=Decimal("0.00"),
-        lifetime_earned=Decimal("0.00")
-    )
-    db.add(balance)
-    
-    await db.commit()
-    
-    return RegisterResponse(
-        message="Registration successful. You can now log in.",
-        user_id=str(user.id),
-        email=user.email
-    )
-
-
 @router.post("/change-password")
 async def change_password(
     data: ChangePasswordRequest,

@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { CreditCard, Bitcoin, Wallet, ChevronRight, Loader2 } from 'lucide-react'
+import { CreditCard, Bitcoin, ChevronRight, Loader2, Clock, CheckCircle, XCircle, Copy } from 'lucide-react'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { adminApi } from '../api/client'
 
 interface PaymentMethod {
   id: string
@@ -11,183 +13,344 @@ interface PaymentMethod {
 
 const paymentMethods: PaymentMethod[] = [
   {
-    id: 'stripe',
-    name: 'Credit Card',
-    icon: CreditCard,
-    description: 'Visa, Mastercard, Apple Pay',
-    minAmount: 5
-  },
-  {
     id: 'crypto',
     name: 'Cryptocurrency',
     icon: Bitcoin,
-    description: 'BTC, ETH, USDT',
+    description: 'USDT, BTC, ETH via NowPayments',
     minAmount: 10
-  },
-  {
-    id: 'yookassa',
-    name: 'YooKassa',
-    icon: Wallet,
-    description: 'SBP, Карты РФ',
-    minAmount: 100
   }
 ]
 
-export default function Deposit() {
-  const [selectedMethod, setSelectedMethod] = useState<string>('stripe')
-  const [amount, setAmount] = useState('50')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+interface Payment {
+  id: string
+  amount_usd: number
+  status: string
+  currency: string
+  created_at: string
+  completed_at: string | null
+  metadata: {
+    pay_address?: string
+    pay_amount?: number
+    pay_currency?: string
+  }
+}
 
-  const handleDeposit = async () => {
-    const numAmount = parseFloat(amount)
-    const method = paymentMethods.find(m => m.id === selectedMethod)
-    
-    if (!method) return
-    
-    if (numAmount < method.minAmount) {
-      setError(`Minimum amount for ${method.name} is $${method.minAmount}`)
+export default function Deposit() {
+  const [selectedMethod, setSelectedMethod] = useState<string>('crypto')
+  const [amount, setAmount] = useState('50')
+  const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20')
+  const [activePayment, setActivePayment] = useState<Payment | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  // Fetch payment history
+  const { data: historyData, refetch: refetchHistory } = useQuery({
+    queryKey: ['payments', 'history'],
+    queryFn: () => adminApi.getPaymentHistory(),
+  })
+
+  // Fetch supported currencies
+  const { data: currenciesData } = useQuery({
+    queryKey: ['payments', 'currencies'],
+    queryFn: () => adminApi.getCryptoCurrencies(),
+  })
+
+  const currencies = currenciesData?.data?.currencies || []
+
+  // Create payment mutation
+  const createPaymentMutation = useMutation({
+    mutationFn: () => adminApi.createCryptoPayment(parseFloat(amount), selectedCurrency),
+    onSuccess: (response) => {
+      setActivePayment({
+        id: response.data.payment_id,
+        amount_usd: parseFloat(amount),
+        status: 'waiting',
+        currency: 'USD',
+        created_at: new Date().toISOString(),
+        completed_at: null,
+        metadata: {
+          pay_address: response.data.pay_address,
+          pay_amount: response.data.pay_amount,
+          pay_currency: response.data.pay_currency
+        }
+      })
+      refetchHistory()
+    }
+  })
+
+  const payments: Payment[] = historyData?.data?.payments || []
+  const pendingPayments = payments.filter(p => ['pending', 'waiting', 'confirming'].includes(p.status))
+  const completedPayments = payments.filter(p => ['completed', 'finished', 'confirmed'].includes(p.status))
+
+  const selectedPayment = paymentMethods.find(m => m.id === selectedMethod)
+  const numAmount = parseFloat(amount) || 0
+
+  const handleCreatePayment = () => {
+    if (numAmount < (selectedPayment?.minAmount || 10)) {
       return
     }
+    createPaymentMutation.mutate()
+  }
 
-    setLoading(true)
-    setError('')
-    setSuccess('')
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
-    try {
-      // В реальности здесь был бы запрос к платёжному шлюзу
-      // Сейчас демо-режим: просто показываем инструкцию
-      setSuccess(`Redirecting to ${method.name} payment...`)
-      
-      // Через 2 секунды показываем "демо-успех"
-      setTimeout(() => {
-        setSuccess(`Demo: Deposit of $${numAmount} via ${method.name} initiated!`)
-        setLoading(false)
-      }, 2000)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Payment failed')
-      setLoading(false)
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+      case 'finished':
+      case 'confirmed':
+        return <CheckCircle className="w-5 h-5 text-green-500" />
+      case 'pending':
+      case 'waiting':
+      case 'confirming':
+        return <Clock className="w-5 h-5 text-yellow-500" />
+      default:
+        return <XCircle className="w-5 h-5 text-red-500" />
     }
   }
 
-  const selectedPayment = paymentMethods.find(m => m.id === selectedMethod)
+  const getStatusText = (status: string) => {
+    const statusMap: Record<string, string> = {
+      'completed': 'Completed',
+      'finished': 'Completed',
+      'confirmed': 'Confirmed',
+      'pending': 'Pending',
+      'waiting': 'Waiting',
+      'confirming': 'Confirming',
+      'failed': 'Failed',
+      'expired': 'Expired'
+    }
+    return statusMap[status] || status
+  }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
-        <p className="text-gray-500 mt-1">Choose payment method and amount</p>
+        <p className="text-gray-500 mt-1">Deposit funds via cryptocurrency</p>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-          {error}
+      {/* Active Payment */}
+      {activePayment && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 className="font-semibold text-blue-900 mb-4">Active Payment</h3>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Amount:</span>
+              <span className="font-bold text-lg">${activePayment.amount_usd.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Status:</span>
+              <span className="flex items-center gap-2">
+                {getStatusIcon(activePayment.status)}
+                {getStatusText(activePayment.status)}
+              </span>
+            </div>
+            {activePayment.metadata?.pay_address && (
+              <div className="bg-white rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-2">Send {activePayment.metadata.pay_amount} {activePayment.metadata.pay_currency?.toUpperCase()} to:</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-gray-100 p-2 rounded text-sm break-all">
+                    {activePayment.metadata.pay_address}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(activePayment.metadata?.pay_address || '')}
+                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                  >
+                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}
+                  </button>
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => setActivePayment(null)}
+              className="text-blue-600 hover:text-blue-700 text-sm"
+            >
+              Create new payment
+            </button>
+          </div>
         </div>
       )}
 
-      {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700">
-          {success}
-        </div>
-      )}
-
-      {/* Payment Methods */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="font-semibold text-gray-900">Payment Method</h2>
-        </div>
-        <div className="divide-y divide-gray-200">
-          {paymentMethods.map((method) => {
-            const Icon = method.icon
-            const isSelected = selectedMethod === method.id
-            
-            return (
-              <button
-                key={method.id}
-                onClick={() => setSelectedMethod(method.id)}
-                className={`w-full px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors ${
-                  isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent'
-                }`}
-              >
-                <div className={`p-3 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                  <Icon className={`w-6 h-6 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
-                </div>
-                <div className="flex-1 text-left">
-                  <h3 className="font-medium text-gray-900">{method.name}</h3>
-                  <p className="text-sm text-gray-500">{method.description}</p>
-                </div>
-                <div className="text-sm text-gray-500">
-                  Min: ${method.minAmount}
-                </div>
-                <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-400'}`} />
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Amount */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Amount (USD)
-        </label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-          <input
-            type="number"
-            min={selectedPayment?.minAmount || 5}
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-            placeholder="50"
-          />
-        </div>
-        <p className="text-sm text-gray-500 mt-2">
-          Minimum: ${selectedPayment?.minAmount || 5}
-        </p>
-      </div>
-
-      {/* Summary */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Deposit amount</span>
-            <span className="font-medium">${parseFloat(amount || '0').toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Payment method</span>
-            <span className="font-medium">{selectedPayment?.name}</span>
-          </div>
-          <div className="border-t border-gray-200 pt-2 mt-2">
-            <div className="flex justify-between">
-              <span className="font-semibold text-gray-900">Total</span>
-              <span className="font-bold text-xl text-gray-900">${parseFloat(amount || '0').toFixed(2)}</span>
+      {/* New Payment Form */}
+      {!activePayment && (
+        <>
+          {/* Payment Method */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="font-semibold text-gray-900">Payment Method</h2>
+            </div>
+            <div className="divide-y divide-gray-200">
+              {paymentMethods.map((method) => {
+                const Icon = method.icon
+                const isSelected = selectedMethod === method.id
+                
+                return (
+                  <button
+                    key={method.id}
+                    onClick={() => setSelectedMethod(method.id)}
+                    className={`w-full px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors ${
+                      isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent'
+                    }`}
+                  >
+                    <div className={`p-3 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <Icon className={`w-6 h-6 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h3 className="font-medium text-gray-900">{method.name}</h3>
+                      <p className="text-sm text-gray-500">{method.description}</p>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Min: ${method.minAmount}
+                    </div>
+                    <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-400'}`} />
+                  </button>
+                )
+              })}
             </div>
           </div>
+
+          {/* Currency Selection */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Select Cryptocurrency
+            </label>
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {currencies.map((curr: any) => (
+                <option key={curr.code} value={curr.code}>
+                  {curr.name} ({curr.network}) - {curr.fee} fees
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Amount */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Amount (USD)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+              <input
+                type="number"
+                min={selectedPayment?.minAmount || 10}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                placeholder="50"
+              />
+            </div>
+            <p className="text-sm text-gray-500 mt-2">
+              Minimum: ${selectedPayment?.minAmount || 10}
+            </p>
+          </div>
+
+          {/* Summary */}
+          <div className="bg-gray-50 rounded-lg p-6">
+            <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Deposit amount</span>
+                <span className="font-medium">${numAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Payment method</span>
+                <span className="font-medium">{selectedPayment?.name}</span>
+              </div>
+              <div className="border-t border-gray-200 pt-2 mt-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-900">Total</span>
+                  <span className="font-bold text-xl text-gray-900">${numAmount.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit */}
+          {createPaymentMutation.isError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+              {(createPaymentMutation.error as any)?.response?.data?.detail || 'Failed to create payment'}
+            </div>
+          )}
+
+          <button
+            onClick={handleCreatePayment}
+            disabled={createPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
+            className="w-full bg-blue-600 text-white py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {createPaymentMutation.isPending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Creating payment...
+              </>
+            ) : (
+              <>Create Payment ${numAmount.toFixed(2)}</>
+            )}
+          </button>
+        </>
+      )}
+
+      {/* Pending Payments */}
+      {pendingPayments.length > 0 && (
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="font-semibold text-gray-900">Pending Payments</h2>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {pendingPayments.map((payment) => (
+              <div key={payment.id} className="px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(payment.status)}
+                  <div>
+                    <p className="font-medium text-gray-900">${payment.amount_usd.toFixed(2)}</p>
+                    <p className="text-sm text-gray-500">{new Date(payment.created_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-yellow-600">
+                  {getStatusText(payment.status)}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Submit */}
-      <button
-        onClick={handleDeposit}
-        disabled={loading || !amount || parseFloat(amount) < (selectedPayment?.minAmount || 5)}
-        className="w-full bg-blue-600 text-white py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
-        {loading ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          <>Pay ${parseFloat(amount || '0').toFixed(2)}</>
-        )}
-      </button>
-
-      <p className="text-center text-sm text-gray-500">
-        Secure payment processing. Your funds will be added instantly after confirmation.
-      </p>
+      {/* Payment History */}
+      {completedPayments.length > 0 && (
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="font-semibold text-gray-900">Payment History</h2>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {completedPayments.slice(0, 5).map((payment) => (
+              <div key={payment.id} className="px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(payment.status)}
+                  <div>
+                    <p className="font-medium text-gray-900">${payment.amount_usd.toFixed(2)}</p>
+                    <p className="text-sm text-gray-500">
+                      {payment.completed_at 
+                        ? new Date(payment.completed_at).toLocaleDateString()
+                        : new Date(payment.created_at).toLocaleDateString()
+                      }
+                    </p>
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-green-600">
+                  {getStatusText(payment.status)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

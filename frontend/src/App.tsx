@@ -5,7 +5,10 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import ChangePassword from './pages/ChangePassword'
 import AdminDashboard from './pages/AdminDashboard'
+import Dashboard from './pages/Dashboard'
 import Users from './pages/Users'
+import Deposit from './pages/Deposit'
+import ApiKeys from './pages/ApiKeys'
 import Layout from './components/Layout'
 
 function App() {
@@ -25,15 +28,20 @@ function App() {
     )
   }
 
+  // Get user role for role-based routing
+  const { user } = useAuthStore()
+  const isAdmin = user?.role === 'admin'
+  const userRole = user?.role
+
   return (
     <Routes>
       <Route 
         path="/login" 
-        element={token ? <Navigate to="/admin" /> : <Login />} 
+        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : "/dashboard"} /> : <Login />} 
       />
       <Route 
         path="/register" 
-        element={token ? <Navigate to="/admin" /> : <Register />} 
+        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : "/dashboard"} /> : <Register />} 
       />
       <Route 
         path="/*" 
@@ -41,9 +49,12 @@ function App() {
           token ? (
             <Layout>
               <Routes>
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/users" element={<Users />} />
-                <Route path="/" element={<Navigate to="/admin" />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/deposit" element={<Deposit />} />
+                <Route path="/api-keys" element={<ApiKeys />} />
+                <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />} />
+                <Route path="/admin/users" element={isAdmin ? <Users /> : <Navigate to="/dashboard" />} />
+                <Route path="/" element={<Navigate to={isAdmin ? "/admin" : "/dashboard"} />} />
               </Routes>
             </Layout>
           ) : (

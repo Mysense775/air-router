@@ -4,6 +4,8 @@ import {
   LayoutDashboard,
   Shield,
   Users,
+  Key,
+  CreditCard,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -25,7 +27,8 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
-        {user?.role === 'admin' && (
+        {user?.role === 'admin' ? (
+          // Admin navigation
           <>
             <Link
               to="/admin"
@@ -50,12 +53,51 @@ export default function Sidebar() {
               <span className="font-medium">Users</span>
             </Link>
           </>
+        ) : (
+          // Client navigation
+          <>
+            <Link
+              to="/dashboard"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/dashboard'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              <span className="font-medium">Dashboard</span>
+            </Link>
+            <Link
+              to="/deposit"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/deposit'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <CreditCard className="w-5 h-5" />
+              <span className="font-medium">Deposit</span>
+            </Link>
+            <Link
+              to="/api-keys"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/api-keys'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Key className="w-5 h-5" />
+              <span className="font-medium">API Keys</span>
+            </Link>
+          </>
         )}
       </nav>
 
       <div className="p-4 border-t border-gray-200">
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white">
-          <p className="text-sm font-medium mb-1">Admin Panel</p>
+          <p className="text-sm font-medium mb-1">
+            {user?.role === 'admin' ? 'Admin Panel' : 'Client Portal'}
+          </p>
           <p className="text-xs opacity-90">v1.2.0</p>
         </div>
       </div>
