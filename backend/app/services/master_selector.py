@@ -130,14 +130,14 @@ class MasterAccountSelector:
         )
         reg = reg_stats.first()
         
-        # Определяем текущую стратегию
+        # Определяем текущую стратегию (порог $1 - минимум для запроса)
         disc_balance = disc.total_balance if disc else 0
         reg_balance = reg.total_balance if reg else 0
         
-        if disc_balance > 10:
+        if disc_balance > 1:
             strategy = "discounted_first"
             strategy_name = "Приоритет дисконтных (маржа 166%)"
-        elif reg_balance > 10:
+        elif reg_balance > 1:
             strategy = "regular_only"
             strategy_name = "Только обычные (маржа 5%)"
         else:
@@ -149,13 +149,13 @@ class MasterAccountSelector:
                 "count": disc.count if disc else 0,
                 "total_balance": float(disc_balance),
                 "avg_balance": float(disc.avg_balance) if disc else 0,
-                "status": "active" if disc_balance > 10 else ("low" if disc_balance > 0 else "empty")
+                "status": "active" if disc_balance > 1 else ("low" if disc_balance > 0 else "empty")
             },
             "regular": {
                 "count": reg.count if reg else 0,
                 "total_balance": float(reg_balance),
                 "avg_balance": float(reg.avg_balance) if reg else 0,
-                "status": "active" if reg_balance > 10 else ("low" if reg_balance > 0 else "empty")
+                "status": "active" if reg_balance > 1 else ("low" if reg_balance > 0 else "empty")
             },
             "strategy": strategy,
             "strategy_name": strategy_name,
@@ -171,12 +171,12 @@ class MasterAccountSelector:
         """
         alerts = []
         
-        # Проверка дисконтных ключей
+        # Проверка дисконтных ключей (warning если < $20)
         disc_low = await self.db.execute(
             select(MasterAccount)
             .where(MasterAccount.account_type == "discounted")
             .where(MasterAccount.is_active == True)
-            .where(MasterAccount.balance_usd < 50)
+            .where(MasterAccount.balance_usd < 20)
             .where(MasterAccount.balance_usd > 0)
         )
         disc_accounts = disc_low.scalars().all()
@@ -190,23 +190,31 @@ class MasterAccountSelector:
                 "recommendation": "Пополните для сохранения маржи 166%"
             })
         
-        # Проверка полного отсутствия дисконтных
+        # Проверка полного отсутствия дисконтных (порог $1 - минимум для запроса)
         disc_empty = await self.db.execute(
             select(func.count(MasterAccount.id))
             .where(MasterAccount.account_type == "discounted")
             .where(MasterAccount.is_active == True)
-            .where(MasterAccount.balance_usd > 5)
+            .where(MasterAccount.balance_usd > 1)
         )
         disc_available = disc_empty.scalar()
         
         if disc_available == 0:
-            # Проверяем есть ли вообще дисконтные с нулевым балансом
+            # Проверяем есть ли вообще дисконтные (хоть с каким-то балансом)
             disc_zero = await self.db.execute(
                 select(func.count(MasterAccount.id))
                 .where(MasterAccount.account_type == "discounted")
                 .where(MasterAccount.is_active == True)
+                .where(MasterAccount.balance_usd > 0)
             )
             if disc_zero.scalar() > 0:
+                alerts.append({
+                    "level": "warning",
+                    "type": "discounted_low",
+                    "message": "Дисконтные ключи на исходе! Баланс менее $1.",
+                    "recommendation": "Пополните для сохранения маржи 166%"
+                })
+            else:
                 alerts.append({
                     "level": "critical",
                     "type": "discounted_empty",
@@ -220,7 +228,7 @@ class MasterAccountSelector:
                 select(func.count(MasterAccount.id))
                 .where(MasterAccount.account_type == "regular")
                 .where(MasterAccount.is_active == True)
-                .where(MasterAccount.balance_usd > 5)
+                .where(MasterAccount.balance_usd > 1)
             )
             reg_available = reg_low.scalar()
             
