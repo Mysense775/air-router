@@ -7,6 +7,7 @@ import {
   Key,
   CreditCard,
   History,
+  Brain,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -100,6 +101,17 @@ export default function Sidebar() {
             >
               <History className="w-5 h-5" />
               <span className="font-medium">Request History</span>
+            </Link>
+            <Link
+              to="/models"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/models'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Brain className="w-5 h-5" />
+              <span className="font-medium">Models</span>
             </Link>
           </>
         )}

@@ -1,7 +1,17 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { 
+  Search, 
+  Filter, 
+  Copy, 
+  Check, 
+  Brain,
+  DollarSign,
+  ChevronDown,
+  Sparkles,
+  BarChart3
+} from 'lucide-react'
 import { api } from '../api/client'
-import { Search, Copy, Check, DollarSign, Zap, Brain, AlertCircle } from 'lucide-react'
 
 interface Model {
   id: string
@@ -12,40 +22,94 @@ interface Model {
     completion: number
   }
   context_length?: number
+  top_provider?: {
+    context_length?: number
+  }
 }
 
 export default function Models() {
-  const [search, setSearch] = useState('')
-  const [copied, setCopied] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedProvider, setSelectedProvider] = useState<string>('all')
+  const [priceFilter, setPriceFilter] = useState<string>('all')
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
-  // Use React Query with retry logic
-  const { data: models = [], isLoading, error, isError } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['models'],
     queryFn: async () => {
       const res = await api.get('/models')
-      return res.data.data || res.data || []
+      return res.data.data as Model[]
     },
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
   })
 
-  const filteredModels = models.filter((m: Model) => {
-    const searchLower = search.toLowerCase()
-    return m.id.toLowerCase().includes(searchLower) || 
-           m.name?.toLowerCase().includes(searchLower)
-  })
+  const models = data || []
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(text)
-    setTimeout(() => setCopied(null), 2000)
+  // Get unique providers
+  const providers = useMemo(() => {
+    const providerSet = new Set<string>()
+    models.forEach(model => {
+      const provider = model.id.split('/')[0]
+      providerSet.add(provider)
+    })
+    return ['all', ...Array.from(providerSet).sort()]
+  }, [models])
+
+  // Filter models
+  const filteredModels = useMemo(() => {
+    return models.filter(model => {
+      // Search filter
+      const searchLower = searchQuery.toLowerCase()
+      const matchesSearch = 
+        model.name.toLowerCase().includes(searchLower) ||
+        model.id.toLowerCase().includes(searchLower) ||
+        (model.description && model.description.toLowerCase().includes(searchLower))
+      
+      // Provider filter
+      const provider = model.id.split('/')[0]
+      const matchesProvider = selectedProvider === 'all' || provider === selectedProvider
+      
+      // Price filter
+      const promptPrice = model.pricing?.prompt || 0
+      let matchesPrice = true
+      if (priceFilter === 'cheap') matchesPrice = promptPrice < 0.000001
+      else if (priceFilter === 'medium') matchesPrice = promptPrice >= 0.000001 && promptPrice < 0.00001
+      else if (priceFilter === 'expensive') matchesPrice = promptPrice >= 0.00001
+      
+      return matchesSearch && matchesProvider && matchesPrice
+    })
+  }, [models, searchQuery, selectedProvider, priceFilter])
+
+  // Get top recommended models
+  const recommendedModels = useMemo(() => {
+    const recommendations = []
+    
+    // Best value (cheap + good)
+    const bestValue = models.find(m => m.id === 'openai/gpt-4o-mini')
+    if (bestValue) recommendations.push({ model: bestValue, badge: '💰 Best Value', color: 'green' })
+    
+    // Best quality
+    const bestQuality = models.find(m => m.id === 'openai/gpt-4o') || models.find(m => m.id.includes('claude-3-5'))
+    if (bestQuality) recommendations.push({ model: bestQuality, badge: '🏆 Best Quality', color: 'purple' })
+    
+    // Long context
+    const longContext = models.find(m => m.id.includes('claude-3-5') && m.context_length && m.context_length > 100000)
+    if (longContext) recommendations.push({ model: longContext, badge: '📚 Long Context', color: 'blue' })
+    
+    return recommendations
+  }, [models])
+
+  const copyToClipboard = (id: string) => {
+    navigator.clipboard.writeText(id)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
-  const formatPrice = (price: number | undefined) => {
-    if (!price) return 'N/A'
-    return `$${(price * 1000).toFixed(4)}`
+  const formatPrice = (price: number) => {
+    if (!price) return 'Free'
+    return `$${(price * 1000000).toFixed(2)}/M tokens`
+  }
+
+  const getContextLength = (model: Model) => {
+    return model.context_length || model.top_provider?.context_length || 4096
   }
 
   if (isLoading) {
@@ -56,121 +120,179 @@ export default function Models() {
     )
   }
 
-  if (isError) {
+  if (error) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
-            <p className="text-gray-500 mt-1">Choose from AI models</p>
-          </div>
-        </div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-red-900 mb-2">Failed to load models</h3>
-          <p className="text-red-700 mb-4">{(error as any)?.message || 'Please try again later'}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        Failed to load models
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
-          <p className="text-gray-500 mt-1">Choose from {models.length} AI models</p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <DollarSign className="w-4 h-4" />
-          Prices per 1K tokens
-        </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
+        <p className="text-gray-500 mt-1">
+          {models.length} AI models available. Choose the best for your task.
+        </p>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search models..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
+      {/* Recommendations */}
+      {recommendedModels.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {recommendedModels.map(({ model, badge, color }) => (
+            <div key={model.id} className={`bg-${color}-50 border border-${color}-200 rounded-xl p-4 relative`}>
+              <span className={`absolute top-2 right-2 text-xs font-medium bg-${color}-100 text-${color}-700 px-2 py-1 rounded-full`}>
+                {badge}
+              </span>
+              <h3 className="font-semibold text-gray-900 mt-4">{model.name}</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                {formatPrice(model.pricing?.prompt || 0)}
+              </p>
+              <button
+                onClick={() => copyToClipboard(model.id)}
+                className={`mt-3 w-full py-2 rounded-lg text-sm font-medium transition-colors ${
+                  copiedId === model.id
+                    ? 'bg-green-600 text-white'
+                    : `bg-${color}-600 text-white hover:bg-${color}-700`
+                }`}
+              >
+                {copiedId === model.id ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Check className="w-4 h-4" /> Copied!
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <Copy className="w-4 h-4" /> Copy ID
+                  </span>
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="grid gap-4">
-        {filteredModels.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No models found</p>
+      {/* Filters */}
+      <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search models..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
-        ) : (
-          filteredModels.map((model: Model) => (
-            <div key={model.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+          
+          {/* Provider Filter */}
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <select
+              value={selectedProvider}
+              onChange={(e) => setSelectedProvider(e.target.value)}
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+            >
+              <option value="all">All Providers</option>
+              {providers.filter(p => p !== 'all').map(provider => (
+                <option key={provider} value={provider}>
+                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+          
+          {/* Price Filter */}
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <select
+              value={priceFilter}
+              onChange={(e) => setPriceFilter(e.target.value)}
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+            >
+              <option value="all">All Prices</option>
+              <option value="cheap">Cheap (&lt; $1/M)</option>
+              <option value="medium">Medium ($1-10/M)</option>
+              <option value="expensive">Expensive (&gt; $10/M)</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+        
+        {/* Results count */}
+        <div className="mt-3 text-sm text-gray-500">
+          Showing {filteredModels.length} of {models.length} models
+        </div>
+      </div>
+
+      {/* Models Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredModels.map((model) => {
+          const provider = model.id.split('/')[0]
+          const contextLength = getContextLength(model)
+          
+          return (
+            <div key={model.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all">
               <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-gray-900 truncate">{model.name || model.id}</h3>
-                    {model.context_length && (
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                        {model.context_length.toLocaleString()} ctx
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-500 font-mono mt-1 truncate">{model.id}</p>
-                  {model.description && (
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">{model.description}</p>
-                  )}
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-blue-600" />
+                  <span className="text-xs font-medium text-gray-500 uppercase">{provider}</span>
                 </div>
-                <div className="flex items-center gap-4 ml-4">
-                  <div className="text-right">
-                    <div className="flex items-center gap-1 text-sm">
-                      <Zap className="w-3 h-3 text-yellow-500" />
-                      <span className="text-gray-600">In:</span>
-                      <span className="font-semibold text-gray-900">{formatPrice(model.pricing?.prompt)}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm mt-1">
-                      <Zap className="w-3 h-3 text-green-500" />
-                      <span className="text-gray-600">Out:</span>
-                      <span className="font-semibold text-gray-900">{formatPrice(model.pricing?.completion)}</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => copyToClipboard(model.id)}
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="Copy model ID"
-                  >
-                    {copied === model.id ? (
-                      <Check className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <Copy className="w-5 h-5" />
-                    )}
-                  </button>
+                <button
+                  onClick={() => copyToClipboard(model.id)}
+                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Copy model ID"
+                >
+                  {copiedId === model.id ? (
+                    <Check className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              
+              <h3 className="font-semibold text-gray-900 mt-2">{model.name}</h3>
+              
+              {model.description && (
+                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                  {model.description}
+                </p>
+              )}
+              
+              <div className="flex items-center gap-4 mt-3 text-sm">
+                <div className="flex items-center gap-1 text-gray-600">
+                  <DollarSign className="w-4 h-4" />
+                  <span>{formatPrice(model.pricing?.prompt || 0)}</span>
+                </div>
+                <div className="flex items-center gap-1 text-gray-600">
+                  <BarChart3 className="w-4 h-4" />
+                  <span>{(contextLength / 1000).toFixed(0)}K context</span>
                 </div>
               </div>
+              
+              {model.pricing && model.pricing.prompt < 0.000001 && (
+                <div className="mt-3 flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Great value</span>
+                </div>
+              )}
             </div>
-          ))
-        )}
+          )
+        })}
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <h3 className="font-semibold text-gray-900 mb-3">Usage Example</h3>
-        <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-{`curl -X POST https://airouter.host/v1/chat/completions \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "anthropic/claude-3.5-sonnet",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'`}
-        </pre>
-      </div>
+      {/* Empty state */}
+      {filteredModels.length === 0 && (
+        <div className="text-center py-12 text-gray-400">
+          <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p>No models found</p>
+          <p className="text-sm">Try adjusting your filters</p>
+        </div>
+      )}
     </div>
   )
 }
