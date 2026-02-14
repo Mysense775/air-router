@@ -119,7 +119,7 @@ export default function RequestHistory() {
             <DollarSign className="w-4 h-4" />
             <span className="text-sm font-medium">Total Spent</span>
           </div>
-          <p className="text-2xl font-bold text-green-900">${totalSpent.toFixed(5)}</p>
+          <p className="text-2xl font-bold text-green-900">${totalSpent.toFixed(6)}</p>
         </div>
 
         <div className="bg-pink-50 rounded-lg p-4">
@@ -127,7 +127,7 @@ export default function RequestHistory() {
             <PiggyBank className="w-4 h-4" />
             <span className="text-sm font-medium">Total Saved</span>
           </div>
-          <p className="text-2xl font-bold text-pink-900">${totalSavings.toFixed(5)}</p>
+          <p className="text-2xl font-bold text-pink-900">${totalSavings.toFixed(6)}</p>
         </div>
 
         <div className="bg-purple-50 rounded-lg p-4">
@@ -188,13 +188,13 @@ export default function RequestHistory() {
                     {req.total_tokens.toLocaleString()}
                   </td>
                   <td className="px-4 py-3 text-sm text-right font-mono text-gray-400">
-                    ${req.openrouter_cost_usd.toFixed(5)}
+                    ${req.openrouter_cost_usd.toFixed(6)}
                   </td>
                   <td className="px-4 py-3 text-sm text-right font-mono text-blue-600 font-medium">
-                    ${req.client_cost_usd.toFixed(5)}
+                    ${req.client_cost_usd.toFixed(6)}
                   </td>
                   <td className="px-4 py-3 text-sm text-right font-mono text-green-600">
-                    ${req.savings_usd.toFixed(5)}
+                    ${req.savings_usd.toFixed(6)}
                   </td>
                   <td className="px-4 py-3 text-sm text-right text-gray-500">
                     {formatDuration(req.duration_ms)}

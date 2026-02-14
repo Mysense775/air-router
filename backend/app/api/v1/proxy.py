@@ -11,7 +11,7 @@ from app.core.config import get_settings
 from app.db.session import get_db
 from app.services.billing import BillingService, PricingService
 from app.services.master_selector import MasterAccountSelector, NoAvailableAccountError
-from app.models import ApiKey, User, MasterAccount
+from app.models import ApiKey, User, MasterAccount, Balance
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from decimal import Decimal
@@ -210,18 +210,24 @@ async def chat_completions(
                 extra_charge = actual_client_cost - reserved_amount
                 await BillingService.deduct_balance(db, user_id, extra_charge)
             
-            # Update lifetime_spent
-            await BillingService.deduct_balance(db, user_id, Decimal("0"))
+            # Update lifetime_spent напрямую (не через deduct_balance чтобы не списать дважды)
+            result = await db.execute(
+                select(Balance).where(Balance.user_id == user_id)
+            )
+            balance = result.scalar_one_or_none()
+            if balance:
+                balance.lifetime_spent += actual_client_cost
+                await db.flush()
+                await db.commit()
             
             # Рассчитываем сбережения клиента (сколько сэкономил vs OpenRouter)
             savings = cost_breakdown["real_cost_usd"] - actual_client_cost
             if savings > 0:
                 # Добавляем сбережения к lifetime_savings
-                from app.models import Balance
-                result = await db.execute(select(Balance).where(Balance.user_id == user_id))
-                balance = result.scalar_one_or_none()
-                if balance:
-                    balance.lifetime_savings += savings
+                result_savings = await db.execute(select(Balance).where(Balance.user_id == user_id))
+                balance_savings = result_savings.scalar_one_or_none()
+                if balance_savings:
+                    balance_savings.lifetime_savings += savings
                     await db.commit()
             
             # Спишем с баланса мастер-аккаунта

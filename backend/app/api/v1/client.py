@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from datetime import datetime, timedelta
 from typing import Optional
+from decimal import Decimal
 
 from app.db.session import get_db
 from app.api.v1.auth import get_current_active_user
@@ -209,10 +210,11 @@ async def get_request_history(
                 "prompt_tokens": req.prompt_tokens,
                 "completion_tokens": req.completion_tokens,
                 "total_tokens": req.total_tokens,
-                "openrouter_cost_usd": float(req.openrouter_cost_usd),
+                # Fallback: если openrouter_cost_usd = 0 (старые записи), считаем по скидке 20%
+                "openrouter_cost_usd": float(req.openrouter_cost_usd if req.openrouter_cost_usd > 0 else req.cost_to_client_usd / Decimal("0.8")),
                 "our_cost_usd": float(req.cost_to_us_usd),
                 "client_cost_usd": float(req.cost_to_client_usd),
-                "savings_usd": float(req.openrouter_cost_usd - req.cost_to_client_usd),
+                "savings_usd": float((req.openrouter_cost_usd if req.openrouter_cost_usd > 0 else req.cost_to_client_usd / Decimal("0.8")) - req.cost_to_client_usd),
                 "account_type": req.account_type_used,
                 "status": req.status,
                 "duration_ms": req.duration_ms,

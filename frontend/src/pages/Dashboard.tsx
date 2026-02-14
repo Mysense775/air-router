@@ -56,21 +56,21 @@ export default function Dashboard() {
   const stats = [
     {
       title: 'Current Balance',
-      value: `$${balance.balance_usd.toFixed(2)}`,
+      value: `$${balance.balance_usd.toFixed(5)}`,
       icon: Wallet,
       color: 'blue',
       trend: 'Available for API calls',
     },
     {
       title: 'Total Spent',
-      value: `$${balance.lifetime_spent.toFixed(2)}`,
+      value: `$${balance.lifetime_spent.toFixed(5)}`,
       icon: TrendingUp,
       color: 'green',
       trend: 'Lifetime spending',
     },
     {
       title: 'Your Savings',
-      value: `$${balance.lifetime_savings.toFixed(2)}`,
+      value: `$${balance.lifetime_savings.toFixed(5)}`,
       icon: PiggyBank,
       color: 'pink',
       trend: 'vs OpenRouter direct',
@@ -169,7 +169,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <span className="text-sm font-medium text-gray-900">
-                    ${model.cost_usd.toFixed(4)}
+                    ${model.cost_usd.toFixed(5)}
                   </span>
                 </div>
               ))}
