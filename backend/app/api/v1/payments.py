@@ -179,10 +179,10 @@ async def create_payment(
 ):
     """Create new crypto payment"""
     
-    if data.amount_usd < 5:
+    if data.amount_usd < 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Minimum deposit amount is $5"
+            detail="Minimum deposit amount is $10"
         )
     
     if data.amount_usd > 10000:

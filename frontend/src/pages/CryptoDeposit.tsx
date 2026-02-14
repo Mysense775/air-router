@@ -87,8 +87,8 @@ export default function CryptoDeposit() {
     e.preventDefault()
     setError('')
     const amt = parseFloat(amount)
-    if (isNaN(amt) || amt < 5) {
-      setError('Minimum deposit amount is $5')
+    if (isNaN(amt) || amt < 10) {
+      setError('Minimum deposit amount is $10')
       return
     }
     if (amt > 10000) {
@@ -211,7 +211,7 @@ export default function CryptoDeposit() {
                 />
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                Minimum: $5 • Maximum: $10,000
+                Minimum: $10 • Maximum: $10,000
               </p>
             </div>
 
