@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, client, admin, proxy, payments
+from app.api.v1 import auth, client, admin, proxy, payments, advisor
 
 api_router = APIRouter()
 
@@ -21,3 +21,6 @@ api_router.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 # Payment endpoints
 api_router.include_router(payments.router, prefix="/payments", tags=["Payments"])
+
+# Advisor endpoints
+api_router.include_router(advisor.router, prefix="/advisor", tags=["Advisor"])

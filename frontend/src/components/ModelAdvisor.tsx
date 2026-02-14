@@ -10,106 +10,69 @@ import {
   Zap,
   Crown,
   Copy,
-  Check
+  Check,
+  FileText,
+  Database,
+  BookOpen,
+  Code,
+  Languages,
+  Video,
+  Megaphone,
+  Server
 } from 'lucide-react'
-import { api, apiKeysApi } from '../api/client'
+import { apiKeysApi } from '../api/client'
+import { api } from '../api/client'
 
-interface ModelRecommendation {
-  taskType: string
-  taskDescription: string
-  budgetOption: {
-    model: string
-    name: string
-    pricePer1M: number
-    why: string
-  }
-  optimalOption: {
-    model: string
-    name: string
-    pricePer1M: number
-    why: string
-  }
-  premiumOption: {
-    model: string
-    name: string
-    pricePer1M: number
-    why: string
-  }
+interface ModelOption {
+  model: string
+  name: string
+  price_per_1m: number
+  why: string
+}
+
+interface TaskRecommendation {
+  task_type: string
+  task_description: string
+  budget_option: ModelOption
+  optimal_option: ModelOption
+  premium_option: ModelOption
 }
 
 interface StackRecommendation {
-  userTask: string
-  detectedTasks: string[]
-  recommendations: ModelRecommendation[]
-  estimatedCost: {
+  detected_tasks: string[]
+  recommendations: TaskRecommendation[]
+  estimated_cost: {
     budget: number
     optimal: number
     premium: number
   }
   workflow: string[]
+  is_template_match: boolean
+  template_name?: string
 }
+
+const TEMPLATES = [
+  { key: 'content_factory', name: 'Контент-фабрика', icon: FileText, desc: 'Статьи, блог, SEO' },
+  { key: 'data_parsing', name: 'Парсинг данных', icon: Database, desc: 'Сбор данных, боты' },
+  { key: 'pdf_analysis', name: 'Анализ PDF', icon: BookOpen, desc: 'Документы, отчёты' },
+  { key: 'code_review', name: 'Код-ревью', icon: Code, desc: 'Анализ и оптимизация' },
+  { key: 'translation', name: 'Переводы', icon: Languages, desc: 'Локализация' },
+  { key: 'video_content', name: 'Сценарии видео', icon: Video, desc: 'YouTube, TikTok' },
+  { key: 'marketing_copy', name: 'Маркетинг', icon: Megaphone, desc: 'Продающие тексты' },
+  { key: 'database', name: 'Базы данных', icon: Server, desc: 'SQL, миграции' },
+]
 
 export default function ModelAdvisor() {
   const [isOpen, setIsOpen] = useState(false)
   const [userTask, setUserTask] = useState('')
   const [selectedTier, setSelectedTier] = useState<'budget' | 'optimal' | 'premium'>('optimal')
   const [copiedModels, setCopiedModels] = useState<Set<string>>(new Set())
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
 
   const analyzeMutation = useMutation({
-    mutationFn: async (task: string) => {
-      // Use GPT-4o-mini to analyze the task and recommend models
-      const response = await api.post('/chat/completions', {
-        model: 'openai/gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an AI model selection expert. Analyze the user's task and recommend the best stack of AI models.
-            
-Identify all sub-tasks and types of generation needed (text, code, analysis, creative, long-context, etc.).
-
-For each sub-task, recommend THREE options:
-1. Budget - cheapest option that still works
-2. Optimal - best price/quality balance
-3. Premium - highest quality regardless of price
-
-Available models and their strengths:
-- gpt-4o-mini: Cheap, fast, good for drafts, code, simple tasks ($0.15/M tokens)
-- gpt-4o: High quality, good for final texts, complex code, analysis ($2.50/M tokens)
-- claude-3-5-sonnet: Best for long context (200K), creative writing, analysis ($3.00/M tokens)
-- claude-3-opus: Premium quality, very long context, complex reasoning ($15.00/M tokens)
-- gpt-4-turbo: Good balance, large context (128K) ($10.00/M tokens)
-
-Respond in JSON format:
-{
-  "detectedTasks": ["task1", "task2"],
-  "recommendations": [
-    {
-      "taskType": "text generation",
-      "taskDescription": "Writing blog posts",
-      "budgetOption": {"model": "gpt-4o-mini", "name": "GPT-4o Mini", "pricePer1M": 0.15, "why": "Great for drafts and fast iteration"},
-      "optimalOption": {"model": "gpt-4o", "name": "GPT-4o", "pricePer1M": 2.50, "why": "Best quality for published content"},
-      "premiumOption": {"model": "claude-3-5-sonnet", "name": "Claude 3.5", "pricePer1M": 3.00, "why": "Superior writing style and creativity"}
-    }
-  ],
-  "estimatedCost": {"budget": 0.45, "optimal": 7.50, "premium": 18.00},
-  "workflow": ["Step 1: Use Model A for...", "Step 2: Use Model B for..."]
-}`
-          },
-          {
-            role: 'user',
-            content: task
-          }
-        ],
-        max_tokens: 2000
-      })
-      
-      const content = response.data.choices[0].message.content
-      // Extract JSON from the response
-      const jsonMatch = content.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]) as StackRecommendation
-      }
-      throw new Error('Failed to parse recommendation')
+    mutationFn: async (task: string): Promise<StackRecommendation> => {
+      const response = await api.post('/advisor/analyze-task', { task })
+      return response.data
     }
   })
 
@@ -123,6 +86,23 @@ Respond in JSON format:
       return created
     }
   })
+
+  const handleTemplateClick = (templateKey: string) => {
+    setSelectedTemplate(templateKey)
+    // Templates have predefined descriptions, use them
+    const templateDescriptions: Record<string, string> = {
+      content_factory: 'Создаю контент-фабрику: статьи для блога, SEO-оптимизация, автоматизация публикаций',
+      data_parsing: 'Нужно парсить данные с сайтов: Python-скрипты, боты, автоматизация сбора',
+      pdf_analysis: 'Анализирую PDF-документы и отчёты конкурентов, большие документы до 500 страниц',
+      code_review: 'Провожу код-ревью: оптимизация, поиск багов, рефакторинг',
+      translation: 'Перевожу тексты: локализация сайта, маркетинговые материалы',
+      video_content: 'Создаю видео-контент: сценарии для YouTube, TikTok, Reels',
+      marketing_copy: 'Маркетинг и копирайтинг: продающие тексты, реклама, email-рассылки',
+      database: 'Работаю с базами данных: SQL-запросы, оптимизация, миграции'
+    }
+    setUserTask(templateDescriptions[templateKey] || '')
+    analyzeMutation.mutate(templateDescriptions[templateKey] || '')
+  }
 
   const handleAnalyze = () => {
     if (userTask.trim().length < 10) return
@@ -144,9 +124,9 @@ Respond in JSON format:
   const getSelectedModels = () => {
     if (!analyzeMutation.data) return []
     return analyzeMutation.data.recommendations.map(r => {
-      if (selectedTier === 'budget') return r.budgetOption.model
-      if (selectedTier === 'premium') return r.premiumOption.model
-      return r.optimalOption.model
+      if (selectedTier === 'budget') return r.budget_option.model
+      if (selectedTier === 'premium') return r.premium_option.model
+      return r.optimal_option.model
     })
   }
 
@@ -164,6 +144,13 @@ Respond in JSON format:
       case 'optimal': return 'Оптимальный'
       case 'premium': return 'Премиум'
     }
+  }
+
+  const reset = () => {
+    setUserTask('')
+    setSelectedTemplate(null)
+    analyzeMutation.reset()
+    createKeysMutation.reset()
   }
 
   return (
@@ -189,7 +176,7 @@ Respond in JSON format:
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Помощник выбора моделей</h2>
-                  <p className="text-sm text-gray-500">Опишите вашу задачу — мы подберём оптимальный стек</p>
+                  <p className="text-sm text-gray-500">Выберите шаблон или опишите задачу</p>
                 </div>
               </div>
               <button
@@ -201,53 +188,99 @@ Respond in JSON format:
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Input Section */}
+              {/* Templates Grid */}
               {!analyzeMutation.data && (
-                <div className="space-y-4">
+                <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Опишите вашу задачу
-                    </label>
-                    <textarea
-                      value={userTask}
-                      onChange={(e) => setUserTask(e.target.value)}
-                      placeholder="Например: Создаю контент-фабрику. Нужно писать статьи для блога, делать Python-скрипты для парсинга и анализировать PDF-отчёты конкурентов"
-                      className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      maxLength={500}
-                    />
-                    <div className="mt-2 text-sm text-gray-500 text-right">
-                      {userTask.length}/500
+                    <p className="text-sm font-medium text-gray-700 mb-3">Популярные сценарии:</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {TEMPLATES.map((template) => {
+                        const Icon = template.icon
+                        return (
+                          <button
+                            key={template.key}
+                            onClick={() => handleTemplateClick(template.key)}
+                            className={`p-4 rounded-xl border transition-all text-left ${
+                              selectedTemplate === template.key
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Icon className="w-6 h-6 text-blue-600 mb-2" />
+                            <p className="font-medium text-gray-900 text-sm">{template.name}</p>
+                            <p className="text-xs text-gray-500 mt-1">{template.desc}</p>
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleAnalyze}
-                    disabled={userTask.trim().length < 10 || analyzeMutation.isPending}
-                    className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-                  >
-                    {analyzeMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Анализирую задачу...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-5 h-5" />
-                        Подобрать стек моделей
-                      </>
-                    )}
-                  </button>
-                </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-2 bg-white text-sm text-gray-500">или</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Опишите вашу задачу
+                      </label>
+                      <textarea
+                        value={userTask}
+                        onChange={(e) => setUserTask(e.target.value)}
+                        placeholder="Например: Нужно анализировать отчёты конкурентов из PDF и писать статьи на основе данных"
+                        className="w-full h-24 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        maxLength={500}
+                      />
+                      <div className="mt-2 text-sm text-gray-500 text-right">
+                        {userTask.length}/500
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleAnalyze}
+                      disabled={userTask.trim().length < 10 || analyzeMutation.isPending}
+                      className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                    >
+                      {analyzeMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Анализирую задачу...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5" />
+                          Подобрать стек моделей
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </>
               )}
 
               {/* Results */}
               {analyzeMutation.data && (
                 <div className="space-y-6">
+                  {/* Match Info */}
+                  {analyzeMutation.data.is_template_match && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <div>
+                        <p className="font-medium text-green-900">Найден готовый шаблон</p>
+                        <p className="text-sm text-green-700">{analyzeMutation.data.template_name}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Detected Tasks */}
                   <div className="bg-blue-50 rounded-xl p-4">
                     <p className="text-sm font-medium text-blue-900 mb-2">Обнаруженные задачи:</p>
                     <div className="flex flex-wrap gap-2">
-                      {analyzeMutation.data.detectedTasks.map((task, i) => (
+                      {analyzeMutation.data.detected_tasks.map((task, i) => (
                         <span key={i} className="px-3 py-1 bg-white text-blue-700 rounded-full text-sm">
                           {task}
                         </span>
@@ -298,16 +331,16 @@ Respond in JSON format:
                   {/* Model Cards */}
                   <div className="space-y-4">
                     {analyzeMutation.data.recommendations.map((rec, i) => {
-                      const option = selectedTier === 'budget' ? rec.budgetOption : 
-                                    selectedTier === 'premium' ? rec.premiumOption : 
-                                    rec.optimalOption
+                      const option = selectedTier === 'budget' ? rec.budget_option : 
+                                    selectedTier === 'premium' ? rec.premium_option : 
+                                    rec.optimal_option
                       
                       return (
                         <div key={i} className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
                           <div className="flex items-start justify-between mb-3">
                             <div>
-                              <p className="text-sm font-medium text-gray-500 uppercase">{rec.taskType}</p>
-                              <p className="text-gray-700">{rec.taskDescription}</p>
+                              <p className="text-sm font-medium text-gray-500 uppercase">{rec.task_type}</p>
+                              <p className="text-gray-700">{rec.task_description}</p>
                             </div>
                             <button
                               onClick={() => copyModelId(option.model)}
@@ -324,7 +357,7 @@ Respond in JSON format:
                           <div className="bg-gray-50 rounded-lg p-3">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-semibold text-gray-900">{option.name}</span>
-                              <span className="text-sm text-gray-600">${option.pricePer1M}/M tokens</span>
+                              <span className="text-sm text-gray-600">${option.price_per_1m}/M tokens</span>
                             </div>
                             <p className="text-sm text-gray-600">{option.why}</p>
                           </div>
@@ -341,7 +374,7 @@ Respond in JSON format:
                         selectedTier === 'budget' ? 'text-green-600' :
                         selectedTier === 'premium' ? 'text-purple-600' : 'text-blue-600'
                       }`}>
-                        ${analyzeMutation.data.estimatedCost[selectedTier].toFixed(2)}
+                        ${analyzeMutation.data.estimated_cost[selectedTier].toFixed(2)}
                       </span>
                       <span className="text-sm text-gray-500">
                         {selectedTier === 'budget' ? 'Экономия 70% vs использование одной дорогой модели' :
@@ -369,10 +402,7 @@ Respond in JSON format:
                   {/* Actions */}
                   <div className="flex gap-3">
                     <button
-                      onClick={() => {
-                        setUserTask('')
-                        analyzeMutation.reset()
-                      }}
+                      onClick={reset}
                       className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
                     >
                       Новый запрос
