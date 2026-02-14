@@ -6,6 +6,7 @@ import {
   Activity,
   Key,
   ArrowUpRight,
+  PiggyBank,
 } from 'lucide-react'
 import { clientApi, apiKeysApi } from '../api/client'
 import { Balance, UsageStats, ApiKey } from '../types'
@@ -57,21 +58,21 @@ export default function Dashboard() {
       value: `$${balance.balance_usd.toFixed(2)}`,
       icon: Wallet,
       color: 'blue',
-      trend: '+100.00',
+      trend: 'Available for API calls',
     },
     {
       title: 'Total Spent',
       value: `$${balance.lifetime_spent.toFixed(2)}`,
       icon: TrendingUp,
       color: 'green',
-      trend: 'Lifetime',
+      trend: 'Lifetime spending',
     },
     {
-      title: 'API Requests (7d)',
-      value: usage.total_requests.toLocaleString(),
-      icon: Activity,
-      color: 'purple',
-      trend: `${usage.total_tokens.toLocaleString()} tokens`,
+      title: 'Your Savings',
+      value: `$${balance.lifetime_savings.toFixed(2)}`,
+      icon: PiggyBank,
+      color: 'pink',
+      trend: 'vs OpenRouter direct',
     },
     {
       title: 'Active API Keys',
@@ -93,6 +94,7 @@ export default function Dashboard() {
             green: 'bg-green-50 text-green-600',
             purple: 'bg-purple-50 text-purple-600',
             orange: 'bg-orange-50 text-orange-600',
+            pink: 'bg-pink-50 text-pink-600',
           }
 
           return (

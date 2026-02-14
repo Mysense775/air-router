@@ -10,6 +10,7 @@ export interface Balance {
   balance_usd: number
   lifetime_spent: number
   lifetime_earned: number
+  lifetime_savings: number
   currency: string
   last_deposit_at: string | null
 }

@@ -53,6 +53,7 @@ class Balance(Base):
     balance_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
     lifetime_spent = Column(Numeric(12, 6), nullable=False, default=0.00)
     lifetime_earned = Column(Numeric(12, 6), nullable=False, default=0.00)
+    lifetime_savings = Column(Numeric(12, 6), nullable=False, default=0.00)  # Экономия vs OpenRouter
     last_deposit_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
     

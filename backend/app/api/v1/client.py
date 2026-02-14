@@ -28,6 +28,7 @@ async def get_balance(
             "balance_usd": 0.00,
             "lifetime_spent": 0.00,
             "lifetime_earned": 0.00,
+            "lifetime_savings": 0.00,
             "currency": "USD"
         }
     
@@ -35,6 +36,7 @@ async def get_balance(
         "balance_usd": float(balance.balance_usd),
         "lifetime_spent": float(balance.lifetime_spent),
         "lifetime_earned": float(balance.lifetime_earned),
+        "lifetime_savings": float(balance.lifetime_savings),
         "currency": "USD",
         "last_deposit_at": balance.last_deposit_at.isoformat() if balance.last_deposit_at else None
     }

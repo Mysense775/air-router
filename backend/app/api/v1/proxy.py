@@ -213,6 +213,17 @@ async def chat_completions(
             # Update lifetime_spent
             await BillingService.deduct_balance(db, user_id, Decimal("0"))
             
+            # Рассчитываем сбережения клиента (сколько сэкономил vs OpenRouter)
+            savings = cost_breakdown["real_cost_usd"] - actual_client_cost
+            if savings > 0:
+                # Добавляем сбережения к lifetime_savings
+                from app.models import Balance
+                result = await db.execute(select(Balance).where(Balance.user_id == user_id))
+                balance = result.scalar_one_or_none()
+                if balance:
+                    balance.lifetime_savings += savings
+                    await db.commit()
+            
             # Спишем с баланса мастер-аккаунта
             account.balance_usd -= our_cost
             await db.commit()
