@@ -8,7 +8,7 @@ import ApiKeysPage from './pages/ApiKeys'
 import UsagePage from './pages/Usage'
 import Models from './pages/Models'
 import Deposit from './pages/Deposit'
-import Admin from './pages/Admin'
+import AdminDashboard from './pages/AdminDashboard'
 import Users from './pages/Users'
 import Layout from './components/Layout'
 
@@ -46,7 +46,7 @@ function App() {
                 <Route path="/usage" element={<UsagePage />} />
                 <Route path="/models" element={<Models />} />
                 <Route path="/deposit" element={<Deposit />} />
-                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<Users />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
               </Routes>

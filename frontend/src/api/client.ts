@@ -117,4 +117,5 @@ export const adminApi = {
     api.post('/admin/users', data),
   addUserBalance: (userId: string, amount: number, reason?: string) =>
     api.post(`/admin/users/${userId}/balance`, { amount, reason }),
+  getDashboard: () => api.get('/admin/dashboard'),
 }

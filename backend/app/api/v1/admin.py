@@ -8,7 +8,7 @@ from decimal import Decimal
 import asyncio
 
 from app.db.session import get_db
-from app.models import User, RequestLog, MasterAccount
+from app.models import User, RequestLog, MasterAccount, Balance, Deposit
 from app.api.v1.auth import get_current_active_user
 
 router = APIRouter()
@@ -113,12 +113,15 @@ async def list_clients(
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """List all clients"""
+    """List all clients with balance"""
+    from app.models import Balance
+    
     result = await db.execute(
-        select(User)
+        select(User, Balance)
+        .outerjoin(Balance, User.id == Balance.user_id)
         .order_by(User.created_at.desc())
     )
-    users = result.scalars().all()
+    users_data = result.all()
 
     return {
         "clients": [
@@ -128,9 +131,10 @@ async def list_clients(
                 "name": user.name,
                 "role": user.role,
                 "status": user.status,
+                "balance_usd": float(balance.balance_usd) if balance else 0.0,
                 "created_at": user.created_at.isoformat() if user.created_at else None,
             }
-            for user in users
+            for user, balance in users_data
         ]
     }
 
@@ -465,4 +469,92 @@ async def add_user_balance(
         added_amount=data.amount,
         reason=data.reason,
         message=f"Successfully added ${data.amount:.2f} to {user.email}"
+    )
+
+
+class DashboardResponse(BaseModel):
+    master_accounts: list[dict]
+    clients: list[dict]
+    total_clients: int
+    total_clients_balance: float
+    total_deposits: float
+    manual_deposits: float
+    payment_deposits: float
+
+
+@router.get("/dashboard", response_model=DashboardResponse)
+async def get_dashboard(
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get admin dashboard statistics"""
+    
+    # Get master accounts
+    result = await db.execute(select(MasterAccount).where(MasterAccount.is_active == True))
+    master_accounts = result.scalars().all()
+    
+    master_list = [
+        {
+            "id": str(acc.id),
+            "name": acc.name,
+            "balance_usd": float(acc.balance_usd),
+            "discount_percent": acc.discount_percent,
+            "monthly_limit_usd": float(acc.monthly_limit_usd) if acc.monthly_limit_usd else None,
+            "monthly_used_usd": float(acc.monthly_used_usd) if acc.monthly_used_usd else 0.0
+        }
+        for acc in master_accounts
+    ]
+    
+    # Get clients with balance
+    result = await db.execute(
+        select(User, Balance).outerjoin(Balance, User.id == Balance.user_id)
+        .where(User.role == "client")
+    )
+    clients_data = result.all()
+    
+    clients_list = []
+    total_clients_balance = 0.0
+    
+    for user, balance in clients_data:
+        balance_usd = float(balance.balance_usd) if balance else 0.0
+        total_clients_balance += balance_usd
+        
+        clients_list.append({
+            "id": str(user.id),
+            "email": user.email,
+            "name": user.name,
+            "balance_usd": balance_usd,
+            "status": user.status,
+            "created_at": user.created_at.isoformat() if user.created_at else None
+        })
+    
+    # Get deposit statistics
+    
+    result = await db.execute(
+        select(func.sum(Deposit.amount_usd)).where(Deposit.status == "completed")
+    )
+    total_deposits = float(result.scalar() or 0.0)
+    
+    result = await db.execute(
+        select(func.sum(Deposit.amount_usd))
+        .where(Deposit.status == "completed")
+        .where(Deposit.payment_method == "manual")
+    )
+    manual_deposits = float(result.scalar() or 0.0)
+    
+    result = await db.execute(
+        select(func.sum(Deposit.amount_usd))
+        .where(Deposit.status == "completed")
+        .where(Deposit.payment_method != "manual")
+    )
+    payment_deposits = float(result.scalar() or 0.0)
+    
+    return DashboardResponse(
+        master_accounts=master_list,
+        clients=clients_list,
+        total_clients=len(clients_list),
+        total_clients_balance=total_clients_balance,
+        total_deposits=total_deposits,
+        manual_deposits=manual_deposits,
+        payment_deposits=payment_deposits
     )

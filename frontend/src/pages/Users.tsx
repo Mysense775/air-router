@@ -10,6 +10,7 @@ interface User {
   role: string
   status: string
   created_at: string
+  balance_usd?: number
 }
 
 export default function Users() {
@@ -150,6 +151,7 @@ export default function Users() {
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Name</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Role</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Status</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Balance</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Created</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">Actions</th>
             </tr>
@@ -157,13 +159,13 @@ export default function Users() {
           <tbody className="divide-y divide-slate-700">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
                   Loading...
                 </td>
               </tr>
             ) : users?.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
                   No users found
                 </td>
               </tr>
@@ -188,6 +190,13 @@ export default function Users() {
                         : 'bg-red-500/20 text-red-300'
                     }`}>
                       {user.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`font-mono font-medium ${
+                      (user.balance_usd || 0) > 0 ? 'text-green-400' : 'text-gray-500'
+                    }`}>
+                      ${(user.balance_usd || 0).toFixed(2)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-400 text-sm">

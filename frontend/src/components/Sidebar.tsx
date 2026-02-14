@@ -77,7 +77,7 @@ export default function Sidebar() {
               }`}
             >
               <Shield className="w-5 h-5" />
-              <span className="font-medium">Admin</span>
+              <span className="font-medium">Dashboard</span>
             </Link>
             <Link
               to="/admin/users"
