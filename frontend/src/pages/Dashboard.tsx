@@ -36,6 +36,7 @@ export default function Dashboard() {
     balance_usd: 0,
     lifetime_spent: 0,
     lifetime_earned: 0,
+    lifetime_savings: 0,
     currency: 'USD',
     last_deposit_at: null,
   }
@@ -182,6 +183,36 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Price Comparison */}
+      {usage.total_cost_usd > 0 && (
+        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Price Comparison (7 days)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-500 mb-1">OpenRouter Price</p>
+              <p className="text-2xl font-bold text-gray-900">
+                ${(usage.total_cost_usd / 0.8).toFixed(2)}
+              </p>
+              <p className="text-xs text-gray-400">if using directly</p>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-4">
+              <p className="text-sm text-blue-600 mb-1">Your Price</p>
+              <p className="text-2xl font-bold text-blue-900">
+                ${usage.total_cost_usd.toFixed(2)}
+              </p>
+              <p className="text-xs text-blue-400">with AI Router</p>
+            </div>
+            <div className="bg-green-50 rounded-lg p-4">
+              <p className="text-sm text-green-600 mb-1">You Saved</p>
+              <p className="text-2xl font-bold text-green-900">
+                ${(usage.total_cost_usd / 0.8 - usage.total_cost_usd).toFixed(2)}
+              </p>
+              <p className="text-xs text-green-400">20% average discount</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* API Usage Chart Placeholder */}
       <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
