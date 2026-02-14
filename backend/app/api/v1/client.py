@@ -136,6 +136,66 @@ async def get_models_usage(
     }
 
 
+@router.get("/daily-usage")
+async def get_daily_usage(
+    days: int = 30,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get daily usage statistics for charts"""
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    result = await db.execute(
+        select(
+            func.date(RequestLog.created_at).label("date"),
+            func.count(RequestLog.id).label("requests"),
+            func.sum(RequestLog.total_tokens).label("tokens"),
+            func.sum(RequestLog.cost_to_client_usd).label("cost"),
+            func.sum(RequestLog.openrouter_cost_usd).label("openrouter_cost")
+        )
+        .where(
+            RequestLog.user_id == current_user.id,
+            RequestLog.created_at >= start_date
+        )
+        .group_by(func.date(RequestLog.created_at))
+        .order_by(func.date(RequestLog.created_at))
+    )
+    
+    rows = result.all()
+    
+    # Fill in missing dates with zeros
+    from datetime import date
+    date_map = {row.date: row for row in rows}
+    daily_data = []
+    
+    for i in range(days):
+        current_date = (datetime.utcnow() - timedelta(days=days-1-i)).date()
+        if current_date in date_map:
+            row = date_map[current_date]
+            daily_data.append({
+                "date": current_date.isoformat(),
+                "requests": row.requests or 0,
+                "tokens": int(row.tokens or 0),
+                "cost_usd": float(row.cost or 0),
+                "openrouter_cost_usd": float(row.openrouter_cost or 0),
+                "savings_usd": float((row.openrouter_cost or 0) - (row.cost or 0))
+            })
+        else:
+            daily_data.append({
+                "date": current_date.isoformat(),
+                "requests": 0,
+                "tokens": 0,
+                "cost_usd": 0.0,
+                "openrouter_cost_usd": 0.0,
+                "savings_usd": 0.0
+            })
+    
+    return {
+        "period": f"{days}d",
+        "daily": daily_data
+    }
+
+
 @router.get("/recent-requests")
 async def get_recent_requests(
     limit: int = 50,

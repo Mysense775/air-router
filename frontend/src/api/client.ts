@@ -95,6 +95,7 @@ export const clientApi = {
   getDailyUsage: (days = 30) => api.get(`/client/usage/daily?days=${days}`),
   getModelsUsage: (days = 30) => api.get(`/client/models/usage?days=${days}`),
   getRecentRequests: (limit = 50) => api.get(`/client/recent-requests?limit=${limit}`),
+  getDailyUsageForCharts: (days = 30) => api.get(`/client/daily-usage?days=${days}`),
 }
 
 // API Keys API

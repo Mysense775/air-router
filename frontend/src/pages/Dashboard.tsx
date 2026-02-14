@@ -10,6 +10,17 @@ import {
 } from 'lucide-react'
 import { clientApi, apiKeysApi } from '../api/client'
 import { Balance, UsageStats, ApiKey } from '../types'
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -32,6 +43,18 @@ export default function Dashboard() {
     queryFn: () => apiKeysApi.getApiKeys(),
   })
 
+  // Fetch daily usage for line chart
+  const { data: dailyUsageData } = useQuery({
+    queryKey: ['dailyUsage', 30],
+    queryFn: () => clientApi.getDailyUsageForCharts(30),
+  })
+
+  // Fetch models usage for bar chart
+  const { data: modelsUsageData } = useQuery({
+    queryKey: ['modelsUsage', 30],
+    queryFn: () => clientApi.getModelsUsage(30),
+  })
+
   const balance: Balance = balanceData?.data || {
     balance_usd: 0,
     lifetime_spent: 0,
@@ -52,6 +75,10 @@ export default function Dashboard() {
 
   const apiKeys: ApiKey[] = apiKeysData?.data || []
   const activeKeys = apiKeys.filter((k) => k.is_active).length
+
+  // Prepare chart data
+  const dailyData = dailyUsageData?.data?.daily || []
+  const modelsData = modelsUsageData?.data?.models?.slice(0, 5) || []
 
   const stats = [
     {
@@ -116,6 +143,95 @@ export default function Dashboard() {
             </div>
           )
         })}
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Usage Line Chart */}
+        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Spending (30 days)</h3>
+          {dailyData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dailyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(date) => new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })}
+                    stroke="#9ca3af"
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke="#9ca3af"
+                    fontSize={12}
+                    tickFormatter={(value) => `$${value.toFixed(4)}`}
+                  />
+                  <Tooltip 
+                    formatter={(value: number) => [`$${value.toFixed(6)}`, 'Your Cost']}
+                    labelFormatter={(label) => new Date(label).toLocaleDateString('ru-RU')}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="cost_usd" 
+                    stroke="#3b82f6" 
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 6, fill: '#3b82f6' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+              <p className="text-gray-400">No data available</p>
+            </div>
+          )}
+        </div>
+
+        {/* Models Bar Chart */}
+        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Models by Cost</h3>
+          {modelsData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={modelsData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+                  <XAxis 
+                    type="number" 
+                    stroke="#9ca3af"
+                    fontSize={12}
+                    tickFormatter={(value) => `$${value.toFixed(4)}`}
+                  />
+                  <YAxis 
+                    type="category" 
+                    dataKey="model" 
+                    stroke="#6b7280"
+                    fontSize={11}
+                    width={120}
+                    tickFormatter={(model) => model.split('/').pop() || model}
+                  />
+                  <Tooltip 
+                    formatter={(value: number, _name: string, props: any) => {
+                      const model = props.payload?.model || ''
+                      return [`$${value.toFixed(6)}`, model]
+                    }}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  />
+                  <Bar 
+                    dataKey="cost_usd" 
+                    fill="#3b82f6"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+              <p className="text-gray-400">No data available</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quick Actions */}
@@ -213,21 +329,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
-      {/* API Usage Chart Placeholder */}
-      <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Usage Overview</h3>
-          <select className="text-sm border border-gray-200 rounded-lg px-3 py-1.5">
-            <option>Last 7 days</option>
-            <option>Last 30 days</option>
-            <option>Last 90 days</option>
-          </select>
-        </div>
-        <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-          <p className="text-gray-400">Usage charts coming soon...</p>
-        </div>
-      </div>
     </div>
   )
 }
