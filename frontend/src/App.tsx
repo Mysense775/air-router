@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import ChangePassword from './pages/ChangePassword'
 import AdminDashboard from './pages/AdminDashboard'
 import Users from './pages/Users'
@@ -29,6 +30,10 @@ function App() {
       <Route 
         path="/login" 
         element={token ? <Navigate to="/admin" /> : <Login />} 
+      />
+      <Route 
+        path="/register" 
+        element={token ? <Navigate to="/admin" /> : <Register />} 
       />
       <Route 
         path="/*" 

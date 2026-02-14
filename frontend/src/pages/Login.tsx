@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Zap, Eye, EyeOff } from 'lucide-react'
 import { authApi } from '../api/client'
 import { useAuthStore } from '../store/authStore'
@@ -142,9 +142,15 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>Test account:</p>
-          <p>test@example.com / test123</p>
+        <div className="mt-6 text-center text-sm">
+          <p className="text-gray-600">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+              Register
+            </Link>
+          </p>
+          <p className="text-gray-400 mt-4">Test account:</p>
+          <p className="text-gray-400">test@example.com / test123</p>
         </div>
       </div>
     </div>

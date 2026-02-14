@@ -26,6 +26,12 @@ class RegisterRequest(BaseModel):
     name: Optional[str] = None
 
 
+class RegisterResponse(BaseModel):
+    message: str
+    user_id: str
+    email: str
+
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
@@ -145,36 +151,44 @@ async def get_current_active_user(
 
 
 # Auth endpoints
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     data: RegisterRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    """Register new user"""
-    # Check if email exists
-    result = await db.execute(select(User).where(User.email == data.email))
-    existing_user = result.scalar_one_or_none()
+    """Register new user (no email confirmation required)"""
+    from app.models import Balance
     
-    if existing_user:
+    # Check if email already exists
+    result = await db.execute(select(User).where(User.email == data.email))
+    if result.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
     
-    # Create user
+    # Validate password
+    if len(data.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters"
+        )
+    
+    # Create user with verified email (no confirmation needed)
     user = User(
         id=uuid4(),
         email=data.email,
+        name=data.name,
         password_hash=get_password_hash(data.password),
-        name=data.name or data.email.split("@")[0],
         role="client",
         status="active",
-        email_verified=False
+        email_verified=True,
+        force_password_change=False
     )
     db.add(user)
-    await db.flush()  # Get user.id without committing
+    await db.flush()
     
-    # Create balance
+    # Create empty balance
     balance = Balance(
         user_id=user.id,
         balance_usd=Decimal("0.00"),
@@ -185,13 +199,10 @@ async def register(
     
     await db.commit()
     
-    # Generate tokens
-    access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
-    refresh_token = create_refresh_token({"sub": str(user.id)})
-    
-    return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token
+    return RegisterResponse(
+        message="Registration successful. You can now log in.",
+        user_id=str(user.id),
+        email=user.email
     )
 
 
@@ -232,6 +243,61 @@ async def login(
 class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str
+
+
+@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
+async def register(
+    data: RegisterRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """Register new user (no email confirmation required)"""
+    from app.models import Balance
+    
+    # Check if email already exists
+    result = await db.execute(select(User).where(User.email == data.email))
+    if result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Validate password
+    if len(data.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters"
+        )
+    
+    # Create user
+    user = User(
+        id=uuid4(),
+        email=data.email,
+        name=data.name,
+        password_hash=get_password_hash(data.password),
+        role="client",
+        status="active",
+        email_verified=True,  # No confirmation needed
+        force_password_change=False  # Password already set by user
+    )
+    db.add(user)
+    await db.flush()  # Get user.id without committing
+    
+    # Create empty balance
+    balance = Balance(
+        user_id=user.id,
+        balance_usd=Decimal("0.00"),
+        lifetime_spent=Decimal("0.00"),
+        lifetime_earned=Decimal("0.00")
+    )
+    db.add(balance)
+    
+    await db.commit()
+    
+    return RegisterResponse(
+        message="Registration successful. You can now log in.",
+        user_id=str(user.id),
+        email=user.email
+    )
 
 
 @router.post("/change-password")
