@@ -145,95 +145,6 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Daily Usage Line Chart */}
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Spending (30 days)</h3>
-          {dailyData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={dailyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis 
-                    dataKey="date" 
-                    tickFormatter={(date) => new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })}
-                    stroke="#9ca3af"
-                    fontSize={12}
-                  />
-                  <YAxis 
-                    stroke="#9ca3af"
-                    fontSize={12}
-                    tickFormatter={(value) => `$${value.toFixed(4)}`}
-                  />
-                  <Tooltip 
-                    formatter={(value: number) => [`$${value.toFixed(6)}`, 'Your Cost']}
-                    labelFormatter={(label) => new Date(label).toLocaleDateString('ru-RU')}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="cost_usd" 
-                    stroke="#3b82f6" 
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 6, fill: '#3b82f6' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-400">No data available</p>
-            </div>
-          )}
-        </div>
-
-        {/* Models Bar Chart */}
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Models by Cost</h3>
-          {modelsData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={modelsData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
-                  <XAxis 
-                    type="number" 
-                    stroke="#9ca3af"
-                    fontSize={12}
-                    tickFormatter={(value) => `$${value.toFixed(4)}`}
-                  />
-                  <YAxis 
-                    type="category" 
-                    dataKey="model" 
-                    stroke="#6b7280"
-                    fontSize={11}
-                    width={120}
-                    tickFormatter={(model) => model.split('/').pop() || model}
-                  />
-                  <Tooltip 
-                    formatter={(value: number, _name: string, props: any) => {
-                      const model = props.payload?.model || ''
-                      return [`$${value.toFixed(6)}`, model]
-                    }}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                  />
-                  <Bar 
-                    dataKey="cost_usd" 
-                    fill="#3b82f6"
-                    radius={[0, 4, 4, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-400">No data available</p>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
@@ -329,6 +240,95 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Usage Line Chart */}
+        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Spending (30 days)</h3>
+          {dailyData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dailyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(date) => new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })}
+                    stroke="#9ca3af"
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke="#9ca3af"
+                    fontSize={12}
+                    tickFormatter={(value) => `$${value.toFixed(4)}`}
+                  />
+                  <Tooltip 
+                    formatter={(value: number) => [`$${value.toFixed(6)}`, 'Your Cost']}
+                    labelFormatter={(label) => new Date(label).toLocaleDateString('ru-RU')}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="cost_usd" 
+                    stroke="#3b82f6" 
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 6, fill: '#3b82f6' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+              <p className="text-gray-400">No data available</p>
+            </div>
+          )}
+        </div>
+
+        {/* Models Bar Chart */}
+        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Models by Cost</h3>
+          {modelsData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={modelsData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+                  <XAxis 
+                    type="number" 
+                    stroke="#9ca3af"
+                    fontSize={12}
+                    tickFormatter={(value) => `$${value.toFixed(4)}`}
+                  />
+                  <YAxis 
+                    type="category" 
+                    dataKey="model" 
+                    stroke="#6b7280"
+                    fontSize={11}
+                    width={120}
+                    tickFormatter={(model) => model.split('/').pop() || model}
+                  />
+                  <Tooltip 
+                    formatter={(value: number, _name: string, props: any) => {
+                      const model = props.payload?.model || ''
+                      return [`$${value.toFixed(6)}`, model]
+                    }}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  />
+                  <Bar 
+                    dataKey="cost_usd" 
+                    fill="#3b82f6"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+              <p className="text-gray-400">No data available</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
