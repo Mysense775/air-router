@@ -8,14 +8,14 @@ class Settings(BaseSettings):
     APP_NAME: str = "AI Router Platform"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
-    SITE_URL: str = "http://localhost:3000"
+    SITE_URL: str = "https://airouter.host"
     
     # Security
     SECRET_KEY: str = "change-me-in-production"
     ENCRYPTION_KEY: str = "change-me-in-production"
     
     # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/ai_router"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@db:5432/ai_router"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

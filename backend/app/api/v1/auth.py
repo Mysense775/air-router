@@ -48,12 +48,14 @@ class UserResponse(BaseModel):
 
 class ApiKeyCreateRequest(BaseModel):
     name: str = "Default"
+    model_id: Optional[str] = None  # Если указано - ключ только для этой модели
 
 
 class ApiKeyResponse(BaseModel):
     id: str
     name: str
     key: str  # Only shown once on creation
+    allowed_model: Optional[str] = None  # Разрешенная модель (None = любая)
     is_active: bool
     created_at: str
 
@@ -61,17 +63,36 @@ class ApiKeyResponse(BaseModel):
 class ApiKeyListResponse(BaseModel):
     id: str
     name: str
+    allowed_model: Optional[str] = None
     is_active: bool
     last_used_at: Optional[str]
     created_at: str
 
 
 # Dependencies
+TEST_MODE = False  # ✅ PRODUCTION MODE ENABLED
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db)
 ) -> User:
-    """Get current user from JWT token"""
+    """Get current user from JWT token (TEST MODE: auth bypassed)"""
+    
+    # TEST MODE: Return admin user without authentication
+    if TEST_MODE:
+        result = await db.execute(
+            select(User).where(User.email == "admin@ai-router.com")
+        )
+        user = result.scalar_one_or_none()
+        if user:
+            return user
+        # If admin user not found, raise error
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Admin user not found",
+        )
+    
+    # PRODUCTION MODE: Normal JWT authentication
     if not credentials:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -164,7 +185,7 @@ async def register(
     await db.commit()
     
     # Generate tokens
-    access_token = create_access_token({"sub": str(user.id), "email": user.email})
+    access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
     refresh_token = create_refresh_token({"sub": str(user.id)})
     
     return TokenResponse(
@@ -196,8 +217,8 @@ async def login(
             detail=f"Account is {user.status}",
         )
     
-    # Generate tokens
-    access_token = create_access_token({"sub": str(user.id), "email": user.email})
+    # Generate tokens with role
+    access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
     refresh_token = create_refresh_token({"sub": str(user.id)})
     
     return TokenResponse(
@@ -274,6 +295,7 @@ async def create_api_key(
         user_id=current_user.id,
         key_hash=key_hash,
         name=data.name,
+        allowed_model=data.model_id,  # Привязка к конкретной модели
         is_active=True
     )
     db.add(api_key)
@@ -284,6 +306,7 @@ async def create_api_key(
         id=str(api_key.id),
         name=api_key.name,
         key=raw_key,  # Only shown once!
+        allowed_model=api_key.allowed_model,
         is_active=api_key.is_active,
         created_at=api_key.created_at.isoformat() if api_key.created_at else None
     )
@@ -306,6 +329,7 @@ async def list_api_keys(
         ApiKeyListResponse(
             id=str(key.id),
             name=key.name,
+            allowed_model=key.allowed_model,
             is_active=key.is_active,
             last_used_at=key.last_used_at.isoformat() if key.last_used_at else None,
             created_at=key.created_at.isoformat() if key.created_at else None

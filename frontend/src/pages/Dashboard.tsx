@@ -5,7 +5,6 @@ import {
   Activity,
   Key,
   ArrowUpRight,
-  ArrowDownRight,
 } from 'lucide-react'
 import { clientApi, apiKeysApi } from '../api/client'
 import { Balance, UsageStats, ApiKey } from '../types'

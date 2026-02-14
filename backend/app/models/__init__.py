@@ -34,6 +34,7 @@ class ApiKey(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     key_hash = Column(String(255), unique=True, nullable=False, index=True)
     name = Column(String(100), default="Default")
+    allowed_model = Column(String(100), nullable=True)  # Если NULL - любая модель
     is_active = Column(Boolean, default=True)
     last_used_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)

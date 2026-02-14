@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Zap, Eye, EyeOff } from 'lucide-react'
@@ -14,18 +14,44 @@ export default function Login() {
   const navigate = useNavigate()
   const { setAuth } = useAuthStore()
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const submitAttempted = useRef(false)
+
   const loginMutation = useMutation({
-    mutationFn: () => authApi.login(email, password),
-    onSuccess: (response) => {
-      const { access_token, refresh_token } = response.data
-      // Get user info
-      authApi.getMe().then((userRes) => {
+    mutationFn: async () => {
+      // Prevent double submission with ref
+      if (submitAttempted.current) {
+        throw new Error('Login already in progress')
+      }
+      submitAttempted.current = true
+      setIsSubmitting(true)
+      
+      try {
+        const response = await authApi.login(email, password)
+        const { access_token, refresh_token } = response.data
+        
+        // Get user info with token directly (bypass interceptor timing issue)
+        const userRes = await authApi.getMe(access_token)
+        
+        // Save auth with full user data
         setAuth(access_token, refresh_token, userRes.data)
-        navigate('/dashboard')
-      })
+        
+        return response
+      } finally {
+        setIsSubmitting(false)
+        // Reset ref after a delay to allow retry on error
+        setTimeout(() => {
+          submitAttempted.current = false
+        }, 1000)
+      }
+    },
+    onSuccess: () => {
+      navigate('/dashboard')
     },
     onError: (err: any) => {
-      setError(err.response?.data?.detail || 'Login failed')
+      setIsSubmitting(false)
+      submitAttempted.current = false
+      setError(err.response?.data?.detail || err.message || 'Login failed')
     },
   })
 
@@ -97,10 +123,17 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting || loginMutation.isPending}
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {loginMutation.isPending ? 'Signing in...' : 'Sign In'}
+            {(isSubmitting || loginMutation.isPending) ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
 

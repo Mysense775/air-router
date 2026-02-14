@@ -3,7 +3,7 @@ export interface User {
   email: string
   name: string | null
   role: string
-  created_at: string
+  created_at?: string
 }
 
 export interface Balance {
@@ -18,6 +18,7 @@ export interface ApiKey {
   id: string
   name: string
   key?: string  // Only present on creation
+  allowed_model?: string | null  // If set, key only works with this model
   is_active: boolean
   last_used_at: string | null
   created_at: string

@@ -10,7 +10,7 @@ from typing import Optional, Tuple
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.services.billing import BillingService, PricingService
-from app.models import ApiKey, User
+from app.models import ApiKey, User, MasterAccount
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -19,12 +19,29 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
-async def get_master_key():
-    """Get active master key from pool"""
-    keys = settings.master_keys_list
-    if not keys:
+async def get_master_key(db: AsyncSession):
+    """Get active master key from database"""
+    from app.models import MasterAccount
+    import base64
+
+    result = await db.execute(
+        select(MasterAccount)
+        .where(MasterAccount.is_active == True)
+        .order_by(MasterAccount.priority.desc())
+        .limit(1)
+    )
+    account = result.scalar_one_or_none()
+
+    if not account:
         raise HTTPException(500, "No master keys configured")
-    return keys[0]
+
+    # Decrypt API key
+    try:
+        api_key = base64.b64decode(account.api_key_encrypted).decode()
+        return api_key
+    except Exception as e:
+        logger.error(f"Failed to decrypt master key: {e}")
+        raise HTTPException(500, "Master key decryption error")
 
 
 async def validate_api_key(
@@ -83,7 +100,21 @@ async def chat_completions(
     
     # Get request body
     body = await request.json()
-    model = body.get("model", "openai/gpt-4o")
+    requested_model = body.get("model", "openai/gpt-4o")
+    
+    # Check if API key is restricted to specific model
+    if api_key.allowed_model and api_key.allowed_model != requested_model:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "error": "Model not allowed",
+                "message": f"This API key is restricted to model: {api_key.allowed_model}",
+                "requested_model": requested_model,
+                "allowed_model": api_key.allowed_model
+            }
+        )
+    
+    model = requested_model
     
     # Get model pricing for cost estimation
     pricing = await PricingService.get_model_pricing(db, model)
@@ -115,8 +146,18 @@ async def chat_completions(
         )
     reserved_amount = estimated_client_cost
     
-    # Get master key
-    master_key = await get_master_key()
+    # Get master key from database
+    result = await db.execute(
+        select(MasterAccount)
+        .where(MasterAccount.is_active == True)
+        .order_by(MasterAccount.priority.desc())
+        .limit(1)
+    )
+    account = result.scalar_one_or_none()
+    if not account:
+        raise HTTPException(500, "No master keys configured")
+    import base64
+    master_key = base64.b64decode(account.api_key_encrypted).decode()
     
     # Proxy request to OpenRouter
     async with httpx.AsyncClient() as client:
@@ -245,10 +286,20 @@ async def chat_completions(
 
 
 @router.get("/models")
-async def list_models():
+async def list_models(db: AsyncSession = Depends(get_db)):
     """List available models from OpenRouter"""
-    master_key = await get_master_key()
-    
+    result = await db.execute(
+        select(MasterAccount)
+        .where(MasterAccount.is_active == True)
+        .order_by(MasterAccount.priority.desc())
+        .limit(1)
+    )
+    account = result.scalar_one_or_none()
+    if not account:
+        raise HTTPException(500, "No master keys configured")
+    import base64
+    master_key = base64.b64decode(account.api_key_encrypted).decode()
+
     async with httpx.AsyncClient() as client:
         response = await client.get(
             f"{settings.OPENROUTER_BASE_URL}/models",
