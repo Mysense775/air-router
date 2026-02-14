@@ -123,6 +123,7 @@ class RequestLog(Base):
     
     cost_to_us_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
     cost_to_client_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
+    openrouter_cost_usd = Column(Numeric(12, 6), nullable=False, default=0.00)  # Цена напрямую у OpenRouter
     profit_usd = Column(Numeric(12, 6), nullable=False, default=0.00)
     
     # Тип использованного мастер-аккаунта (для аналитики)

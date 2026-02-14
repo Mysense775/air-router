@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Users from './pages/Users'
 import Deposit from './pages/Deposit'
 import ApiKeys from './pages/ApiKeys'
+import RequestHistory from './pages/RequestHistory'
 import Layout from './components/Layout'
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/deposit" element={<Deposit />} />
                 <Route path="/api-keys" element={<ApiKeys />} />
+                <Route path="/requests" element={<RequestHistory />} />
                 <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />} />
                 <Route path="/admin/users" element={isAdmin ? <Users /> : <Navigate to="/dashboard" />} />
                 <Route path="/" element={<Navigate to={isAdmin ? "/admin" : "/dashboard"} />} />

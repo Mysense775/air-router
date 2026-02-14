@@ -191,22 +191,22 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-500 mb-1">OpenRouter Price</p>
-              <p className="text-2xl font-bold text-gray-900">
-                ${(usage.total_cost_usd / 0.8).toFixed(2)}
+              <p className="text-xl font-mono font-bold text-gray-900">
+                ${(usage.total_cost_usd / 0.8).toFixed(5)}
               </p>
               <p className="text-xs text-gray-400">if using directly</p>
             </div>
             <div className="bg-blue-50 rounded-lg p-4">
               <p className="text-sm text-blue-600 mb-1">Your Price</p>
-              <p className="text-2xl font-bold text-blue-900">
-                ${usage.total_cost_usd.toFixed(2)}
+              <p className="text-xl font-mono font-bold text-blue-900">
+                ${usage.total_cost_usd.toFixed(5)}
               </p>
               <p className="text-xs text-blue-400">with AI Router</p>
             </div>
             <div className="bg-green-50 rounded-lg p-4">
               <p className="text-sm text-green-600 mb-1">You Saved</p>
-              <p className="text-2xl font-bold text-green-900">
-                ${(usage.total_cost_usd / 0.8 - usage.total_cost_usd).toFixed(2)}
+              <p className="text-xl font-mono font-bold text-green-900">
+                ${(usage.total_cost_usd / 0.8 - usage.total_cost_usd).toFixed(5)}
               </p>
               <p className="text-xs text-green-400">20% average discount</p>
             </div>

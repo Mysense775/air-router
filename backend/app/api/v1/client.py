@@ -167,3 +167,57 @@ async def get_recent_requests(
             for req in requests
         ]
     }
+
+
+@router.get("/request-history")
+async def get_request_history(
+    page: int = 1,
+    limit: int = 20,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get detailed request history with price comparison"""
+    offset = (page - 1) * limit
+    
+    # Get total count
+    count_result = await db.execute(
+        select(func.count(RequestLog.id))
+        .where(RequestLog.user_id == current_user.id)
+    )
+    total = count_result.scalar()
+    
+    # Get requests with details
+    result = await db.execute(
+        select(RequestLog)
+        .where(RequestLog.user_id == current_user.id)
+        .order_by(RequestLog.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    requests = result.scalars().all()
+    
+    return {
+        "total": total,
+        "page": page,
+        "per_page": limit,
+        "total_pages": (total + limit - 1) // limit,
+        "requests": [
+            {
+                "id": str(req.id),
+                "model": req.model,
+                "endpoint": req.endpoint,
+                "prompt_tokens": req.prompt_tokens,
+                "completion_tokens": req.completion_tokens,
+                "total_tokens": req.total_tokens,
+                "openrouter_cost_usd": float(req.openrouter_cost_usd),
+                "our_cost_usd": float(req.cost_to_us_usd),
+                "client_cost_usd": float(req.cost_to_client_usd),
+                "savings_usd": float(req.openrouter_cost_usd - req.cost_to_client_usd),
+                "account_type": req.account_type_used,
+                "status": req.status,
+                "duration_ms": req.duration_ms,
+                "created_at": req.created_at.isoformat() if req.created_at else None
+            }
+            for req in requests
+        ]
+    }

@@ -224,6 +224,7 @@ class BillingService:
             total_tokens=prompt_tokens + completion_tokens,
             cost_to_us_usd=cost_breakdown["our_cost_usd"],
             cost_to_client_usd=cost_breakdown["client_cost_usd"],
+            openrouter_cost_usd=cost_breakdown.get("real_cost_usd", cost_breakdown["our_cost_usd"]),
             profit_usd=cost_breakdown["profit_usd"],
             duration_ms=duration_ms,
             status=status,
