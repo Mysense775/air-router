@@ -108,7 +108,7 @@ export const apiKeysApi = {
 export const adminApi = {
   getStats: () => api.get('/admin/stats'),
   getMasterAccounts: () => api.get('/admin/master-accounts'),
-  createMasterAccount: (data: { name: string; api_key: string; discount_percent: number; monthly_limit_usd?: number | null; priority?: number }) =>
+  createMasterAccount: (data: { name: string; api_key: string; account_type: string; discount_percent: number; monthly_limit_usd?: number | null; priority?: number }) =>
     api.post('/admin/master-accounts', data),
   syncMasterAccount: (accountId: string) => api.post(`/admin/master-accounts/${accountId}/sync`),
   getClients: () => api.get('/admin/clients'),
@@ -118,6 +118,7 @@ export const adminApi = {
   addUserBalance: (userId: string, amount: number, reason?: string) =>
     api.post(`/admin/users/${userId}/balance`, { amount, reason }),
   getDashboard: () => api.get('/admin/dashboard'),
+  getMasterAccountPools: () => api.get('/admin/master-accounts/pools'),
   getCryptoCurrencies: () => api.get('/payments/currencies'),
   createCryptoPayment: (amount_usd: number, currency: string) =>
     api.post('/payments/create', { amount_usd, currency }),

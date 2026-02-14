@@ -42,6 +42,31 @@ interface DashboardData {
   payment_deposits: number
 }
 
+interface PoolStats {
+  discounted: {
+    count: number
+    total_balance: number
+    avg_balance: number
+    status: string
+  }
+  regular: {
+    count: number
+    total_balance: number
+    avg_balance: number
+    status: string
+  }
+  strategy: string
+  strategy_name: string
+  total_available: number
+}
+
+interface Alert {
+  level: string
+  type: string
+  message: string
+  recommendation: string
+}
+
 export default function Dashboard() {
   const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -49,6 +74,7 @@ export default function Dashboard() {
   const [newAccount, setNewAccount] = useState({
     name: '',
     api_key: '',
+    account_type: 'discounted' as 'discounted' | 'regular',
     discount_percent: 70,
     monthly_limit_usd: '',
     priority: 0
@@ -64,11 +90,21 @@ export default function Dashboard() {
     }
   })
 
+  const { data: poolData } = useQuery({
+    queryKey: ['master-pools'],
+    queryFn: async () => {
+      const res = await adminApi.getMasterAccountPools()
+      return res.data as { pools: PoolStats; alerts: Alert[]; recommendations: string[] }
+    },
+    refetchInterval: 30000 // Refresh every 30 seconds
+  })
+
   const createMutation = useMutation({
     mutationFn: (data: typeof newAccount) =>
       adminApi.createMasterAccount({
         name: data.name,
         api_key: data.api_key,
+        account_type: data.account_type,
         discount_percent: data.discount_percent,
         monthly_limit_usd: data.monthly_limit_usd ? parseFloat(data.monthly_limit_usd) : null,
         priority: data.priority
@@ -76,7 +112,7 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] })
       setIsModalOpen(false)
-      setNewAccount({ name: '', api_key: '', discount_percent: 70, monthly_limit_usd: '', priority: 0 })
+      setNewAccount({ name: '', api_key: '', account_type: 'discounted', discount_percent: 70, monthly_limit_usd: '', priority: 0 })
       setSuccess('Master account created successfully')
       setTimeout(() => setSuccess(''), 3000)
     },
@@ -207,6 +243,186 @@ export default function Dashboard() {
             </div>
           )
         })}
+      </div>
+
+      {/* Pool Statistics */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            Master Account Pools
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {poolData?.pools.strategy_name || 'Loading...'}
+          </p>
+        </div>
+
+        {/* Alerts */}
+        {poolData?.alerts && poolData.alerts.length > 0 && (
+          <div className="px-6 py-4 bg-gray-50 space-y-2">
+            {poolData.alerts.map((alert, idx) => (
+              <div
+                key={idx}
+                className={`p-3 rounded-lg flex items-start gap-3 ${
+                  alert.level === 'emergency'
+                    ? 'bg-red-100 border border-red-200'
+                    : alert.level === 'critical'
+                    ? 'bg-orange-100 border border-orange-200'
+                    : 'bg-yellow-100 border border-yellow-200'
+                }`}
+              >
+                <AlertCircle
+                  className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                    alert.level === 'emergency'
+                      ? 'text-red-600'
+                      : alert.level === 'critical'
+                      ? 'text-orange-600'
+                      : 'text-yellow-600'
+                  }`}
+                />
+                <div>
+                  <p
+                    className={`font-medium ${
+                      alert.level === 'emergency'
+                        ? 'text-red-800'
+                        : alert.level === 'critical'
+                        ? 'text-orange-800'
+                        : 'text-yellow-800'
+                    }`}
+                  >
+                    {alert.message}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{alert.recommendation}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Pools Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {/* Discounted Pool */}
+          <div
+            className={`p-6 ${
+              poolData?.pools.discounted.status === 'active'
+                ? 'bg-green-50'
+                : poolData?.pools.discounted.status === 'low'
+                ? 'bg-yellow-50'
+                : 'bg-gray-50'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900">Discounted Keys</h3>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${
+                  poolData?.pools.discounted.status === 'active'
+                    ? 'bg-green-200 text-green-800'
+                    : poolData?.pools.discounted.status === 'low'
+                    ? 'bg-yellow-200 text-yellow-800'
+                    : 'bg-gray-200 text-gray-800'
+                }`}
+              >
+                {poolData?.pools.discounted.status === 'active'
+                  ? 'Active'
+                  : poolData?.pools.discounted.status === 'low'
+                  ? 'Low'
+                  : 'Empty'}
+              </span>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-500">Total Balance</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(poolData?.pools.discounted.total_balance || 0)}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Accounts</p>
+                  <p className="text-lg font-medium text-gray-900">
+                    {poolData?.pools.discounted.count || 0}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Margin</p>
+                  <p className="text-lg font-medium text-green-600">166%</p>
+                </div>
+              </div>
+              <div className="pt-3 border-t border-gray-200">
+                <p className="text-xs text-gray-500">Buy: -70% → Sell: -20%</p>
+                <p className="text-xs text-green-600 font-medium">High Profit</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Regular Pool */}
+          <div
+            className={`p-6 border-l border-gray-200 ${
+              poolData?.pools.regular.status === 'active'
+                ? 'bg-blue-50'
+                : 'bg-gray-50'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900">Regular Keys</h3>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${
+                  poolData?.pools.regular.status === 'active'
+                    ? 'bg-blue-200 text-blue-800'
+                    : 'bg-gray-200 text-gray-800'
+                }`}
+              >
+                {poolData?.pools.regular.status === 'active' ? 'Reserve' : 'Empty'}
+              </span>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-500">Total Balance</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(poolData?.pools.regular.total_balance || 0)}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Accounts</p>
+                  <p className="text-lg font-medium text-gray-900">
+                    {poolData?.pools.regular.count || 0}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Margin</p>
+                  <p className="text-lg font-medium text-blue-600">5%</p>
+                </div>
+              </div>
+              <div className="pt-3 border-t border-gray-200">
+                <p className="text-xs text-gray-500">Buy: 0% → Sell: +5%</p>
+                <p className="text-xs text-blue-600 font-medium">Backup Only</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Strategy Indicator */}
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-700">Current Strategy</p>
+              <p className="text-sm text-gray-500">
+                {poolData?.pools.strategy === 'discounted_first'
+                  ? '🟢 Prioritizing high-margin accounts (166% profit)'
+                  : poolData?.pools.strategy === 'regular_only'
+                  ? '🟡 Using backup accounts only (5% profit)'
+                  : '🔴 No accounts available!'}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Total Available</p>
+              <p className="text-xl font-bold text-gray-900">
+                {formatCurrency(poolData?.pools.total_available || 0)}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Master Accounts Section */}
@@ -405,6 +621,46 @@ export default function Dashboard() {
                   placeholder="Main Account"
                   required
                 />
+              </div>
+
+              {/* Account Type Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Account Type *</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setNewAccount({ ...newAccount, account_type: 'discounted' })}
+                    className={`p-3 border rounded-lg text-left transition-all ${
+                      newAccount.account_type === 'discounted'
+                        ? 'border-green-500 bg-green-50 ring-1 ring-green-500'
+                        : 'border-gray-200 hover:border-green-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-gray-900">Discounted</span>
+                      {newAccount.account_type === 'discounted' && <Check className="w-4 h-4 text-green-600" />}
+                    </div>
+                    <p className="text-xs text-gray-500">Buy: -70% → Sell: -20%</p>
+                    <p className="text-xs text-green-600 font-medium mt-1">166% margin ✅</p>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setNewAccount({ ...newAccount, account_type: 'regular' })}
+                    className={`p-3 border rounded-lg text-left transition-all ${
+                      newAccount.account_type === 'regular'
+                        ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-gray-900">Regular</span>
+                      {newAccount.account_type === 'regular' && <Check className="w-4 h-4 text-blue-600" />}
+                    </div>
+                    <p className="text-xs text-gray-500">Buy: 0% → Sell: +5%</p>
+                    <p className="text-xs text-blue-600 font-medium mt-1">5% margin (backup)</p>
+                  </button>
+                </div>
               </div>
 
               <div>
