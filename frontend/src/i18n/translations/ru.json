@@ -16,7 +16,9 @@
     "close": "Закрыть",
     "back": "Назад",
     "next": "Далее",
-    "previous": "Назад"
+    "previous": "Назад",
+    "total": "всего",
+    "noData": "Нет данных"
   },
   "navigation": {
     "dashboard": "Главная",

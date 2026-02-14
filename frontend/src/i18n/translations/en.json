@@ -16,7 +16,9 @@
     "close": "Close",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "total": "total",
+    "noData": "No data available"
   },
   "navigation": {
     "dashboard": "Dashboard",

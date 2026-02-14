@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { clientApi, apiKeysApi } from '../api/client'
 import { Balance, UsageStats, ApiKey } from '../types'
+import { useTranslation } from '../i18n'
 import {
   LineChart,
   Line,
@@ -24,6 +25,7 @@ import {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   
   // Fetch balance
   const { data: balanceData } = useQuery({
@@ -82,32 +84,32 @@ export default function Dashboard() {
 
   const stats = [
     {
-      title: 'Current Balance',
+      title: t('dashboard.currentBalance'),
       value: `$${balance.balance_usd.toFixed(5)}`,
       icon: Wallet,
       color: 'blue',
-      trend: 'Available for API calls',
+      trend: t('dashboard.availableForApiCalls'),
     },
     {
-      title: 'Total Spent',
+      title: t('dashboard.totalSpent'),
       value: `$${balance.lifetime_spent.toFixed(5)}`,
       icon: TrendingUp,
       color: 'green',
-      trend: 'Lifetime spending',
+      trend: t('dashboard.lifetimeSpending'),
     },
     {
-      title: 'Your Savings',
+      title: t('dashboard.yourSavings'),
       value: `$${balance.lifetime_savings.toFixed(5)}`,
       icon: PiggyBank,
       color: 'pink',
-      trend: 'vs OpenRouter direct',
+      trend: t('dashboard.vsOpenRouterDirect'),
     },
     {
-      title: 'Active API Keys',
+      title: t('dashboard.activeApiKeys'),
       value: activeKeys.toString(),
       icon: Key,
       color: 'orange',
-      trend: `${apiKeys.length} total`,
+      trend: `${apiKeys.length} ${t('common.total') || 'total'}`,
     },
   ]
 
@@ -148,7 +150,7 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions')}</h3>
           <div className="grid grid-cols-2 gap-4">
             <button 
               onClick={() => navigate('/deposit')}
@@ -158,8 +160,8 @@ export default function Dashboard() {
                 <Wallet className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Deposit</p>
-                <p className="text-xs text-gray-500">Top up balance</p>
+                <p className="font-medium text-gray-900">{t('dashboard.topUpBalance')}</p>
+                <p className="text-xs text-gray-500">{t('deposit.choosePaymentMethod')}</p>
               </div>
             </button>
             <button 
@@ -170,15 +172,15 @@ export default function Dashboard() {
                 <Key className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">New API Key</p>
-                <p className="text-xs text-gray-500">Create key</p>
+                <p className="font-medium text-gray-900">{t('dashboard.createKey')}</p>
+                <p className="text-xs text-gray-500">{t('apiKeys.manageYourApiKeys')}</p>
               </div>
             </button>
           </div>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.recentActivity')}</h3>
           {usage.by_model.length > 0 ? (
             <div className="space-y-3">
               {usage.by_model.slice(0, 5).map((model) => (
@@ -192,7 +194,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{model.model}</p>
-                      <p className="text-xs text-gray-500">{model.requests} requests</p>
+                      <p className="text-xs text-gray-500">{model.requests} {t('dashboard.requests')}</p>
                     </div>
                   </div>
                   <span className="text-sm font-medium text-gray-900">
@@ -204,8 +206,8 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-8 text-gray-400">
               <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No recent activity</p>
-              <p className="text-sm">Make your first API call to see stats</p>
+              <p>{t('dashboard.noRecentActivity')}</p>
+              <p className="text-sm">{t('dashboard.makeYourFirstApiCall')}</p>
             </div>
           )}
         </div>
@@ -214,28 +216,28 @@ export default function Dashboard() {
       {/* Price Comparison */}
       {usage.total_cost_usd > 0 && (
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Price Comparison (7 days)</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.priceComparison')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-500 mb-1">OpenRouter Price</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.openRouterPrice')}</p>
               <p className="text-xl font-mono font-bold text-gray-900">
                 ${(usage.total_cost_usd / 0.8).toFixed(5)}
               </p>
-              <p className="text-xs text-gray-400">if using directly</p>
+              <p className="text-xs text-gray-400">{t('dashboard.ifUsingDirectly')}</p>
             </div>
             <div className="bg-blue-50 rounded-lg p-4">
-              <p className="text-sm text-blue-600 mb-1">Your Price</p>
+              <p className="text-sm text-blue-600 mb-1">{t('dashboard.yourPrice')}</p>
               <p className="text-xl font-mono font-bold text-blue-900">
                 ${usage.total_cost_usd.toFixed(5)}
               </p>
-              <p className="text-xs text-blue-400">with AI Router</p>
+              <p className="text-xs text-blue-400">{t('dashboard.withAiRouter')}</p>
             </div>
             <div className="bg-green-50 rounded-lg p-4">
-              <p className="text-sm text-green-600 mb-1">You Saved</p>
+              <p className="text-sm text-green-600 mb-1">{t('dashboard.youSaved')}</p>
               <p className="text-xl font-mono font-bold text-green-900">
                 ${(usage.total_cost_usd / 0.8 - usage.total_cost_usd).toFixed(5)}
               </p>
-              <p className="text-xs text-green-400">20% average discount</p>
+              <p className="text-xs text-green-400">20% {t('dashboard.averageDiscount')}</p>
             </div>
           </div>
         </div>
@@ -245,7 +247,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Usage Line Chart */}
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Spending (30 days)</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.dailySpending')}</h3>
           {dailyData.length > 0 ? (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -263,7 +265,7 @@ export default function Dashboard() {
                     tickFormatter={(value) => `$${value.toFixed(4)}`}
                   />
                   <Tooltip 
-                    formatter={(value: number) => [`$${value.toFixed(6)}`, 'Your Cost']}
+                    formatter={(value: number) => [`$${value.toFixed(6)}`, t('dashboard.yourPrice')]}
                     labelFormatter={(label) => new Date(label).toLocaleDateString('ru-RU')}
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                   />
@@ -280,14 +282,14 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-400">No data available</p>
+              <p className="text-gray-400">{t('common.noData')}</p>
             </div>
           )}
         </div>
 
         {/* Models Bar Chart */}
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Models by Cost</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.topModelsByCost')}</h3>
           {modelsData.length > 0 ? (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -324,7 +326,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-400">No data available</p>
+              <p className="text-gray-400">{t('common.noData')}</p>
             </div>
           )}
         </div>
