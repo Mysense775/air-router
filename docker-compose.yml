@@ -43,6 +43,8 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/ai_router
       - REDIS_URL=redis://redis:6379/0
+      - NOWPAYMENTS_API_KEY=CK8T15X-TZR4HSM-JYBWRN4-2ZD6AEF
+      - API_BASE_URL=https://airouter.host
     env_file:
       - ./backend/.env
     volumes:
@@ -112,3 +114,7 @@ volumes:
   redis_data:
   prometheus_data:
   grafana_data:
+
+# Добавить в секцию backend:
+# environment:
+#   - NOWPAYMENTS_API_KEY=${NOWPAYMENTS_API_KEY}

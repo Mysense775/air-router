@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     YOOKASSA_SHOP_ID: str = ""
     YOOKASSA_SECRET_KEY: str = ""
     
+    # API Configuration
+    API_BASE_URL: str = "https://airouter.host"
+    
     # Monitoring
     SENTRY_DSN: str = ""
     LOG_LEVEL: str = "INFO"
