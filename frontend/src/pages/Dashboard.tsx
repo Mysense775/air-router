@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import {
   Wallet,
   TrendingUp,
@@ -10,6 +11,8 @@ import { clientApi, apiKeysApi } from '../api/client'
 import { Balance, UsageStats, ApiKey } from '../types'
 
 export default function Dashboard() {
+  const navigate = useNavigate()
+  
   // Fetch balance
   const { data: balanceData } = useQuery({
     queryKey: ['balance'],
@@ -117,16 +120,22 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left">
+            <button 
+              onClick={() => navigate('/deposit')}
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+            >
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Wallet className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Add Funds</p>
+                <p className="font-medium text-gray-900">Deposit</p>
                 <p className="text-xs text-gray-500">Top up balance</p>
               </div>
             </button>
-            <button className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors text-left">
+            <button 
+              onClick={() => navigate('/api-keys')}
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors text-left"
+            >
               <div className="p-2 bg-purple-100 rounded-lg">
                 <Key className="w-5 h-5 text-purple-600" />
               </div>

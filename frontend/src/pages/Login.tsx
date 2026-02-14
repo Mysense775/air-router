@@ -6,8 +6,8 @@ import { authApi } from '../api/client'
 import { useAuthStore } from '../store/authStore'
 
 export default function Login() {
-  const [email, setEmail] = useState('test@example.com')
-  const [password, setPassword] = useState('test123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   
@@ -149,8 +149,6 @@ export default function Login() {
               Register
             </Link>
           </p>
-          <p className="text-gray-400 mt-4">Test account:</p>
-          <p className="text-gray-400">test@example.com / test123</p>
         </div>
       </div>
     </div>
