@@ -118,4 +118,8 @@ export const adminApi = {
   addUserBalance: (userId: string, amount: number, reason?: string) =>
     api.post(`/admin/users/${userId}/balance`, { amount, reason }),
   getDashboard: () => api.get('/admin/dashboard'),
+  getCryptoCurrencies: () => api.get('/payments/currencies'),
+  createCryptoPayment: (amount_usd: number, currency: string) =>
+    api.post('/payments/create', { amount_usd, currency }),
+  getPaymentHistory: () => api.get('/payments/history'),
 }

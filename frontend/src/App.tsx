@@ -8,6 +8,7 @@ import ApiKeysPage from './pages/ApiKeys'
 import UsagePage from './pages/Usage'
 import Models from './pages/Models'
 import Deposit from './pages/Deposit'
+import CryptoDeposit from './pages/CryptoDeposit'
 import AdminDashboard from './pages/AdminDashboard'
 import Users from './pages/Users'
 import Layout from './components/Layout'
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/usage" element={<UsagePage />} />
                 <Route path="/models" element={<Models />} />
                 <Route path="/deposit" element={<Deposit />} />
+                <Route path="/deposit/crypto" element={<CryptoDeposit />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<Users />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
