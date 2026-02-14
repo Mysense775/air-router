@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
 import App from './App'
 import SentryErrorBoundary from './components/SentryErrorBoundary'
+import { I18nProvider } from './i18n'
 import './index.css'
 
 // Initialize Sentry for error tracking
@@ -41,7 +42,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <SentryErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <App />
+          <I18nProvider>
+            <App />
+          </I18nProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </SentryErrorBoundary>

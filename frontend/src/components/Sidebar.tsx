@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
+import { useTranslation } from '../i18n'
 import {
   LayoutDashboard,
   Shield,
@@ -8,11 +9,13 @@ import {
   CreditCard,
   History,
   Brain,
+  Globe,
 } from 'lucide-react'
 
 export default function Sidebar() {
   const location = useLocation()
   const { user } = useAuthStore()
+  const { language, toggleLanguage, t } = useTranslation()
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
@@ -41,7 +44,7 @@ export default function Sidebar() {
               }`}
             >
               <Shield className="w-5 h-5" />
-              <span className="font-medium">Dashboard</span>
+              <span className="font-medium">{t('navigation.admin')}</span>
             </Link>
             <Link
               to="/admin/users"
@@ -52,7 +55,7 @@ export default function Sidebar() {
               }`}
             >
               <Users className="w-5 h-5" />
-              <span className="font-medium">Users</span>
+              <span className="font-medium">{t('navigation.users')}</span>
             </Link>
           </>
         ) : (
@@ -67,7 +70,7 @@ export default function Sidebar() {
               }`}
             >
               <LayoutDashboard className="w-5 h-5" />
-              <span className="font-medium">Dashboard</span>
+              <span className="font-medium">{t('navigation.dashboard')}</span>
             </Link>
             <Link
               to="/deposit"
@@ -78,7 +81,7 @@ export default function Sidebar() {
               }`}
             >
               <CreditCard className="w-5 h-5" />
-              <span className="font-medium">Deposit</span>
+              <span className="font-medium">{t('navigation.deposit')}</span>
             </Link>
             <Link
               to="/api-keys"
@@ -89,7 +92,7 @@ export default function Sidebar() {
               }`}
             >
               <Key className="w-5 h-5" />
-              <span className="font-medium">API Keys</span>
+              <span className="font-medium">{t('navigation.apiKeys')}</span>
             </Link>
             <Link
               to="/requests"
@@ -100,7 +103,7 @@ export default function Sidebar() {
               }`}
             >
               <History className="w-5 h-5" />
-              <span className="font-medium">Request History</span>
+              <span className="font-medium">{t('navigation.requestHistory')}</span>
             </Link>
             <Link
               to="/models"
@@ -111,11 +114,25 @@ export default function Sidebar() {
               }`}
             >
               <Brain className="w-5 h-5" />
-              <span className="font-medium">Models</span>
+              <span className="font-medium">{t('navigation.models')}</span>
             </Link>
           </>
         )}
       </nav>
+
+      {/* Language Switcher */}
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={toggleLanguage}
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+        >
+          <Globe className="w-5 h-5" />
+          <span className="font-medium">{language === 'en' ? 'English' : 'Русский'}</span>
+          <span className="ml-auto text-xs text-gray-400">
+            {language === 'en' ? 'RU' : 'EN'}
+          </span>
+        </button>
+      </div>
 
       <div className="p-4 border-t border-gray-200">
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white">
