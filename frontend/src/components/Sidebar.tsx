@@ -7,6 +7,7 @@ import {
   Brain,
   PlusCircle,
   Shield,
+  Users,
 } from 'lucide-react'
 
 const menuItems = [
@@ -66,17 +67,30 @@ export default function Sidebar() {
           <span className="font-medium">Add Funds</span>
         </Link>
         {user?.role === 'admin' && (
-          <Link
-            to="/admin"
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
-              location.pathname === '/admin'
-                ? 'bg-purple-50 text-purple-600'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Shield className="w-5 h-5" />
-            <span className="font-medium">Admin</span>
-          </Link>
+          <>
+            <Link
+              to="/admin"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/admin'
+                  ? 'bg-purple-50 text-purple-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Shield className="w-5 h-5" />
+              <span className="font-medium">Admin</span>
+            </Link>
+            <Link
+              to="/admin/users"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/admin/users'
+                  ? 'bg-purple-50 text-purple-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span className="font-medium">Users</span>
+            </Link>
+          </>
         )}
       </nav>
 

@@ -2,20 +2,32 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
+import ChangePassword from './pages/ChangePassword'
 import Dashboard from './pages/Dashboard'
 import ApiKeysPage from './pages/ApiKeys'
 import UsagePage from './pages/Usage'
 import Models from './pages/Models'
 import Deposit from './pages/Deposit'
 import Admin from './pages/Admin'
+import Users from './pages/Users'
 import Layout from './components/Layout'
 
 function App() {
-  const { token, checkAuth } = useAuthStore()
+  const { token, checkAuth, forcePasswordChange } = useAuthStore()
 
   useEffect(() => {
     checkAuth()
   }, [checkAuth])
+
+  // Force password change page - accessible only when logged in and flag is set
+  if (token && forcePasswordChange) {
+    return (
+      <Routes>
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="*" element={<Navigate to="/change-password" />} />
+      </Routes>
+    )
+  }
 
   return (
     <Routes>
@@ -35,6 +47,7 @@ function App() {
                 <Route path="/models" element={<Models />} />
                 <Route path="/deposit" element={<Deposit />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/users" element={<Users />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
               </Routes>
             </Layout>

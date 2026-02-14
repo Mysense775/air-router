@@ -34,6 +34,7 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
+    force_password_change: bool = False
     token_type: str = "bearer"
     expires_in: int = 900  # 15 minutes
 
@@ -223,8 +224,37 @@ async def login(
     
     return TokenResponse(
         access_token=access_token,
-        refresh_token=refresh_token
+        refresh_token=refresh_token,
+        force_password_change=user.force_password_change or False
     )
+
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+
+
+@router.post("/change-password")
+async def change_password(
+    data: ChangePasswordRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Change password (required for admin-created users on first login)"""
+    # Verify old password
+    if not verify_password(data.old_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid old password"
+        )
+    
+    # Update password
+    current_user.password_hash = get_password_hash(data.new_password)
+    current_user.force_password_change = False
+    
+    await db.commit()
+    
+    return {"message": "Password changed successfully"}
 
 
 @router.post("/refresh", response_model=TokenResponse)

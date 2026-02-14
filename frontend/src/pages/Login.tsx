@@ -28,15 +28,15 @@ export default function Login() {
       
       try {
         const response = await authApi.login(email, password)
-        const { access_token, refresh_token } = response.data
+        const { access_token, refresh_token, force_password_change } = response.data
         
         // Get user info with token directly (bypass interceptor timing issue)
         const userRes = await authApi.getMe(access_token)
         
-        // Save auth with full user data
-        setAuth(access_token, refresh_token, userRes.data)
+        // Save auth with full user data and force_password_change flag
+        setAuth(access_token, refresh_token, userRes.data, force_password_change)
         
-        return response
+        return { ...response, force_password_change }
       } finally {
         setIsSubmitting(false)
         // Reset ref after a delay to allow retry on error
@@ -45,8 +45,13 @@ export default function Login() {
         }, 1000)
       }
     },
-    onSuccess: () => {
-      navigate('/dashboard')
+    onSuccess: (data) => {
+      // Redirect to change password if required
+      if (data.force_password_change) {
+        navigate('/change-password')
+      } else {
+        navigate('/dashboard')
+      }
     },
     onError: (err: any) => {
       setIsSubmitting(false)

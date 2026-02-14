@@ -22,6 +22,21 @@ class MasterAccountCreate(BaseModel):
     priority: int = 0
 
 
+class UserCreate(BaseModel):
+    email: str
+    name: str | None = None
+    role: str = "client"  # "client" or "admin"
+
+
+class UserCreateResponse(BaseModel):
+    id: str
+    email: str
+    name: str | None
+    role: str
+    temporary_password: str
+    message: str
+
+
 async def require_admin(
     current_user: User = Depends(get_current_active_user)
 ) -> User:
@@ -310,3 +325,144 @@ async def sync_master_account_balance(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to sync balance: {str(e)}"
         )
+
+
+def generate_temporary_password(length: int = 12) -> str:
+    """Generate a secure temporary password"""
+    import secrets
+    import string
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+
+@router.post("/users", response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
+async def create_user(
+    data: UserCreate,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Create a new user by admin (generates temporary password)"""
+    from app.core.security import get_password_hash
+    
+    # Check if email already exists
+    result = await db.execute(select(User).where(User.email == data.email))
+    if result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Generate temporary password
+    temp_password = generate_temporary_password()
+    password_hash = get_password_hash(temp_password)
+    
+    # Create user
+    user = User(
+        id=uuid4(),
+        email=data.email,
+        name=data.name,
+        password_hash=password_hash,
+        role=data.role,
+        status="active",
+        email_verified=True,  # Auto-verified since admin created
+        force_password_change=True  # User must change password on first login
+    )
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    
+    return UserCreateResponse(
+        id=str(user.id),
+        email=user.email,
+        name=user.name,
+        role=user.role,
+        temporary_password=temp_password,
+        message="User created successfully. Temporary password shown only once!"
+    )
+
+
+class BalanceAddRequest(BaseModel):
+    amount: float
+    reason: str | None = None
+
+
+class BalanceAddResponse(BaseModel):
+    user_id: str
+    email: str
+    old_balance: float
+    new_balance: float
+    added_amount: float
+    reason: str | None
+    message: str
+
+
+@router.post("/users/{user_id}/balance", response_model=BalanceAddResponse)
+async def add_user_balance(
+    user_id: str,
+    data: BalanceAddRequest,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Add balance to user account (admin only)"""
+    from decimal import Decimal
+    from app.models import Balance, Deposit
+    
+    # Find user
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    if data.amount <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Amount must be positive"
+        )
+    
+    # Get or create balance
+    result = await db.execute(select(Balance).where(Balance.user_id == user_id))
+    balance = result.scalar_one_or_none()
+    
+    old_balance = float(balance.balance_usd) if balance else 0.0
+    
+    if not balance:
+        balance = Balance(
+            user_id=user_id,
+            balance_usd=Decimal(str(data.amount)),
+            lifetime_earned=Decimal(str(data.amount))
+        )
+        db.add(balance)
+    else:
+        balance.balance_usd += Decimal(str(data.amount))
+        balance.lifetime_earned += Decimal(str(data.amount))
+        balance.last_deposit_at = datetime.utcnow()
+    
+    # Create deposit record
+    deposit = Deposit(
+        user_id=user_id,
+        amount_usd=Decimal(str(data.amount)),
+        currency="USD",
+        status="completed",
+        payment_method="manual",
+        provider_transaction_id=f"manual_{datetime.utcnow().timestamp()}",
+        metadata_={"reason": data.reason, "added_by": str(admin.id)}
+    )
+    db.add(deposit)
+    
+    await db.commit()
+    await db.refresh(balance)
+    
+    return BalanceAddResponse(
+        user_id=user_id,
+        email=user.email,
+        old_balance=old_balance,
+        new_balance=float(balance.balance_usd),
+        added_amount=data.amount,
+        reason=data.reason,
+        message=f"Successfully added ${data.amount:.2f} to {user.email}"
+    )

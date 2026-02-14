@@ -16,10 +16,12 @@ interface AuthState {
   refreshToken: string | null
   user: User | null
   isAuthenticated: boolean
-  setAuth: (token: string, refreshToken: string, user: User) => void
+  forcePasswordChange: boolean
+  setAuth: (token: string, refreshToken: string, user: User, forcePasswordChange?: boolean) => void
   logout: () => void
   checkAuth: () => boolean
   refreshAccessToken: () => Promise<string | null>
+  clearForcePasswordChange: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,13 +31,18 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       user: null,
       isAuthenticated: false,
+      forcePasswordChange: false,
 
-      setAuth: (token, refreshToken, user) => {
-        set({ token, refreshToken, user, isAuthenticated: true })
+      setAuth: (token, refreshToken, user, forcePasswordChange = false) => {
+        set({ token, refreshToken, user, isAuthenticated: true, forcePasswordChange })
+      },
+
+      clearForcePasswordChange: () => {
+        set({ forcePasswordChange: false })
       },
 
       logout: () => {
-        set({ token: null, refreshToken: null, user: null, isAuthenticated: false })
+        set({ token: null, refreshToken: null, user: null, isAuthenticated: false, forcePasswordChange: false })
         localStorage.removeItem('auth-storage-v3')
         window.location.href = '/login'
       },

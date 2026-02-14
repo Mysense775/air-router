@@ -17,6 +17,7 @@ class User(Base):
     status = Column(String(20), nullable=False, default="active")
     email_verified = Column(Boolean, default=False)
     email_verified_at = Column(DateTime(timezone=True))
+    force_password_change = Column(Boolean, default=False)  # True for admin-created users
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
     
