@@ -16,7 +16,7 @@ import logging
 from app.db.session import get_db
 from app.models import User, Deposit, Balance
 from app.api.v1.auth import get_current_active_user
-from app.core.config import settings
+from app.core.config import get_settings
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -49,6 +49,7 @@ class PaymentStatusResponse(BaseModel):
 async def get_nowpayments_api_key() -> str:
     """Get NowPayments API key from settings"""
     # In production, load from environment or database
+    settings = get_settings()
     return getattr(settings, 'NOWPAYMENTS_API_KEY', '')
 
 async def create_crypto_payment(
@@ -59,6 +60,7 @@ async def create_crypto_payment(
 ) -> dict:
     """Create new crypto payment via NowPayments"""
     
+    settings = get_settings()
     api_key = await get_nowpayments_api_key()
     if not api_key:
         raise HTTPException(
