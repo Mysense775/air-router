@@ -161,7 +161,6 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dashboard.topUpBalance')}</p>
-                <p className="text-xs text-gray-500">{t('deposit.choosePaymentMethod')}</p>
               </div>
             </button>
             <button 
@@ -173,7 +172,6 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dashboard.createKey')}</p>
-                <p className="text-xs text-gray-500">{t('apiKeys.manageYourApiKeys')}</p>
               </div>
             </button>
           </div>

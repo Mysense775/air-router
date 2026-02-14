@@ -35,9 +35,9 @@
   "dashboard": {
     "title": "Главная",
     "currentBalance": "Текущий баланс",
-    "totalSpent": "Всего потрачено",
+    "totalSpent": "Потрачено",
     "yourSavings": "Ваша экономия",
-    "activeApiKeys": "Активные API ключи",
+    "activeApiKeys": "Активные ключи",
     "availableForApiCalls": "Доступно для API запросов",
     "lifetimeSpending": "Всего потрачено за всё время",
     "vsOpenRouterDirect": "по сравнению с OpenRouter",

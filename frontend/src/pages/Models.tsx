@@ -12,6 +12,7 @@ import {
   BarChart3
 } from 'lucide-react'
 import { api } from '../api/client'
+import ModelAdvisor from '../components/ModelAdvisor'
 
 interface Model {
   id: string
@@ -32,6 +33,8 @@ export default function Models() {
   const [selectedProvider, setSelectedProvider] = useState<string>('all')
   const [priceFilter, setPriceFilter] = useState<string>('all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 20
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['models'],
@@ -77,6 +80,18 @@ export default function Models() {
       return matchesSearch && matchesProvider && matchesPrice
     })
   }, [models, searchQuery, selectedProvider, priceFilter])
+
+  // Pagination
+  const totalPages = Math.ceil(filteredModels.length / itemsPerPage)
+  const paginatedModels = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage
+    return filteredModels.slice(startIndex, startIndex + itemsPerPage)
+  }, [filteredModels, currentPage])
+
+  // Reset to first page when filters change
+  useMemo(() => {
+    setCurrentPage(1)
+  }, [searchQuery, selectedProvider, priceFilter])
 
   // Get top recommended models
   const recommendedModels = useMemo(() => {
@@ -131,11 +146,14 @@ export default function Models() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
-        <p className="text-gray-500 mt-1">
-          {models.length} AI models available. Choose the best for your task.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
+          <p className="text-gray-500 mt-1">
+            {models.length} AI models available. Choose the best for your task.
+          </p>
+        </div>
+        <ModelAdvisor />
       </div>
 
       {/* Recommendations */}
@@ -225,13 +243,13 @@ export default function Models() {
         
         {/* Results count */}
         <div className="mt-3 text-sm text-gray-500">
-          Showing {filteredModels.length} of {models.length} models
+          Showing {paginatedModels.length} of {filteredModels.length} models (Page {currentPage} of {totalPages})
         </div>
       </div>
 
       {/* Models Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredModels.map((model) => {
+        {paginatedModels.map((model) => {
           const provider = model.id.split('/')[0]
           const contextLength = getContextLength(model)
           
@@ -291,6 +309,67 @@ export default function Models() {
           <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No models found</p>
           <p className="text-sm">Try adjusting your filters</p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4">
+          <div className="text-sm text-gray-500">
+            Page {currentPage} of {totalPages}
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Previous button */}
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            
+            {/* Page numbers */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum: number
+                if (totalPages <= 5) {
+                  pageNum = i + 1
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i
+                } else {
+                  pageNum = currentPage - 2 + i
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+            </div>
+            
+            {/* Next button */}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+          <div className="text-sm text-gray-500">
+            {filteredModels.length} models total
+          </div>
         </div>
       )}
     </div>
