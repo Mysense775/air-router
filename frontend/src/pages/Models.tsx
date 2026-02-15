@@ -9,8 +9,11 @@ import {
   DollarSign,
   ChevronDown,
   Sparkles,
-  BarChart3
+  BarChart3,
+  Book,
+  ExternalLink
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import ModelAdvisor from '../components/ModelAdvisor'
 
@@ -152,6 +155,14 @@ export default function Models() {
           <p className="text-gray-500 mt-1">
             {models.length} AI models available. Choose the best for your task.
           </p>
+          <Link 
+            to="/docs" 
+            className="inline-flex items-center gap-2 mt-3 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <Book className="w-4 h-4" />
+            <span>Как подключить к n8n, Make, Zapier</span>
+            <ExternalLink className="w-3 h-3" />
+          </Link>
         </div>
         <ModelAdvisor />
       </div>

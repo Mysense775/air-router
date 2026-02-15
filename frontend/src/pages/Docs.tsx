@@ -7,8 +7,7 @@ import {
   HelpCircle, 
   ChevronRight,
   Copy,
-  Check,
-  ExternalLink
+  Check
 } from 'lucide-react'
 
 const CODE_EXAMPLES = {
