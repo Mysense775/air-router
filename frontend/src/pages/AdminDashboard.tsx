@@ -17,7 +17,9 @@ import {
   RevenueOverviewWidget, 
   AccountTypeRevenueWidget,
   ProfitDistributionChart,
-  InvestorKeysManagement 
+  InvestorKeysManagement,
+  SystemLoadChart,
+  AverageClientSpendChart
 } from '../components/admin'
 
 interface MasterAccount {
@@ -257,12 +259,11 @@ export default function Dashboard() {
       {/* Account Types Revenue */}
       <AccountTypeRevenueWidget />
 
-      {/* Profit Distribution & Investor Management */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <ProfitDistributionChart />
-        <div className="space-y-6">
-          {/* Placeholder for future widget */}
-        </div>
+        <SystemLoadChart />
+        <AverageClientSpendChart />
       </div>
 
       {/* Investor Keys Management */}
