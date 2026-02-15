@@ -618,3 +618,34 @@ async def get_master_account_pools(
             "Приоритет: дисконтные (маржа 166%) → обычные (маржа 5%)"
         ]
     }
+
+
+@router.delete("/master-accounts/{account_id}")
+async def revoke_master_account(
+    account_id: str,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Revoke (delete) a master account"""
+    from uuid import UUID
+    
+    result = await db.execute(
+        select(MasterAccount).where(MasterAccount.id == UUID(account_id))
+    )
+    account = result.scalar_one_or_none()
+    
+    if not account:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Master account not found"
+        )
+    
+    account_name = account.name
+    await db.delete(account)
+    await db.commit()
+    
+    return {
+        "id": account_id,
+        "name": account_name,
+        "message": f"Master account '{account_name}' has been revoked"
+    }

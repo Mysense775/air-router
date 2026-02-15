@@ -11,7 +11,8 @@ import {
   RefreshCw,
   X,
   Check,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from 'lucide-react'
 import { 
   RevenueOverviewWidget, 
@@ -129,6 +130,8 @@ export default function Dashboard() {
     }
   })
 
+  const [revokingId, setRevokingId] = useState<string | null>(null)
+
   const handleSync = async (accountId: string) => {
     setSyncingId(accountId)
     try {
@@ -140,6 +143,23 @@ export default function Dashboard() {
       setError(err.response?.data?.detail || 'Failed to sync balance')
     } finally {
       setSyncingId(null)
+    }
+  }
+
+  const handleRevoke = async (accountId: string, accountName: string) => {
+    if (!confirm(`Are you sure you want to revoke master account "${accountName}"? This action cannot be undone.`)) {
+      return
+    }
+    setRevokingId(accountId)
+    try {
+      await adminApi.revokeMasterAccount(accountId)
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] })
+      setSuccess(`Master account "${accountName}" revoked successfully`)
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to revoke account')
+    } finally {
+      setRevokingId(null)
     }
   }
 
@@ -512,14 +532,24 @@ export default function Dashboard() {
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleSync(account.id)}
-                    disabled={syncingId === account.id}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 disabled:opacity-50 text-blue-700 rounded-lg text-sm transition-colors"
-                  >
-                    <RefreshCw className={`w-4 h-4 ${syncingId === account.id ? 'animate-spin' : ''}`} />
-                    {syncingId === account.id ? 'Syncing...' : 'Sync'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSync(account.id)}
+                      disabled={syncingId === account.id}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 disabled:opacity-50 text-blue-700 rounded-lg text-sm transition-colors"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${syncingId === account.id ? 'animate-spin' : ''}`} />
+                      {syncingId === account.id ? 'Syncing...' : 'Sync'}
+                    </button>
+                    <button
+                      onClick={() => handleRevoke(account.id, account.name)}
+                      disabled={revokingId === account.id}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-100 hover:bg-red-200 disabled:opacity-50 text-red-700 rounded-lg text-sm transition-colors"
+                    >
+                      <Trash2 className={`w-4 h-4 ${revokingId === account.id ? 'animate-spin' : ''}`} />
+                      {revokingId === account.id ? 'Revoking...' : 'Revoke'}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

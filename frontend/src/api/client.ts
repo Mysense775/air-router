@@ -113,6 +113,8 @@ export const adminApi = {
   createMasterAccount: (data: { name: string; api_key: string; account_type: string; discount_percent: number; monthly_limit_usd?: number | null; priority?: number }) =>
     api.post('/admin/master-accounts', data),
   syncMasterAccount: (accountId: string) => api.post(`/admin/master-accounts/${accountId}/sync`),
+  revokeMasterAccount: (accountId: string) =>
+    api.delete(`/admin/master-accounts/${accountId}`),
   getClients: () => api.get('/admin/clients'),
   getLogs: (limit = 100) => api.get(`/admin/logs?limit=${limit}`),
   createUser: (data: { email: string; name?: string; role: string }) =>
