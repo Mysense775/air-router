@@ -127,8 +127,8 @@ async def get_transactions(
             completed_at=deposit.completed_at.isoformat() if deposit.completed_at else None
         ))
     
-    # Get stats
-    stats = await _get_transaction_stats(db, base_query)
+    # Get stats - use separate query without JOIN to avoid duplicates
+    stats = await _get_transaction_stats(db, status, method, search, from_date, to_date)
     
     return TransactionsListResponse(
         transactions=transactions,
@@ -138,15 +138,42 @@ async def get_transactions(
     )
 
 
-async def _get_transaction_stats(db: AsyncSession, base_query):
-    """Calculate transaction statistics"""
+async def _get_transaction_stats(db: AsyncSession, status_filter, method_filter, search_filter, from_date, to_date):
+    """Calculate transaction statistics - query only Deposit table to avoid JOIN duplicates"""
+    
+    # Build stats query on Deposit only
+    stats_base = select(Deposit)
+    
+    # Apply same filters but on Deposit table only
+    if status_filter:
+        stats_base = stats_base.where(Deposit.status == status_filter)
+    
+    if method_filter:
+        stats_base = stats_base.where(Deposit.payment_method == method_filter)
+    
+    if from_date:
+        try:
+            from_dt = datetime.strptime(from_date, "%Y-%m-%d")
+            stats_base = stats_base.where(Deposit.created_at >= from_dt)
+        except ValueError:
+            pass
+    
+    if to_date:
+        try:
+            to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+            stats_base = stats_base.where(Deposit.created_at < to_dt)
+        except ValueError:
+            pass
+    
+    # Note: search_filter is skipped for stats as it requires User table
+    # This keeps stats accurate without JOIN duplication
     
     # By status
     status_query = select(
         Deposit.status,
         func.count().label("count"),
         func.coalesce(func.sum(Deposit.amount_usd), Decimal("0")).label("amount")
-    ).select_from(base_query.subquery())
+    ).select_from(stats_base.subquery())
     status_query = status_query.group_by(Deposit.status)
     status_result = await db.execute(status_query)
     by_status = {
@@ -161,7 +188,7 @@ async def _get_transaction_stats(db: AsyncSession, base_query):
         Deposit.payment_method,
         func.count().label("count"),
         func.coalesce(func.sum(Deposit.amount_usd), Decimal("0")).label("amount")
-    ).select_from(base_query.subquery())
+    ).select_from(stats_base.subquery())
     method_query = method_query.group_by(Deposit.payment_method)
     method_result = await db.execute(method_query)
     by_method = {
@@ -175,7 +202,7 @@ async def _get_transaction_stats(db: AsyncSession, base_query):
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     today_query = select(
         func.coalesce(func.sum(Deposit.amount_usd), Decimal("0"))
-    ).select_from(base_query.subquery())
+    ).select_from(stats_base.subquery())
     today_query = today_query.where(Deposit.status == "completed")
     today_query = today_query.where(Deposit.created_at >= today_start)
     today_result = await db.execute(today_query)
@@ -185,7 +212,7 @@ async def _get_transaction_stats(db: AsyncSession, base_query):
     month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     month_query = select(
         func.coalesce(func.sum(Deposit.amount_usd), Decimal("0"))
-    ).select_from(base_query.subquery())
+    ).select_from(stats_base.subquery())
     month_query = month_query.where(Deposit.status == "completed")
     month_query = month_query.where(Deposit.created_at >= month_start)
     month_result = await db.execute(month_query)
