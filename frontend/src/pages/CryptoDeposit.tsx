@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../api/client'
-import { 
-  Wallet, 
-  Copy, 
-  Check, 
-  RefreshCw, 
+import {
+  Wallet,
+  Copy,
+  Check,
+  RefreshCw,
   ExternalLink,
   Bitcoin,
   AlertCircle,
@@ -232,12 +232,12 @@ export default function CryptoDeposit() {
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Wallet className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Payment Created!</h2>
+            <h2 className="text-xl font-bold text-gray-900">Платёж создан!</h2>
             <p className="text-gray-500 mt-1">
-              Send {payment.pay_amount.toFixed(6)} {payment.pay_currency.toUpperCase()} to the address below
+              Отправьте указанную сумму на адрес ниже
             </p>
           </div>
 
@@ -247,12 +247,15 @@ export default function CryptoDeposit() {
               <div className="font-mono text-gray-900">{payment.payment_id}</div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm text-gray-500 mb-1">Amount to Send</div>
-              <div className="text-2xl font-bold text-gray-900">
-                {payment.pay_amount.toFixed(6)} {payment.pay_currency.toUpperCase()}
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-6 text-white text-center">
+              <div className="text-sm opacity-90 mb-2">Отправьте точно эту сумму:</div>
+              <div className="text-5xl font-black tracking-tight">
+                {payment.pay_amount.toFixed(6)}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-2xl font-bold mt-1">
+                {payment.pay_currency.toUpperCase()}
+              </div>
+              <div className="mt-3 text-sm opacity-75">
                 ≈ ${amount} USD
               </div>
             </div>
