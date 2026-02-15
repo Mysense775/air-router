@@ -8,7 +8,7 @@ from decimal import Decimal
 from typing import Optional, Tuple, Dict, List
 import logging
 
-from app.models import MasterAccount, RequestLog
+from app.models import MasterAccount, RequestLog, InvestorAccount
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +37,18 @@ class MasterAccountSelector:
         """
         Выбирает лучший аккаунт и возвращает ценовой множитель для клиента
         
+        Priority:
+        1. Discounted accounts (наши, высокая маржа 166%)
+        2. Investor accounts (ключи инвесторов, маржа 99%)
+        3. Regular accounts (наши, низкая маржа 5%)
+        
         Args:
             estimated_cost: Оценочная стоимость запроса
             min_balance: Минимальный запас баланса
             
         Returns:
             - MasterAccount: выбранный аккаунт
-            - Decimal: множитель цены (0.8 для -20%, 1.05 для +5%)
+            - Decimal: множитель цены (0.8 для -20%, 0.95 для инвестора, 1.05 для +5%)
             
         Raises:
             NoAvailableAccountError: если нет доступных аккаунтов
@@ -59,22 +64,29 @@ class MasterAccountSelector:
             .order_by(MasterAccount.usage_weight.asc())
             .order_by(MasterAccount.balance_usd.desc())
             .limit(1)
-            .with_for_update()  # Блокировка для конкурентного доступа
+            .with_for_update()
         )
         account = discounted.scalar_one_or_none()
         
         if account:
-            # Увеличиваем вес для round-robin
             account.usage_weight += 1
             await self.db.commit()
-            
-            # Коэффициент цены для клиента: -20% = 0.8
             price_multiplier = Decimal("0.8")
             logger.info(f"Selected DISCOUNTED account {account.name} (balance: {account.balance_usd}, multiplier: {price_multiplier})")
             return account, price_multiplier
         
-        # 2. Если дисконтных нет — ищем обычные
-        logger.warning("No discounted accounts available, switching to regular")
+        # 2. Ищем инвесторские аккаунты (между discounted и regular)
+        logger.info("No discounted accounts, checking investor accounts")
+        
+        investor_account = await self.select_investor_account(required_balance)
+        if investor_account:
+            # Инвесторские ключи: продаем со скидкой 5% (маржа 99% после 1% инвестору)
+            price_multiplier = Decimal("0.95")
+            logger.info(f"Selected INVESTOR account {investor_account.name} (balance: {investor_account.current_balance}, multiplier: {price_multiplier})")
+            return investor_account, price_multiplier
+        
+        # 3. Если инвесторских нет — ищем обычные
+        logger.warning("No investor accounts available, switching to regular")
         
         regular = await self.db.execute(
             select(MasterAccount)
@@ -88,16 +100,43 @@ class MasterAccountSelector:
         account = regular.scalar_one_or_none()
         
         if account:
-            # Коэффициент цены для клиента: +5% = 1.05
             price_multiplier = Decimal("1.05")
             logger.warning(f"Selected REGULAR account {account.name} (balance: {account.balance_usd}, multiplier: {price_multiplier}) - LOW MARGIN!")
             return account, price_multiplier
         
-        # 3. Если вообще нет — ошибка
+        # 4. Если вообще нет — ошибка
         logger.error(f"No available master accounts! Required: ${required_balance}")
         raise NoAvailableAccountError(
             f"No master accounts available with balance > ${required_balance}"
         )
+    
+    async def select_investor_account(
+        self,
+        required_balance: Decimal
+    ) -> Optional[InvestorAccount]:
+        """
+        Выбирает инвесторский аккаунт с достаточным балансом
+        
+        Returns:
+            InvestorAccount или None если нет подходящих
+        """
+        result = await self.db.execute(
+            select(InvestorAccount)
+            .where(InvestorAccount.status == "active")
+            .where(InvestorAccount.current_balance > required_balance)
+            .where(InvestorAccount.current_balance > InvestorAccount.min_threshold)
+            .order_by(InvestorAccount.total_spent.asc())  # Round-robin по наименее использованным
+            .limit(1)
+            .with_for_update()
+        )
+        account = result.scalar_one_or_none()
+        
+        if account:
+            # Обновляем статистику использования
+            account.total_spent = (account.total_spent or Decimal("0")) + Decimal("0.01")  # Маркер использования
+            await self.db.commit()
+        
+        return account
     
     async def get_pool_stats(self) -> Dict:
         """

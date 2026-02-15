@@ -27,6 +27,7 @@ class User(Base):
     request_logs = relationship("RequestLog", back_populates="user")
     deposits = relationship("Deposit", back_populates="user")
     investor_accounts = relationship("InvestorAccount", back_populates="user", cascade="all, delete-orphan")
+    investor_accounts = relationship("InvestorAccount", back_populates="user", cascade="all, delete-orphan")
 
 
 class ApiKey(Base):

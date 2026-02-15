@@ -11,7 +11,8 @@ from app.core.config import get_settings
 from app.db.session import get_db
 from app.services.billing import BillingService, PricingService
 from app.services.master_selector import MasterAccountSelector, NoAvailableAccountError
-from app.models import ApiKey, User, MasterAccount, Balance
+from app.models import ApiKey, User, MasterAccount, Balance, InvestorAccount
+from typing import Union
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from decimal import Decimal
@@ -21,14 +22,16 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
-async def get_master_account_with_pricing(db: AsyncSession, estimated_cost: Decimal = Decimal("0")) -> Tuple[MasterAccount, str, Decimal]:
+async def get_master_account_with_pricing(db: AsyncSession, estimated_cost: Decimal = Decimal("0")) -> Tuple[Union[MasterAccount, InvestorAccount], str, Decimal]:
     """
     Get master account using priority queue and calculate pricing
     
+    Priority: Discounted -> Investor -> Regular
+    
     Returns:
-        - MasterAccount: selected account
+        - MasterAccount or InvestorAccount: selected account
         - str: decrypted API key
-        - Decimal: price multiplier for client (0.8 for discounted, 1.05 for regular)
+        - Decimal: price multiplier for client (0.8 discounted, 0.95 investor, 1.05 regular)
     """
     import base64
     
@@ -39,7 +42,7 @@ async def get_master_account_with_pricing(db: AsyncSession, estimated_cost: Deci
     except NoAvailableAccountError:
         raise HTTPException(500, "No master accounts available with sufficient balance")
     
-    # Decrypt API key
+    # Decrypt API key (works for both MasterAccount and InvestorAccount)
     try:
         api_key = base64.b64decode(account.api_key_encrypted).decode()
         return account, api_key, price_multiplier
@@ -259,14 +262,22 @@ async def chat_completions(
             # TODO: добавить поле account_type_used в RequestLog
             
             # Add cost info to response
+            # Handle both MasterAccount and InvestorAccount
+            if isinstance(account, InvestorAccount):
+                account_type_str = "investor"
+                pricing_str = "investor (-5%)"
+            else:
+                account_type_str = account.account_type
+                pricing_str = f"{'-' if account.markup_percent < 0 else '+'}{abs(account.markup_percent)}%"
+            
             response_data["cost"] = {
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
                 "total_tokens": prompt_tokens + completion_tokens,
                 "cost_usd": float(actual_client_cost),
                 "currency": "USD",
-                "account_type": account.account_type,
-                "pricing": f"{'-' if account.markup_percent < 0 else '+'}{abs(account.markup_percent)}%"
+                "account_type": account_type_str,
+                "pricing": pricing_str
             }
             
             return response_data
