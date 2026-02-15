@@ -11,6 +11,7 @@ import Deposit from './pages/Deposit'
 import ApiKeys from './pages/ApiKeys'
 import RequestHistory from './pages/RequestHistory'
 import Models from './pages/Models'
+import Docs from './pages/Docs'
 import Layout from './components/Layout'
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
                 <Route path="/api-keys" element={<ApiKeys />} />
                 <Route path="/requests" element={<RequestHistory />} />
                 <Route path="/models" element={<Models />} />
+                <Route path="/docs" element={<Docs />} />
                 <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />} />
                 <Route path="/admin/users" element={isAdmin ? <Users /> : <Navigate to="/dashboard" />} />
                 <Route path="/" element={<Navigate to={isAdmin ? "/admin" : "/dashboard"} />} />

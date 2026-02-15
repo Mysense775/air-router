@@ -10,6 +10,7 @@ import {
   History,
   Brain,
   Globe,
+  Book,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -115,6 +116,17 @@ export default function Sidebar() {
             >
               <Brain className="w-5 h-5" />
               <span className="font-medium">{t('navigation.models')}</span>
+            </Link>
+            <Link
+              to="/docs"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/docs'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Book className="w-5 h-5" />
+              <span className="font-medium">Docs</span>
             </Link>
           </>
         )}
