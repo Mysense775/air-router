@@ -93,45 +93,36 @@ async def get_transactions(
         except ValueError:
             pass
     
-    # Count total - use Deposit only to avoid JOIN duplicates
-    count_query = select(func.count()).select_from(Deposit)
+    # Build where conditions for count/sum
+    count_conditions = []
     if status:
-        count_query = count_query.where(Deposit.status == status)
+        count_conditions.append(Deposit.status == status)
     if method:
-        count_query = count_query.where(Deposit.payment_method == method)
+        count_conditions.append(Deposit.payment_method == method)
     if from_date:
         try:
             from_dt = datetime.strptime(from_date, "%Y-%m-%d")
-            count_query = count_query.where(Deposit.created_at >= from_dt)
+            count_conditions.append(Deposit.created_at >= from_dt)
         except ValueError:
             pass
     if to_date:
         try:
             to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
-            count_query = count_query.where(Deposit.created_at < to_dt)
+            count_conditions.append(Deposit.created_at < to_dt)
         except ValueError:
             pass
+    
+    # Count total
+    count_query = select(func.count()).select_from(Deposit)
+    for cond in count_conditions:
+        count_query = count_query.where(cond)
     total_result = await db.execute(count_query)
     total = total_result.scalar() or 0
     
-    # Get total amount - use Deposit only
+    # Get total amount
     sum_query = select(func.coalesce(func.sum(Deposit.amount_usd), Decimal("0"))).select_from(Deposit)
-    if status:
-        sum_query = sum_query.where(Deposit.status == status)
-    if method:
-        sum_query = sum_query.where(Deposit.payment_method == method)
-    if from_date:
-        try:
-            from_dt = datetime.strptime(from_date, "%Y-%m-%d")
-            sum_query = sum_query.where(Deposit.created_at >= from_dt)
-        except ValueError:
-            pass
-    if to_date:
-        try:
-            to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
-            sum_query = sum_query.where(Deposit.created_at < to_dt)
-        except ValueError:
-            pass
+    for cond in count_conditions:
+        sum_query = sum_query.where(cond)
     sum_result = await db.execute(sum_query)
     total_amount = float(sum_result.scalar() or 0)
     
@@ -171,36 +162,37 @@ async def get_transactions(
 
 
 async def _get_transaction_stats(db: AsyncSession, status_filter, method_filter, search_filter, from_date, to_date):
-    """Calculate transaction statistics - query Deposit table directly"""
+    """Calculate transaction statistics - simple direct queries"""
     
-    # Helper to build WHERE clause
-    def apply_filters(query):
-        if status_filter:
-            query = query.where(Deposit.status == status_filter)
-        if method_filter:
-            query = query.where(Deposit.payment_method == method_filter)
-        if from_date:
-            try:
-                from_dt = datetime.strptime(from_date, "%Y-%m-%d")
-                query = query.where(Deposit.created_at >= from_dt)
-            except ValueError:
-                pass
-        if to_date:
-            try:
-                to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
-                query = query.where(Deposit.created_at < to_dt)
-            except ValueError:
-                pass
-        return query
+    # Build base where conditions
+    conditions = []
+    if status_filter:
+        conditions.append(Deposit.status == status_filter)
+    if method_filter:
+        conditions.append(Deposit.payment_method == method_filter)
+    if from_date:
+        try:
+            from_dt = datetime.strptime(from_date, "%Y-%m-%d")
+            conditions.append(Deposit.created_at >= from_dt)
+        except ValueError:
+            pass
+    if to_date:
+        try:
+            to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+            conditions.append(Deposit.created_at < to_dt)
+        except ValueError:
+            pass
     
-    # By status - direct query
-    status_query = apply_filters(select(Deposit))
+    # By status - simple group by
     status_query = select(
         Deposit.status,
         func.count().label("count"),
         func.coalesce(func.sum(Deposit.amount_usd), Decimal("0")).label("amount")
-    ).select_from(status_query.subquery())
+    )
+    for cond in conditions:
+        status_query = status_query.where(cond)
     status_query = status_query.group_by(Deposit.status)
+    
     status_result = await db.execute(status_query)
     by_status = {
         row.status: {
@@ -209,14 +201,16 @@ async def _get_transaction_stats(db: AsyncSession, status_filter, method_filter,
         } for row in status_result.all()
     }
     
-    # By method - direct query
-    method_query = apply_filters(select(Deposit))
+    # By method - simple group by  
     method_query = select(
         Deposit.payment_method,
         func.count().label("count"),
         func.coalesce(func.sum(Deposit.amount_usd), Decimal("0")).label("amount")
-    ).select_from(method_query.subquery())
+    )
+    for cond in conditions:
+        method_query = method_query.where(cond)
     method_query = method_query.group_by(Deposit.payment_method)
+    
     method_result = await db.execute(method_query)
     by_method = {
         row.payment_method: {
@@ -225,25 +219,25 @@ async def _get_transaction_stats(db: AsyncSession, status_filter, method_filter,
         } for row in method_result.all()
     }
     
-    # Today amount - direct query
+    # Today amount
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_query = select(func.coalesce(func.sum(Deposit.amount_usd), Decimal("0"))).where(
-        Deposit.status == "completed"
-    ).where(
-        Deposit.created_at >= today_start
-    )
-    today_query = apply_filters(today_query)
+    today_query = select(func.coalesce(func.sum(Deposit.amount_usd), Decimal("0")))
+    today_query = today_query.where(Deposit.status == "completed")
+    today_query = today_query.where(Deposit.created_at >= today_start)
+    for cond in conditions:
+        today_query = today_query.where(cond)
+    
     today_result = await db.execute(today_query)
     today_amount = float(today_result.scalar() or 0)
     
-    # Month amount - direct query
+    # Month amount
     month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    month_query = select(func.coalesce(func.sum(Deposit.amount_usd), Decimal("0"))).where(
-        Deposit.status == "completed"
-    ).where(
-        Deposit.created_at >= month_start
-    )
-    month_query = apply_filters(month_query)
+    month_query = select(func.coalesce(func.sum(Deposit.amount_usd), Decimal("0")))
+    month_query = month_query.where(Deposit.status == "completed")
+    month_query = month_query.where(Deposit.created_at >= month_start)
+    for cond in conditions:
+        month_query = month_query.where(cond)
+    
     month_result = await db.execute(month_query)
     month_amount = float(month_result.scalar() or 0)
     
