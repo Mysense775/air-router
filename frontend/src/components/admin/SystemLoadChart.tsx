@@ -31,7 +31,7 @@ export default function SystemLoadChart() {
         return acc
       }, {})
       
-      const chartData = Object.entries(byDate)
+      const chartData = Object.entries(byDate as Record<string, { prompt: number; completion: number }>)
         .map(([date, tokens]) => ({
           date,
           prompt_tokens: tokens.prompt,

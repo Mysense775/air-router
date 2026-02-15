@@ -31,7 +31,7 @@ export default function AverageClientSpendChart() {
         return acc
       }, {})
       
-      const chartData = Object.entries(byDate)
+      const chartData = Object.entries(byDate as Record<string, { total: number; clients: Set<string> }>)
         .map(([date, data]) => ({
           date,
           avg_spend: data.clients.size > 0 ? data.total / data.clients.size : 0,
