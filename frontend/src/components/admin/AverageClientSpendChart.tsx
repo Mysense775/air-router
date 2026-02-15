@@ -15,7 +15,8 @@ export default function AverageClientSpendChart() {
     queryFn: async () => {
       const response = await adminApi.getLogs(1000)
       
-      const logs = response.data || []
+      // API returns { logs: [...] }
+      const logs = response.data?.logs || []
       
       // Group by date and calculate avg spend
       const byDate = logs.reduce((acc: Record<string, { total: number; clients: Set<string> }>, log: any) => {

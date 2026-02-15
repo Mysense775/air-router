@@ -16,8 +16,8 @@ export default function SystemLoadChart() {
       // Using existing endpoint with request logs aggregation
       const response = await adminApi.getLogs(1000)
       
-      // Aggregate by date
-      const logs = response.data || []
+      // Aggregate by date - API returns { logs: [...] }
+      const logs = response.data?.logs || []
       const byDate = logs.reduce((acc: Record<string, { prompt: number; completion: number }>, log: any) => {
         const date = new Date(log.created_at).toLocaleDateString('ru-RU', { 
           day: '2-digit', 
