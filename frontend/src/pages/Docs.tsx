@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '../i18n'
 import { 
   Book, 
   Code, 
@@ -104,20 +105,23 @@ const N8N_CONFIG = `{
   ]
 }`
 
-const SECTIONS = [
-  { id: 'quickstart', title: 'Быстрый старт', icon: Terminal },
+const getSections = (t: any) => [
+  { id: 'quickstart', title: t('docs.quickstart'), icon: Terminal },
   { id: 'n8n', title: 'n8n', icon: Settings },
   { id: 'make', title: 'Make.com', icon: Settings },
   { id: 'zapier', title: 'Zapier', icon: Settings },
-  { id: 'code', title: 'Примеры кода', icon: Code },
-  { id: 'advanced', title: 'Продвинутое', icon: Book },
+  { id: 'code', title: t('docs.codeExamples'), icon: Code },
+  { id: 'advanced', title: t('docs.advanced'), icon: Book },
   { id: 'faq', title: 'FAQ', icon: HelpCircle },
 ]
 
 export default function Docs() {
+  const { t, language } = useTranslation()
   const [activeSection, setActiveSection] = useState('quickstart')
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [selectedLang, setSelectedLang] = useState<'curl' | 'python' | 'javascript' | 'php'>('curl')
+  
+  const SECTIONS = getSections(t)
 
   const copyToClipboard = (code: string, id: string) => {
     navigator.clipboard.writeText(code)
@@ -144,48 +148,65 @@ export default function Docs() {
       case 'quickstart':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Быстрый старт</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('docs.quickstart')}</h2>
             
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">Базовые настройки</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">{t('docs.baseUrl')}</h3>
               <div className="space-y-2 text-sm">
                 <p><strong>Base URL:</strong> <code className="bg-blue-100 px-2 py-1 rounded">https://airouter.host/v1</code></p>
-                <p><strong>Authorization:</strong> <code className="bg-blue-100 px-2 py-1 rounded">Bearer YOUR_API_KEY</code></p>
+                <p><strong>{t('docs.authorization')}:</strong> <code className="bg-blue-100 px-2 py-1 rounded">Bearer YOUR_API_KEY</code></p>
                 <p><strong>Content-Type:</strong> <code className="bg-blue-100 px-2 py-1 rounded">application/json</code></p>
               </div>
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">1. Получите API ключ</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('docs.getApiKey')}</h3>
               <p className="text-gray-600 mb-4">
-                Перейдите в раздел <strong>API Keys</strong> в вашем дашборде и создайте новый ключ. 
-                Скопируйте его — он понадобится для всех запросов.
+                {language === 'ru' 
+                  ? 'Перейдите в раздел API Keys в вашем дашборде и создайте новый ключ. Скопируйте его — он понадобится для всех запросов.'
+                  : 'Go to API Keys section in your dashboard and create a new key. Copy it — you will need it for all requests.'}
               </p>
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">2. Первый запрос</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('docs.firstRequest')}</h3>
               <CodeBlock code={CODE_EXAMPLES.curl} id="curl-basic" />
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">3. Параметры запроса</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('docs.parameters')}</h3>
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <div>
                   <code className="font-semibold text-blue-600">model</code>
-                  <p className="text-sm text-gray-600">ID модели (например: openai/gpt-4o, anthropic/claude-3-5-sonnet)</p>
+                  <p className="text-sm text-gray-600">
+                    {language === 'ru' 
+                      ? 'ID модели (например: openai/gpt-4o, anthropic/claude-3-5-sonnet)'
+                      : 'Model ID (e.g.: openai/gpt-4o, anthropic/claude-3-5-sonnet)'}
+                  </p>
                 </div>
                 <div>
                   <code className="font-semibold text-blue-600">messages</code>
-                  <p className="text-sm text-gray-600">Массив сообщений с role (system/user/assistant) и content</p>
+                  <p className="text-sm text-gray-600">
+                    {language === 'ru'
+                      ? 'Массив сообщений с role (system/user/assistant) и content'
+                      : 'Array of messages with role (system/user/assistant) and content'}
+                  </p>
                 </div>
                 <div>
                   <code className="font-semibold text-blue-600">max_tokens</code>
-                  <p className="text-sm text-gray-600">Максимальное количество токенов в ответе (опционально)</p>
+                  <p className="text-sm text-gray-600">
+                    {language === 'ru'
+                      ? 'Максимальное количество токенов в ответе (опционально)'
+                      : 'Maximum number of tokens in response (optional)'}
+                  </p>
                 </div>
                 <div>
                   <code className="font-semibold text-blue-600">temperature</code>
-                  <p className="text-sm text-gray-600">Креативность от 0 до 2 (0 = детерминировано, 2 = максимально креативно)</p>
+                  <p className="text-sm text-gray-600">
+                    {language === 'ru'
+                      ? 'Креативность от 0 до 2 (0 = детерминировано, 2 = максимально креативно)'
+                      : 'Creativity from 0 to 2 (0 = deterministic, 2 = maximum creative)'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -195,19 +216,21 @@ export default function Docs() {
       case 'n8n':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Интеграция с n8n</h2>
+            <h2 className="text-2xl font-bold text-gray-900">n8n {language === 'ru' ? 'Интеграция' : 'Integration'}</h2>
             
             <div className="space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                <h3 className="font-semibold text-green-900 mb-2">⚡ Готовый шаблон</h3>
+                <h3 className="font-semibold text-green-900 mb-2">{t('docs.n8nTemplate')}</h3>
                 <p className="text-sm text-green-800 mb-3">
-                  Скопируйте JSON ниже и импортируйте в n8n (Workflow → Import from JSON)
+                  {language === 'ru'
+                    ? 'Скопируйте JSON ниже и импортируйте в n8n (Workflow → Import from JSON)'
+                    : 'Copy JSON below and import into n8n (Workflow → Import from JSON)'}
                 </p>
                 <CodeBlock code={N8N_CONFIG} id="n8n-template" />
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Настройка вручную</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">{t('docs.n8nManual')}</h3>
                 <ol className="space-y-4 list-decimal list-inside">
                   <li className="text-gray-700">
                     <strong>Добавьте HTTP Request node</strong>
@@ -354,7 +377,7 @@ output = {'reply': response.json()['choices'][0]['message']['content']}`} id="za
       case 'code':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Примеры кода</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('docs.codeExamples')}</h2>
             
             <div className="flex gap-2 mb-4">
               {(['curl', 'python', 'javascript', 'php'] as const).map((lang) => (
@@ -375,9 +398,11 @@ output = {'reply': response.json()['choices'][0]['message']['content']}`} id="za
             <CodeBlock code={CODE_EXAMPLES[selectedLang]} id={`code-${selectedLang}`} />
 
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">OpenAI SDK</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('docs.openaiSdk')}</h3>
               <p className="text-sm text-gray-600 mb-3">
-                Можете использовать официальный SDK OpenAI, просто изменив base_url:
+                {language === 'ru'
+                  ? 'Можете использовать официальный SDK OpenAI, просто изменив base_url:'
+                  : 'You can use the official OpenAI SDK, just change the base_url:'}
               </p>
               <CodeBlock code={`from openai import OpenAI
 
@@ -538,7 +563,7 @@ print(response.choices[0].message.content)`} id="openai-sdk" />
             <div className="bg-white rounded-xl shadow-sm p-4 sticky top-8">
               <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Book className="w-5 h-5" />
-                Документация
+                {t('docs.title')}
               </h2>
               <nav className="space-y-1">
                 {SECTIONS.map((section) => {

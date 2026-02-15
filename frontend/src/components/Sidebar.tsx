@@ -126,7 +126,7 @@ export default function Sidebar() {
               }`}
             >
               <Book className="w-5 h-5" />
-              <span className="font-medium">Docs</span>
+              <span className="font-medium">{t('navigation.docs')}</span>
             </Link>
           </>
         )}
