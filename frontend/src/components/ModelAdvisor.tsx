@@ -170,30 +170,42 @@ export default function ModelAdvisor() {
                   {/* Examples */}
                   <div className="bg-gray-50 rounded-lg p-4">
                     <p className="text-sm font-medium text-gray-700 mb-2">Примеры запросов:</p>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setUserTask('Создаю видеоконтент: генерация роликов для YouTube, TikTok, Reels с синхронизированным звуком')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        🎬 Видеогенерация: YouTube, TikTok, Reels
+                      </button>
+                      <button
+                        onClick={() => setUserTask('OCR и обработка документов: сканирование инвойсов, извлечение таблиц из PDF, структурирование данных')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        📄 OCR: инвойсы, таблицы, PDF
+                      </button>
+                      <button
+                        onClick={() => setUserTask('Генерация изображений: логотипы с текстом, маркетинговые баннеры, иллюстрации для соцсетей')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        🎨 Изображения: логотипы, баннеры
+                      </button>
+                      <button
+                        onClick={() => setUserTask('Научные исследования: анализ статей, математические доказательства, длинные контексты до 10M токенов')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        🔬 Наука: статьи, математика, анализ
+                      </button>
                       <button
                         onClick={() => setUserTask('Контент-фабрика: статьи для блога, SEO-оптимизация, автоматизация публикаций')}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        • Контент-фабрика: статьи, SEO, автоматизация
+                        ✍️ Контент: статьи, SEO, автоматизация
                       </button>
                       <button
-                        onClick={() => setUserTask('Парсинг данных с сайтов: Python-скрипты, боты, автоматизация сбора данных')}
+                        onClick={() => setUserTask('Парсинг данных: Python-скрипты, боты, автоматизация сбора данных')}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        • Парсинг данных: скрипты, боты
-                      </button>
-                      <button
-                        onClick={() => setUserTask('Анализ PDF-документов и отчётов конкурентов, большие документы до 500 страниц')}
-                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        • Анализ PDF: документы, отчёты
-                      </button>
-                      <button
-                        onClick={() => setUserTask('Сценарии для видео: YouTube, TikTok, Reels, корпоративное видео')}
-                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        • Сценарии для видео
+                        💻 Код: парсинг, скрипты, боты
                       </button>
                     </div>
                   </div>

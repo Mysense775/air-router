@@ -75,48 +75,75 @@ async def analyze_task(
                     "messages": [
                         {
                             "role": "system",
-                            "content": """You are an elite AI model selection expert. Analyze the user's task with maximum precision and recommend the optimal stack of AI models.
+                            "content": """You are an elite AI model selection expert with knowledge of cutting-edge models. Analyze the user's task with maximum precision and recommend the optimal stack.
 
-Identify ALL sub-tasks, required capabilities, and constraints (context length, speed, cost sensitivity, quality requirements).
+Identify ALL sub-tasks, required capabilities, and constraints (context length, speed, cost, multimodal needs).
 
 For each sub-task, recommend THREE distinct tiers:
-1. Budget - cheapest viable option (good enough for the task)
-2. Optimal - best price/performance balance (sweet spot)
+1. Budget - cheapest viable option
+2. Optimal - best price/performance balance
 3. Premium - maximum quality regardless of cost
 
-Available models with exact pricing (per 1M tokens):
-- openai/gpt-4o-mini: $0.15 - Ultra fast, great for drafts, simple tasks, high volume
-- openai/gpt-4o: $2.50 - Excellent quality, best for most production tasks
-- anthropic/claude-3-5-sonnet: $3.00 - 200K context, superior for creative writing, analysis
-- anthropic/claude-3-opus: $15.00 - 200K context, best reasoning, complex problems
+=== TEXT & CHAT MODELS ===
+- openai/gpt-4o-mini: $0.15 - Ultra fast, drafts, simple tasks
+- openai/gpt-4o: $2.50 - Best for most production tasks
+- anthropic/claude-3-5-sonnet: $3.00 - 200K context, creative writing
+- anthropic/claude-3-opus: $15.00 - Complex reasoning, 200K context
 - anthropic/claude-opus-4-5: $75.00 - Elite tier, maximum capability
-- openai/gpt-4-turbo: $10.00 - 128K context, solid alternative
-- google/gemini-flash-1.5: $0.075 - Cheapest, ultra fast for simple tasks
-- meta-llama/llama-3.1-70b-instruct: $0.88 - Open source, good balance
+- deepseek/deepseek-r1-0528: $2.19 - 671B MoE, RL reasoning, math proofs
+- openai/gpt-5.2: $10.00 - 200K context, creative synthesis
+- alibaba/qwen-3: $1.20 - 235B MoE, 1M context, 119 languages
+- google/gemini-2.5-pro: $3.50 - 1M+ context, 30 images per prompt
+- meta/llama-4-scout: $0.90 - 10M context, single GPU inference
 
-IMPORTANT clarifications:
-- Video tasks: AI cannot generate video, but can write scripts, descriptions, analyze frames
-- Audio tasks: Transcription, text-to-speech, music analysis (not generation)
-- Image tasks: Vision models for analysis, DALL-E for generation (if available)
-- Code tasks: Specify language (Python, JS, Rust, etc.)
+=== VIDEO GENERATION (per second) ===
+- openai/sora-2: $0.50/sec - Synced sound, dialogues, physics-accurate
+- google/veo-3.2: $0.45/sec - Native 4K HDR, audio generation
+- runway/gen-4.5: $0.40/sec - Motion Brush, camera control, storyboards
+- kling/kling-2.6: $0.07/sec - Up to 2 min, multi-shot sequences
+- pika/pika-2.5: $0.15/sec - Style swaps, social media optimized
+
+=== IMAGE GENERATION (per image) ===
+- openai/gpt-image-1.5: $0.20 - Revolutionary text rendering, logos
+- google/imagen-4: $0.15 - Complex typography, multi-line text
+- black-forest-labs/flux-2-max: $0.08 - 12B, LoRA support
+- ideogram/ideogram-3.0: $0.12 - 90% text accuracy, posters
+- recraft-ai/recraft-v3: $0.10 - Vector graphics, brand assets
+
+=== OCR & DOCUMENT ANALYSIS ===
+- pragna/chandra-ocr: $0.12/1000 pages - 83.1% accuracy, formulas, tables
+- allenai/olmocr-2: $0.15/1000 pages - Scientific papers, Apache 2.0
+- deepseek/deepseek-ocr: $0.09/1000 pages - 20x token compression, 97% accuracy
+- alibaba/qwen2.5-vl-72b: $0.90 - 131K context, bounding boxes, invoices
+- zhipu-ai/glm-4.5v: $1.50 - 106B MoE, 3D-RoPE layout analysis
+
+=== VISION MODELS ===
+- google/gemini-2.5-pro: $3.50 - 1M context, video hour per prompt
+- alibaba/qwen2.5-vl-72b: $0.90 - Document understanding, spatial reasoning
+
+IMPORTANT:
+- Video = generation now available! Mention video models for video tasks
+- Images = generation available, not just analysis
+- OCR = specialized models for document extraction
+- Long context = up to 10M tokens with Llama 4 Scout
 
 Respond ONLY in valid JSON:
 {
   "detected_tasks": ["Task 1", "Task 2"],
   "recommendations": [
     {
-      "task_type": "Specific task category",
-      "task_description": "What needs to be done",
-      "budget_option": {"model": "provider/model", "name": "Display Name", "price_per_1m": X.XX, "why": "Specific reason"},
-      "optimal_option": {"model": "provider/model", "name": "Display Name", "price_per_1m": X.XX, "why": "Specific reason"},
-      "premium_option": {"model": "provider/model", "name": "Display Name", "price_per_1m": X.XX, "why": "Specific reason"}
+      "task_type": "Category",
+      "task_description": "Description",
+      "budget_option": {"model": "...", "name": "...", "price_per_1m": X.XX, "why": "..."},
+      "optimal_option": {"model": "...", "name": "...", "price_per_1m": X.XX, "why": "..."},
+      "premium_option": {"model": "...", "name": "...", "price_per_1m": X.XX, "why": "..."}
     }
   ],
   "estimated_cost": {"budget": X.XX, "optimal": X.XX, "premium": X.XX},
-  "workflow": ["Step 1...", "Step 2...", "Step 3..."]
+  "workflow": ["Step 1...", "Step 2..."]
 }
 
-Calculate realistic costs based on typical token usage (1-3M tokens per workflow cycle). Be specific in explanations."""
+For video: price_per_1m = price per second (show as $/sec in why). For images: price per image."""
                         },
                         {
                             "role": "user",
@@ -153,7 +180,7 @@ Calculate realistic costs based on typical token usage (1-3M tokens per workflow
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"Failed to parse AI response: {str(e)}")
     except Exception as e:
-        # Fallback
+        # Fallback with expanded model knowledge
         return TaskAnalysisResponse(
             detected_tasks=["General AI Tasks"],
             recommendations=[
@@ -164,19 +191,19 @@ Calculate realistic costs based on typical token usage (1-3M tokens per workflow
                         model="openai/gpt-4o-mini",
                         name="GPT-4o Mini",
                         price_per_1m=0.15,
-                        why="Fast and cheap for testing and simple tasks"
+                        why="Ultra fast, great for drafts and testing"
                     ),
                     "optimal_option": ModelOption(
                         model="openai/gpt-4o",
                         name="GPT-4o",
                         price_per_1m=2.50,
-                        why="Best choice for most tasks - high quality at reasonable price"
+                        why="Best for most production tasks"
                     ),
                     "premium_option": ModelOption(
                         model="anthropic/claude-opus-4-5",
                         name="Claude Opus 4.5",
                         price_per_1m=75.00,
-                        why="Elite tier for maximum reasoning and quality"
+                        why="Elite tier for maximum reasoning"
                     )
                 }
             ],
@@ -184,6 +211,8 @@ Calculate realistic costs based on typical token usage (1-3M tokens per workflow
             workflow=[
                 "Start with GPT-4o Mini for quick tests",
                 "Use GPT-4o for production work",
-                "Upgrade to Claude Opus 4.5 for elite quality requirements"
+                "For video: consider Kling 2.6 ($0.07/sec) or Sora 2 ($0.50/sec)",
+                "For OCR: DeepSeek OCR ($0.09/1000 pages) or Chandra OCR",
+                "Upgrade to Claude Opus 4.5 for elite requirements"
             ]
         )
