@@ -1,11 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { adminApi } from '../../api/client'
-import { useTranslation } from '../../i18n'
+import { adminApi } from '../api/client'
 import {
   Receipt,
   Search,
-  Filter,
   Download,
   CheckCircle,
   XCircle,
@@ -17,10 +15,7 @@ import {
   X,
   ExternalLink,
   Calendar,
-  CreditCard,
-  User,
   DollarSign,
-  Bitcoin,
 }
 from 'lucide-react'
 
@@ -51,7 +46,6 @@ interface TransactionStats {
 }
 
 export default function Transactions() {
-  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -64,7 +58,7 @@ export default function Transactions() {
   const [failReason, setFailReason] = useState('')
   const [showFailModal, setShowFailModal] = useState(false)
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['admin-transactions', { status: statusFilter, method: methodFilter, search, from: fromDate, to: toDate, page, limit }],
     queryFn: async () => {
       const response = await adminApi.getTransactions({
