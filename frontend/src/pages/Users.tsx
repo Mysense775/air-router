@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { adminApi } from '../api/client'
-import { UserPlus, Copy, Check, AlertCircle, X, Wallet } from 'lucide-react'
+import { UserPlus, Copy, Check, AlertCircle, X, Wallet, Eye } from 'lucide-react'
+import UserDetailsModal from '../components/UserDetailsModal'
 
 interface User {
   id: string
@@ -27,6 +28,9 @@ export default function Users() {
   const [balanceAmount, setBalanceAmount] = useState('')
   const [balanceReason, setBalanceReason] = useState('')
   const [balanceSuccess, setBalanceSuccess] = useState<{ old: number; new: number; amount: number } | null>(null)
+
+  // User details modal
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['users'],
@@ -203,13 +207,22 @@ export default function Users() {
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
-                    <button
-                      onClick={() => openBalanceModal(user)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors"
-                    >
-                      <Wallet className="w-4 h-4" />
-                      Add Balance
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setSelectedUserId(user.id)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                        Просмотр
+                      </button>
+                      <button
+                        onClick={() => openBalanceModal(user)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors"
+                      >
+                        <Wallet className="w-4 h-4" />
+                        Баланс
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -449,6 +462,12 @@ export default function Users() {
           </div>
         </div>
       )}
+
+      {/* User Details Modal */}
+      <UserDetailsModal
+        userId={selectedUserId}
+        onClose={() => setSelectedUserId(null)}
+      />
     </div>
   )
 }

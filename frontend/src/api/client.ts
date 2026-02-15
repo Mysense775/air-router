@@ -141,4 +141,13 @@ export const adminApi = {
     api.post(`/admin/transactions/${transactionId}/confirm`),
   failTransaction: (transactionId: string, reason?: string) =>
     api.post(`/admin/transactions/${transactionId}/fail`, { reason }),
+  // User admin
+  getUserDetails: (userId: string) =>
+    api.get(`/admin/users/${userId}/details`),
+  updateUserRole: (userId: string, role: string) =>
+    api.put(`/admin/users/${userId}/role`, { role }),
+  impersonateUser: (userId: string) =>
+    api.post(`/admin/users/${userId}/impersonate`),
+  addUserBalance: (userId: string, amount: number, reason?: string) =>
+    api.post(`/admin/users/${userId}/balance/add`, null, { params: { amount, reason } }),
 }
