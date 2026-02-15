@@ -108,6 +108,7 @@ export const apiKeysApi = {
 // Admin API
 export const adminApi = {
   getStats: () => api.get('/admin/stats'),
+  getDashboardStats: (days = 30) => api.get(`/admin/dashboard-stats?days=${days}`),
   getMasterAccounts: () => api.get('/admin/master-accounts'),
   createMasterAccount: (data: { name: string; api_key: string; account_type: string; discount_percent: number; monthly_limit_usd?: number | null; priority?: number }) =>
     api.post('/admin/master-accounts', data),
@@ -120,6 +121,15 @@ export const adminApi = {
     api.post(`/admin/users/${userId}/balance`, { amount, reason }),
   getDashboard: () => api.get('/admin/dashboard'),
   getMasterAccountPools: () => api.get('/admin/master-accounts/pools'),
+  // Investor admin
+  getInvestorAccounts: (params?: { status?: string; search?: string; min_balance?: number; skip?: number; limit?: number }) =>
+    api.get('/admin/investor-accounts', { params }),
+  pauseInvestorAccount: (accountId: string) =>
+    api.post(`/admin/investor-accounts/${accountId}/pause`),
+  activateInvestorAccount: (accountId: string) =>
+    api.post(`/admin/investor-accounts/${accountId}/activate`),
+  revokeInvestorAccount: (accountId: string) =>
+    api.post(`/admin/investor-accounts/${accountId}/revoke`),
   getCryptoCurrencies: () => api.get('/payments/currencies'),
   createCryptoPayment: (amount_usd: number, currency: string) =>
     api.post('/payments/create', { amount_usd, currency }),
