@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, Key, Info, Loader2 } from 'lucide-react'
+import { ArrowLeft, Info, Loader2 } from 'lucide-react'
 import { useTranslation } from '../i18n'
 import { api } from '../api/client'
 import { Link, useNavigate } from 'react-router-dom'

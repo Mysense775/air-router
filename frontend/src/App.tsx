@@ -74,7 +74,7 @@ function App() {
           token ? (
             <Layout>
               <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={userRole === 'investor' ? <Navigate to="/investor" /> : <Dashboard />} />
                 <Route path="/deposit" element={<Deposit />} />
                 <Route path="/api-keys" element={<ApiKeys />} />
                 <Route path="/requests" element={<RequestHistory />} />
@@ -82,7 +82,7 @@ function App() {
                 <Route path="/docs" element={<Docs />} />
                 <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />} />
                 <Route path="/admin/users" element={isAdmin ? <Users /> : <Navigate to="/dashboard" />} />
-                <Route path="/" element={<Navigate to={isAdmin ? "/admin" : "/dashboard"} />} />
+                <Route path="/" element={<Navigate to={isAdmin ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} />} />
               </Routes>
             </Layout>
           ) : (

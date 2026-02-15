@@ -6,8 +6,7 @@ import {
   Trash2,
   Copy,
   Check,
-  AlertCircle,
-  RefreshCw
+  AlertCircle
 } from 'lucide-react'
 import { useTranslation } from '../i18n'
 import { api } from '../api/client'

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Zap, Eye, EyeOff } from 'lucide-react'
 import { authApi } from '../api/client'
 import { useAuthStore } from '../store/authStore'
@@ -11,7 +11,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   
-  const navigate = useNavigate()
   const { setAuth } = useAuthStore()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -36,7 +35,7 @@ export default function Login() {
         // Save auth with full user data and force_password_change flag
         setAuth(access_token, refresh_token, userRes.data, force_password_change)
         
-        return { ...response, force_password_change }
+        return { ...response, force_password_change, userRes }
       } finally {
         setIsSubmitting(false)
         // Reset ref after a delay to allow retry on error
@@ -46,11 +45,19 @@ export default function Login() {
       }
     },
     onSuccess: (data) => {
-      // Redirect to change password if required
+      // Redirect based on role and force_password_change
       if (data.force_password_change) {
-        navigate('/change-password')
+        window.location.href = '/change-password'
       } else {
-        navigate('/dashboard')
+        // Get user role from the user data we just saved
+        const userRole = data.userRes?.data?.role || 'client'
+        if (userRole === 'admin') {
+          window.location.href = '/admin'
+        } else if (userRole === 'investor') {
+          window.location.href = '/investor'
+        } else {
+          window.location.href = '/dashboard'
+        }
       }
     },
     onError: (err: any) => {
