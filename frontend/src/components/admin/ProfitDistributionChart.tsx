@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
-import { adminApi } from '../api/client'
+import { adminApi } from '../../api/client'
 
 interface RevenueByType {
   account_type: string

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, Calendar, DollarSign } from 'lucide-react'
-import { adminApi } from '../api/client'
+import { adminApi } from '../../api/client'
 
 interface RevenueStats {
   total_revenue: {

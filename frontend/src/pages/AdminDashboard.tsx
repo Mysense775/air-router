@@ -13,6 +13,12 @@ import {
   Check,
   AlertCircle
 } from 'lucide-react'
+import { 
+  RevenueOverviewWidget, 
+  AccountTypeRevenueWidget,
+  ProfitDistributionChart,
+  InvestorKeysManagement 
+} from '../components/admin'
 
 interface MasterAccount {
   id: string
@@ -244,6 +250,23 @@ export default function Dashboard() {
           )
         })}
       </div>
+
+      {/* Revenue Overview - New Widgets */}
+      <RevenueOverviewWidget />
+
+      {/* Account Types Revenue */}
+      <AccountTypeRevenueWidget />
+
+      {/* Profit Distribution & Investor Management */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ProfitDistributionChart />
+        <div className="space-y-6">
+          {/* Placeholder for future widget */}
+        </div>
+      </div>
+
+      {/* Investor Keys Management */}
+      <InvestorKeysManagement />
 
       {/* Pool Statistics */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
