@@ -117,8 +117,6 @@ export const adminApi = {
   getLogs: (limit = 100) => api.get(`/admin/logs?limit=${limit}`),
   createUser: (data: { email: string; name?: string; role: string }) =>
     api.post('/admin/users', data),
-  addUserBalance: (userId: string, amount: number, reason?: string) =>
-    api.post(`/admin/users/${userId}/balance`, { amount, reason }),
   getDashboard: () => api.get('/admin/dashboard'),
   getMasterAccountPools: () => api.get('/admin/master-accounts/pools'),
   // Investor admin

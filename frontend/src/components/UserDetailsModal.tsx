@@ -4,7 +4,6 @@ import { adminApi } from '../api/client'
 import {
   X,
   User,
-  Mail,
   DollarSign,
   Key,
   Activity,
