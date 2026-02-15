@@ -171,40 +171,40 @@ export default function ModelAdvisor() {
                     <p className="text-sm font-medium text-gray-700 mb-2">{t('modelAdvisor.examples')}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <button
-                        onClick={() => setUserTask('Создаю видеоконтент: генерация роликов для YouTube, TikTok, Reels с синхронизированным звуком')}
+                        onClick={() => setUserTask(t('modelAdvisor.exampleVideoTask'))}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        🎬 Видеогенерация: YouTube, TikTok, Reels
+                        {t('modelAdvisor.exampleVideo')}
                       </button>
                       <button
-                        onClick={() => setUserTask('OCR и обработка документов: сканирование инвойсов, извлечение таблиц из PDF, структурирование данных')}
+                        onClick={() => setUserTask(t('modelAdvisor.exampleOcrTask'))}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        📄 OCR: инвойсы, таблицы, PDF
+                        {t('modelAdvisor.exampleOcr')}
                       </button>
                       <button
-                        onClick={() => setUserTask('Генерация изображений: логотипы с текстом, маркетинговые баннеры, иллюстрации для соцсетей')}
+                        onClick={() => setUserTask(t('modelAdvisor.exampleImageTask'))}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        🎨 Изображения: логотипы, баннеры
+                        {t('modelAdvisor.exampleImage')}
                       </button>
                       <button
-                        onClick={() => setUserTask('Научные исследования: анализ статей, математические доказательства, длинные контексты до 10M токенов')}
+                        onClick={() => setUserTask(t('modelAdvisor.exampleScienceTask'))}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        🔬 Наука: статьи, математика, анализ
+                        {t('modelAdvisor.exampleScience')}
                       </button>
                       <button
-                        onClick={() => setUserTask('Контент-фабрика: статьи для блога, SEO-оптимизация, автоматизация публикаций')}
+                        onClick={() => setUserTask(t('modelAdvisor.exampleContentTask'))}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        ✍️ Контент: статьи, SEO, автоматизация
+                        {t('modelAdvisor.exampleContent')}
                       </button>
                       <button
-                        onClick={() => setUserTask('Парсинг данных: Python-скрипты, боты, автоматизация сбора данных')}
+                        onClick={() => setUserTask(t('modelAdvisor.exampleCodeTask'))}
                         className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        💻 Код: парсинг, скрипты, боты
+                        {t('modelAdvisor.exampleCode')}
                       </button>
                     </div>
                   </div>
