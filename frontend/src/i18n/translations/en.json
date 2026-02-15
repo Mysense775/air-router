@@ -78,6 +78,27 @@
     "important": "Important",
     "tip": "💡 Tip"
   },
+  "modelAdvisor": {
+    "button": "Select Model Stack",
+    "title": "Model Selection Assistant",
+    "subtitle": "AI will select the optimal stack for your task",
+    "describeTask": "Describe your task",
+    "placeholder": "For example: Creating a content factory. Need to write blog articles, make Python scripts for parsing, and analyze competitor PDF reports",
+    "examples": "Example queries:",
+    "analyzing": "AI is analyzing the task...",
+    "selectStack": "Select Model Stack",
+    "recommendedStack": "Recommended Stack",
+    "stepByStepPlan": "📋 Step-by-step plan:",
+    "newRequest": "New Request",
+    "createKeys": "Create keys for stack",
+    "keysCreated": "Keys created!",
+    "saveNow": "Save them now — we won't show them again",
+    "copyAllKeys": "Copy all keys",
+    "goToApiKeys": "Go to API Keys",
+    "important": "Important!",
+    "keysWarning": "This is the only time you will see these keys. Copy them now or download. After closing the window, keys will only be available in hashed form.",
+    "copied": "Copied!"
+  },
   "dashboard": {
     "title": "Dashboard",
     "currentBalance": "Current Balance",

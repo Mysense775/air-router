@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '../i18n'
 import { 
   Brain, 
   Sparkles, 
@@ -36,6 +37,7 @@ interface CreatedApiKey {
 }
 
 export default function ModelAdvisor() {
+  const { t, language } = useTranslation()
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [userTask, setUserTask] = useState('')
@@ -118,7 +120,7 @@ export default function ModelAdvisor() {
         className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
       >
         <Sparkles className="w-5 h-5" />
-        <span>Подобрать стек моделей</span>
+        <span>{t('modelAdvisor.button')}</span>
       </button>
 
       {/* Main Modal */}
@@ -132,8 +134,8 @@ export default function ModelAdvisor() {
                   <Brain className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Помощник выбора моделей</h2>
-                  <p className="text-sm text-gray-500">AI подберёт оптимальный стек для вашей задачи</p>
+                  <h2 className="text-xl font-bold text-gray-900">{t('modelAdvisor.title')}</h2>
+                  <p className="text-sm text-gray-500">{t('modelAdvisor.subtitle')}</p>
                 </div>
               </div>
               <button
@@ -150,12 +152,12 @@ export default function ModelAdvisor() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Опишите вашу задачу
+                      {t('modelAdvisor.describeTask')}
                     </label>
                     <textarea
                       value={userTask}
                       onChange={(e) => setUserTask(e.target.value)}
-                      placeholder="Например: Создаю контент-фабрику. Нужно писать статьи для блога, делать Python-скрипты для парсинга и анализировать PDF-отчёты конкурентов"
+                      placeholder={t('modelAdvisor.placeholder')}
                       className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                       maxLength={500}
                     />
@@ -166,7 +168,7 @@ export default function ModelAdvisor() {
 
                   {/* Examples */}
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Примеры запросов:</p>
+                    <p className="text-sm font-medium text-gray-700 mb-2">{t('modelAdvisor.examples')}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <button
                         onClick={() => setUserTask('Создаю видеоконтент: генерация роликов для YouTube, TikTok, Reels с синхронизированным звуком')}
@@ -215,12 +217,12 @@ export default function ModelAdvisor() {
                     {analyzeMutation.isPending ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        AI анализирует задачу...
+                        {t('modelAdvisor.analyzing')}
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-5 h-5" />
-                        Подобрать стек моделей
+                        {t('modelAdvisor.selectStack')}
                       </>
                     )}
                   </button>
@@ -233,7 +235,7 @@ export default function ModelAdvisor() {
                   {/* Recommended Stack Header */}
                   <div className="flex items-center gap-2">
                     <Layers className="w-5 h-5 text-blue-600" />
-                    <h3 className="font-semibold text-gray-900">Рекомендуемый стек</h3>
+                    <h3 className="font-semibold text-gray-900">{t('modelAdvisor.recommendedStack')}</h3>
                   </div>
 
                   {/* Model Cards */}
@@ -268,7 +270,7 @@ export default function ModelAdvisor() {
 
                   {/* Workflow */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
-                    <p className="font-medium text-gray-900 mb-3">📋 Пошаговый план:</p>
+                    <p className="font-medium text-gray-900 mb-3">{t('modelAdvisor.stepByStepPlan')}</p>
                     <ol className="space-y-2">
                       {analyzeMutation.data.workflow.map((step, i) => (
                         <li key={i} className="flex items-start gap-3">
@@ -287,7 +289,7 @@ export default function ModelAdvisor() {
                       onClick={reset}
                       className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
                     >
-                      Новый запрос
+                      {t('modelAdvisor.newRequest')}
                     </button>
                     <button
                       onClick={() => createKeysMutation.mutate(analyzeMutation.data!.recommendations.map(r => r.model))}
@@ -297,12 +299,12 @@ export default function ModelAdvisor() {
                       {createKeysMutation.isPending ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          Создаю ключи...
+                          {language === 'ru' ? 'Создаю ключи...' : 'Creating keys...'}
                         </>
                       ) : (
                         <>
                           <CheckCircle className="w-5 h-5" />
-                          Создать ключи для стека ({analyzeMutation.data.recommendations.length})
+                          {t('modelAdvisor.createKeys')} ({analyzeMutation.data.recommendations.length})
                         </>
                       )}
                     </button>
@@ -325,8 +327,8 @@ export default function ModelAdvisor() {
                   <Key className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-green-900">Ключи созданы!</h2>
-                  <p className="text-sm text-green-700">Сохраните их сейчас — больше мы не покажем</p>
+                  <h2 className="text-xl font-bold text-green-900">{t('modelAdvisor.keysCreated')}</h2>
+                  <p className="text-sm text-green-700">{t('modelAdvisor.saveNow')}</p>
                 </div>
               </div>
             </div>
@@ -336,10 +338,9 @@ export default function ModelAdvisor() {
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-yellow-900">Важно!</p>
+                  <p className="font-medium text-yellow-900">{t('modelAdvisor.important')}</p>
                   <p className="text-sm text-yellow-800">
-                    Это единственный раз, когда вы видите эти ключи. Скопируйте их сейчас или скачайте.
-                    После закрытия окна ключи будут доступны только в хешированном виде.
+                    {t('modelAdvisor.keysWarning')}
                   </p>
                 </div>
               </div>
@@ -381,12 +382,12 @@ export default function ModelAdvisor() {
                 {copiedAll ? (
                   <>
                     <Check className="w-5 h-5" />
-                    Скопировано!
+                    {t('modelAdvisor.copied')}
                   </>
                 ) : (
                   <>
                     <Copy className="w-5 h-5" />
-                    Скопировать все ключи
+                    {t('modelAdvisor.copyAllKeys')}
                   </>
                 )}
               </button>
@@ -397,7 +398,7 @@ export default function ModelAdvisor() {
                   onClick={handleCloseKeysModal}
                   className="flex-1 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
                 >
-                  Перейти в API Keys
+                  {t('modelAdvisor.goToApiKeys')}
                 </button>
               </div>
             </div>
