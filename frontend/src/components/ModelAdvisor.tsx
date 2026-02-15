@@ -10,15 +10,7 @@ import {
   Zap,
   Crown,
   Copy,
-  Check,
-  FileText,
-  Database,
-  BookOpen,
-  Code,
-  Languages,
-  Video,
-  Megaphone,
-  Server
+  Check
 } from 'lucide-react'
 import { apiKeysApi } from '../api/client'
 import { api } from '../api/client'
@@ -47,27 +39,13 @@ interface StackRecommendation {
     premium: number
   }
   workflow: string[]
-  is_template_match: boolean
-  template_name?: string
 }
-
-const TEMPLATES = [
-  { key: 'content_factory', name: 'Контент-фабрика', icon: FileText, desc: 'Статьи, блог, SEO' },
-  { key: 'data_parsing', name: 'Парсинг данных', icon: Database, desc: 'Сбор данных, боты' },
-  { key: 'pdf_analysis', name: 'Анализ PDF', icon: BookOpen, desc: 'Документы, отчёты' },
-  { key: 'code_review', name: 'Код-ревью', icon: Code, desc: 'Анализ и оптимизация' },
-  { key: 'translation', name: 'Переводы', icon: Languages, desc: 'Локализация' },
-  { key: 'video_content', name: 'Сценарии видео', icon: Video, desc: 'YouTube, TikTok' },
-  { key: 'marketing_copy', name: 'Маркетинг', icon: Megaphone, desc: 'Продающие тексты' },
-  { key: 'database', name: 'Базы данных', icon: Server, desc: 'SQL, миграции' },
-]
 
 export default function ModelAdvisor() {
   const [isOpen, setIsOpen] = useState(false)
   const [userTask, setUserTask] = useState('')
   const [selectedTier, setSelectedTier] = useState<'budget' | 'optimal' | 'premium'>('optimal')
   const [copiedModels, setCopiedModels] = useState<Set<string>>(new Set())
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
 
   const analyzeMutation = useMutation({
     mutationFn: async (task: string): Promise<StackRecommendation> => {
@@ -86,23 +64,6 @@ export default function ModelAdvisor() {
       return created
     }
   })
-
-  const handleTemplateClick = (templateKey: string) => {
-    setSelectedTemplate(templateKey)
-    // Templates have predefined descriptions, use them
-    const templateDescriptions: Record<string, string> = {
-      content_factory: 'Создаю контент-фабрику: статьи для блога, SEO-оптимизация, автоматизация публикаций',
-      data_parsing: 'Нужно парсить данные с сайтов: Python-скрипты, боты, автоматизация сбора',
-      pdf_analysis: 'Анализирую PDF-документы и отчёты конкурентов, большие документы до 500 страниц',
-      code_review: 'Провожу код-ревью: оптимизация, поиск багов, рефакторинг',
-      translation: 'Перевожу тексты: локализация сайта, маркетинговые материалы',
-      video_content: 'Создаю видео-контент: сценарии для YouTube, TikTok, Reels',
-      marketing_copy: 'Маркетинг и копирайтинг: продающие тексты, реклама, email-рассылки',
-      database: 'Работаю с базами данных: SQL-запросы, оптимизация, миграции'
-    }
-    setUserTask(templateDescriptions[templateKey] || '')
-    analyzeMutation.mutate(templateDescriptions[templateKey] || '')
-  }
 
   const handleAnalyze = () => {
     if (userTask.trim().length < 10) return
@@ -148,7 +109,6 @@ export default function ModelAdvisor() {
 
   const reset = () => {
     setUserTask('')
-    setSelectedTemplate(null)
     analyzeMutation.reset()
     createKeysMutation.reset()
   }
@@ -176,7 +136,7 @@ export default function ModelAdvisor() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Помощник выбора моделей</h2>
-                  <p className="text-sm text-gray-500">Выберите шаблон или опишите задачу</p>
+                  <p className="text-sm text-gray-500">AI проанализирует задачу и подберёт оптимальный стек</p>
                 </div>
               </div>
               <button
@@ -188,94 +148,79 @@ export default function ModelAdvisor() {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Templates Grid */}
+              {/* Input Section */}
               {!analyzeMutation.data && (
-                <>
+                <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-3">Популярные сценарии:</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {TEMPLATES.map((template) => {
-                        const Icon = template.icon
-                        return (
-                          <button
-                            key={template.key}
-                            onClick={() => handleTemplateClick(template.key)}
-                            className={`p-4 rounded-xl border transition-all text-left ${
-                              selectedTemplate === template.key
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                            }`}
-                          >
-                            <Icon className="w-6 h-6 text-blue-600 mb-2" />
-                            <p className="font-medium text-gray-900 text-sm">{template.name}</p>
-                            <p className="text-xs text-gray-500 mt-1">{template.desc}</p>
-                          </button>
-                        )
-                      })}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Опишите вашу задачу
+                    </label>
+                    <textarea
+                      value={userTask}
+                      onChange={(e) => setUserTask(e.target.value)}
+                      placeholder="Например: Создаю контент-фабрику. Нужно писать статьи для блога, делать Python-скрипты для парсинга и анализировать PDF-отчёты конкурентов"
+                      className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      maxLength={500}
+                    />
+                    <div className="mt-2 text-sm text-gray-500 text-right">
+                      {userTask.length}/500
                     </div>
                   </div>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200" />
-                    </div>
-                    <div className="relative flex justify-center">
-                      <span className="px-2 bg-white text-sm text-gray-500">или</span>
+                  {/* Examples */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Примеры запросов:</p>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setUserTask('Контент-фабрика: статьи для блога, SEO-оптимизация, автоматизация публикаций')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        • Контент-фабрика: статьи, SEO, автоматизация
+                      </button>
+                      <button
+                        onClick={() => setUserTask('Парсинг данных с сайтов: Python-скрипты, боты, автоматизация сбора данных')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        • Парсинг данных: скрипты, боты
+                      </button>
+                      <button
+                        onClick={() => setUserTask('Анализ PDF-документов и отчётов конкурентов, большие документы до 500 страниц')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        • Анализ PDF: документы, отчёты
+                      </button>
+                      <button
+                        onClick={() => setUserTask('Сценарии для видео: YouTube, TikTok, Reels, корпоративное видео')}
+                        className="block w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        • Сценарии для видео
+                      </button>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Опишите вашу задачу
-                      </label>
-                      <textarea
-                        value={userTask}
-                        onChange={(e) => setUserTask(e.target.value)}
-                        placeholder="Например: Нужно анализировать отчёты конкурентов из PDF и писать статьи на основе данных"
-                        className="w-full h-24 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        maxLength={500}
-                      />
-                      <div className="mt-2 text-sm text-gray-500 text-right">
-                        {userTask.length}/500
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={handleAnalyze}
-                      disabled={userTask.trim().length < 10 || analyzeMutation.isPending}
-                      className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-                    >
-                      {analyzeMutation.isPending ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Анализирую задачу...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          Подобрать стек моделей
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </>
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={userTask.trim().length < 10 || analyzeMutation.isPending}
+                    className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  >
+                    {analyzeMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        AI анализирует задачу...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Подобрать стек моделей
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
 
               {/* Results */}
               {analyzeMutation.data && (
                 <div className="space-y-6">
-                  {/* Match Info */}
-                  {analyzeMutation.data.is_template_match && (
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <div>
-                        <p className="font-medium text-green-900">Найден готовый шаблон</p>
-                        <p className="text-sm text-green-700">{analyzeMutation.data.template_name}</p>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Detected Tasks */}
                   <div className="bg-blue-50 rounded-xl p-4">
                     <p className="text-sm font-medium text-blue-900 mb-2">Обнаруженные задачи:</p>
@@ -377,9 +322,9 @@ export default function ModelAdvisor() {
                         ${analyzeMutation.data.estimated_cost[selectedTier].toFixed(2)}
                       </span>
                       <span className="text-sm text-gray-500">
-                        {selectedTier === 'budget' ? 'Экономия 70% vs использование одной дорогой модели' :
+                        {selectedTier === 'budget' ? 'Экономия до 70% на черновиках и тестах' :
                          selectedTier === 'premium' ? 'Максимальное качество для критически важных задач' :
-                         'Оптимальный баланс цены и качества'}
+                         'Оптимальный баланс цены и качества для большинства задач'}
                       </span>
                     </div>
                   </div>
