@@ -13,6 +13,10 @@ import RequestHistory from './pages/RequestHistory'
 import Models from './pages/Models'
 import Docs from './pages/Docs'
 import Layout from './components/Layout'
+import InvestorLayout from './layouts/InvestorLayout'
+import InvestorDashboard from './pages/InvestorDashboard'
+import InvestorKeys from './pages/InvestorKeys'
+import AddInvestorKey from './pages/AddInvestorKey'
 
 function App() {
   const { token, checkAuth, forcePasswordChange } = useAuthStore()
@@ -40,11 +44,29 @@ function App() {
     <Routes>
       <Route 
         path="/login" 
-        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : "/dashboard"} /> : <Login />} 
+        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <Login />} 
       />
       <Route 
         path="/register" 
-        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : "/dashboard"} /> : <Register />} 
+        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <Register />} 
+      />
+      {/* Investor Routes */}
+      <Route
+        path="/investor/*"
+        element={
+          token && userRole === 'investor' ? (
+            <InvestorLayout>
+              <Routes>
+                <Route path="/" element={<InvestorDashboard />} />
+                <Route path="/keys" element={<InvestorKeys />} />
+                <Route path="/keys/add" element={<AddInvestorKey />} />
+                <Route path="*" element={<Navigate to="/investor" />} />
+              </Routes>
+            </InvestorLayout>
+          ) : (
+            <Navigate to={token ? "/dashboard" : "/login"} />
+          )
+        }
       />
       <Route 
         path="/*" 
