@@ -125,7 +125,7 @@ export default function ModelAdvisor() {
 
       {/* Main Modal */}
       {isOpen && !showKeysModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" key={language}>
           <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
@@ -318,7 +318,7 @@ export default function ModelAdvisor() {
 
       {/* Keys Modal - показывается после создания ключей */}
       {showKeysModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]" key={`keys-${language}`}>
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="p-6 border-b border-gray-200 bg-green-50">
