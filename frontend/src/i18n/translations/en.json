@@ -109,7 +109,9 @@
     "goToApiKeys": "Go to API Keys",
     "important": "Important!",
     "keysWarning": "This is the only time you will see these keys. Copy them now or download. After closing the window, keys will only be available in hashed form.",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "copyKey": "Copy key",
+    "model": "Model"
   },
   "dashboard": {
     "title": "Dashboard",

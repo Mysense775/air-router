@@ -359,7 +359,7 @@ export default function ModelAdvisor() {
                       <button
                         onClick={() => copyKey(key.key)}
                         className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                        title="Копировать ключ"
+                        title={t('modelAdvisor.copyKey')}
                       >
                         <Copy className="w-4 h-4" />
                       </button>
@@ -368,7 +368,7 @@ export default function ModelAdvisor() {
                       {key.key}
                     </code>
                     {key.allowed_model && (
-                      <p className="text-xs text-gray-500 mt-2">Модель: {key.allowed_model}</p>
+                      <p className="text-xs text-gray-500 mt-2">{t('modelAdvisor.model')}: {key.allowed_model}</p>
                     )}
                   </div>
                 ))}
