@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { 
   Brain, 
   Sparkles, 
@@ -8,7 +9,9 @@ import {
   CheckCircle,
   Copy,
   Check,
-  Layers
+  Layers,
+  Key,
+  AlertTriangle
 } from 'lucide-react'
 import { apiKeysApi } from '../api/client'
 import { api } from '../api/client'
@@ -25,10 +28,21 @@ interface StackRecommendation {
   workflow: string[]
 }
 
+interface CreatedApiKey {
+  id: string
+  name: string
+  key: string
+  allowed_model: string | null
+}
+
 export default function ModelAdvisor() {
+  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [userTask, setUserTask] = useState('')
   const [copiedModels, setCopiedModels] = useState<Set<string>>(new Set())
+  const [showKeysModal, setShowKeysModal] = useState(false)
+  const [createdKeys, setCreatedKeys] = useState<CreatedApiKey[]>([])
+  const [copiedAll, setCopiedAll] = useState(false)
 
   const analyzeMutation = useMutation({
     mutationFn: async (task: string): Promise<StackRecommendation> => {
@@ -45,6 +59,10 @@ export default function ModelAdvisor() {
         created.push(res.data)
       }
       return created
+    },
+    onSuccess: (data) => {
+      setCreatedKeys(data)
+      setShowKeysModal(true)
     }
   })
 
@@ -65,10 +83,31 @@ export default function ModelAdvisor() {
     }, 2000)
   }
 
+  const copyKey = (key: string) => {
+    navigator.clipboard.writeText(key)
+  }
+
+  const copyAllKeys = () => {
+    const allKeys = createdKeys.map(k => `${k.name}: ${k.key}`).join('\n')
+    navigator.clipboard.writeText(allKeys)
+    setCopiedAll(true)
+    setTimeout(() => setCopiedAll(false), 2000)
+  }
+
+  const handleCloseKeysModal = () => {
+    setShowKeysModal(false)
+    setIsOpen(false)
+    reset()
+    // Редирект на /api-keys
+    navigate('/api-keys')
+  }
+
   const reset = () => {
     setUserTask('')
     analyzeMutation.reset()
     createKeysMutation.reset()
+    setCreatedKeys([])
+    setShowKeysModal(false)
   }
 
   return (
@@ -82,8 +121,8 @@ export default function ModelAdvisor() {
         <span>Подобрать стек моделей</span>
       </button>
 
-      {/* Modal */}
-      {isOpen && (
+      {/* Main Modal */}
+      {isOpen && !showKeysModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
@@ -227,7 +266,7 @@ export default function ModelAdvisor() {
                     ))}
                   </div>
 
-                  {/* Workflow / Recommended Stack Steps */}
+                  {/* Workflow */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
                     <p className="font-medium text-gray-900 mb-3">📋 Пошаговый план:</p>
                     <ol className="space-y-2">
@@ -268,20 +307,99 @@ export default function ModelAdvisor() {
                       )}
                     </button>
                   </div>
-
-                  {createKeysMutation.data && (
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                      <p className="text-green-800 font-medium flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5" />
-                        Создано {createKeysMutation.data.length} API ключей!
-                      </p>
-                      <p className="text-green-600 text-sm mt-1">
-                        Перейдите в раздел API Keys чтобы скопировать их
-                      </p>
-                    </div>
-                  )}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Keys Modal - показывается после создания ключей */}
+      {showKeysModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="p-6 border-b border-gray-200 bg-green-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Key className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-green-900">Ключи созданы!</h2>
+                  <p className="text-sm text-green-700">Сохраните их сейчас — больше мы не покажем</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Warning */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-yellow-900">Важно!</p>
+                  <p className="text-sm text-yellow-800">
+                    Это единственный раз, когда вы видите эти ключи. Скопируйте их сейчас или скачайте.
+                    После закрытия окна ключи будут доступны только в хешированном виде.
+                  </p>
+                </div>
+              </div>
+
+              {/* Keys List */}
+              <div className="space-y-3">
+                {createdKeys.map((key, i) => (
+                  <div key={key.id} className="border border-gray-200 rounded-xl p-4 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+                          {i + 1}
+                        </span>
+                        <span className="font-medium text-gray-900">{key.name}</span>
+                      </div>
+                      <button
+                        onClick={() => copyKey(key.key)}
+                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                        title="Копировать ключ"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <code className="block bg-gray-900 text-green-400 px-3 py-2 rounded-lg text-sm font-mono break-all">
+                      {key.key}
+                    </code>
+                    {key.allowed_model && (
+                      <p className="text-xs text-gray-500 mt-2">Модель: {key.allowed_model}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Copy All Button */}
+              <button
+                onClick={copyAllKeys}
+                className="w-full py-3 border-2 border-blue-600 text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+              >
+                {copiedAll ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    Скопировано!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-5 h-5" />
+                    Скопировать все ключи
+                  </>
+                )}
+              </button>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleCloseKeysModal}
+                  className="flex-1 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+                >
+                  Перейти в API Keys
+                </button>
+              </div>
             </div>
           </div>
         </div>
