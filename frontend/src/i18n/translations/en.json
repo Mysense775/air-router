@@ -29,6 +29,7 @@
     "docs": "Documentation",
     "admin": "Admin",
     "users": "Users",
+    "transactions": "Transactions",
     "logout": "Logout",
     "login": "Login",
     "register": "Register"

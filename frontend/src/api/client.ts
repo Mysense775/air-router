@@ -134,4 +134,11 @@ export const adminApi = {
   createCryptoPayment: (amount_usd: number, currency: string) =>
     api.post('/payments/create', { amount_usd, currency }),
   getPaymentHistory: () => api.get('/payments/history'),
+  // Transactions admin
+  getTransactions: (params?: { status?: string; method?: string; search?: string; from_date?: string; to_date?: string; skip?: number; limit?: number }) =>
+    api.get('/admin/transactions', { params }),
+  confirmTransaction: (transactionId: string) =>
+    api.post(`/admin/transactions/${transactionId}/confirm`),
+  failTransaction: (transactionId: string, reason?: string) =>
+    api.post(`/admin/transactions/${transactionId}/fail`, { reason }),
 }

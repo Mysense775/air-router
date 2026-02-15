@@ -12,6 +12,7 @@ import ApiKeys from './pages/ApiKeys'
 import RequestHistory from './pages/RequestHistory'
 import Models from './pages/Models'
 import Docs from './pages/Docs'
+import Transactions from './pages/Transactions'
 import Layout from './components/Layout'
 import InvestorLayout from './layouts/InvestorLayout'
 import InvestorDashboard from './pages/InvestorDashboard'
@@ -82,6 +83,7 @@ function App() {
                 <Route path="/docs" element={<Docs />} />
                 <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />} />
                 <Route path="/admin/users" element={isAdmin ? <Users /> : <Navigate to="/dashboard" />} />
+                <Route path="/admin/transactions" element={isAdmin ? <Transactions /> : <Navigate to="/dashboard" />} />
                 <Route path="/" element={<Navigate to={isAdmin ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} />} />
               </Routes>
             </Layout>

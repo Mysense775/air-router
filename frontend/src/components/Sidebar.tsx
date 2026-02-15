@@ -11,6 +11,7 @@ import {
   Brain,
   Globe,
   Book,
+  Receipt,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -57,6 +58,17 @@ export default function Sidebar() {
             >
               <Users className="w-5 h-5" />
               <span className="font-medium">{t('navigation.users')}</span>
+            </Link>
+            <Link
+              to="/admin/transactions"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                location.pathname === '/admin/transactions'
+                  ? 'bg-purple-50 text-purple-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Receipt className="w-5 h-5" />
+              <span className="font-medium">{t('navigation.transactions')}</span>
             </Link>
           </>
         ) : (
