@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 
 from app.db.session import get_db
 from app.models import User, Balance, ApiKey, RequestLog, Deposit
-from app.api.v1.auth import get_current_active_user, require_admin
+from app.api.v1.auth import get_current_active_user
+from app.api.v1.admin import require_admin
 from app.core.security import create_access_token
 
 router = APIRouter()
