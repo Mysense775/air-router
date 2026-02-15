@@ -24,6 +24,7 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=128)
     name: Optional[str] = None
+    role: Optional[str] = Field(default="client", pattern="^(client|investor)$")  # client или investor
 
 
 class RegisterResponse(BaseModel):
@@ -174,13 +175,16 @@ async def register(
             detail="Password must be at least 8 characters"
         )
     
+    # Determine role (client or investor)
+    user_role = data.role if data.role in ["client", "investor"] else "client"
+    
     # Create user with verified email (no confirmation needed)
     user = User(
         id=uuid4(),
         email=data.email,
         name=data.name,
         password_hash=get_password_hash(data.password),
-        role="client",
+        role=user_role,
         status="active",
         email_verified=True,
         force_password_change=False
@@ -188,14 +192,15 @@ async def register(
     db.add(user)
     await db.flush()
     
-    # Create empty balance
-    balance = Balance(
-        user_id=user.id,
-        balance_usd=Decimal("0.00"),
-        lifetime_spent=Decimal("0.00"),
-        lifetime_earned=Decimal("0.00")
-    )
-    db.add(balance)
+    # Create empty balance only for clients (investors don't need client balance)
+    if user_role == "client":
+        balance = Balance(
+            user_id=user.id,
+            balance_usd=Decimal("0.00"),
+            lifetime_spent=Decimal("0.00"),
+            lifetime_earned=Decimal("0.00")
+        )
+        db.add(balance)
     
     await db.commit()
     

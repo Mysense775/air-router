@@ -26,6 +26,7 @@ class User(Base):
     balance = relationship("Balance", back_populates="user", uselist=False)
     request_logs = relationship("RequestLog", back_populates="user")
     deposits = relationship("Deposit", back_populates="user")
+    investor_accounts = relationship("InvestorAccount", back_populates="user", cascade="all, delete-orphan")
 
 
 class ApiKey(Base):
@@ -181,3 +182,89 @@ class ModelPricing(Base):
     fetched_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class InvestorAccount(Base):
+    """Инвесторские аккаунты (ключи от инвесторов)"""
+    __tablename__ = "investor_accounts"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String(100), nullable=False)  # Название ключа (например "Investor #1")
+    api_key_encrypted = Column(Text, nullable=False)  # Зашифрованный ключ OpenRouter
+    openrouter_account_id = Column(String(255))  # ID аккаунта в OpenRouter
+    
+    # Балансы
+    initial_balance = Column(Numeric(12, 2), nullable=False)  # Начальный баланс ($100 минимум)
+    current_balance = Column(Numeric(12, 2), nullable=False, default=0.00)  # Текущий (синхронизация)
+    min_threshold = Column(Numeric(12, 2), default=50.00)  # Минимум для переключения (default $50)
+    
+    # Комиссия
+    commission_rate = Column(Numeric(5, 2), default=1.00)  # Процент инвестору (default 1%)
+    
+    # Статистика
+    total_earned = Column(Numeric(12, 2), default=0.00)  # Сколько заработал инвестор
+    total_spent = Column(Numeric(12, 2), default=0.00)  # Сколько потрачено с ключа
+    
+    # Статус
+    status = Column(String(20), default="active")  # active, paused, revoked
+    
+    # Даты
+    last_sync_at = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    revoked_at = Column(DateTime(timezone=True))  # Когда инвестор забрал ключ
+    
+    # Relationships
+    user = relationship("User", back_populates="investor_accounts")
+    payouts = relationship("InvestorPayout", back_populates="investor_account", cascade="all, delete-orphan")
+    request_logs = relationship("InvestorRequestLog", back_populates="investor_account")
+
+
+class InvestorPayout(Base):
+    """Выплаты инвесторам"""
+    __tablename__ = "investor_payouts"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    investor_account_id = Column(UUID(as_uuid=True), ForeignKey("investor_accounts.id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    period_start = Column(DateTime(timezone=True), nullable=False)
+    period_end = Column(DateTime(timezone=True), nullable=False)
+    amount_spent = Column(Numeric(12, 2), nullable=False, default=0.00)  # Оборот за период
+    commission_amount = Column(Numeric(12, 2), nullable=False, default=0.00)  # Сумма комиссии
+    
+    # Статус выплаты
+    status = Column(String(20), default="pending")  # pending, paid, cancelled
+    paid_at = Column(DateTime(timezone=True))
+    transaction_id = Column(String(255))  # ID транзакции выплаты
+    
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    
+    # Relationships
+    investor_account = relationship("InvestorAccount", back_populates="payouts")
+
+
+class InvestorRequestLog(Base):
+    """Лог запросов через инвесторские ключи"""
+    __tablename__ = "investor_request_logs"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    investor_account_id = Column(UUID(as_uuid=True), ForeignKey("investor_accounts.id"), nullable=False, index=True)
+    
+    model = Column(String(100), nullable=False, index=True)
+    prompt_tokens = Column(Integer, default=0)
+    completion_tokens = Column(Integer, default=0)
+    total_tokens = Column(Integer, default=0)
+    
+    cost_usd = Column(Numeric(12, 6), default=0.00)  # Сколько списалось с ключа
+    commission_usd = Column(Numeric(12, 6), default=0.00)  # Комиссия инвестору (1%)
+    
+    status = Column(String(20), default="success", index=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, index=True)
+    
+    # Relationships
+    investor_account = relationship("InvestorAccount", back_populates="request_logs")
+    
+    __table_args__ = (
+        Index('idx_investor_logs_account_created', 'investor_account_id', 'created_at'),
+        Index('idx_investor_logs_model_created', 'model', 'created_at'),
+    )
