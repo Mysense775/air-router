@@ -73,26 +73,41 @@ async def get_dashboard_stats(
     revenue_stats = result.one()
     
     # 2. Доходы по типам аккаунтов (discounted, regular, investor)
-    # Для investor нужно проверить request_logs через investor_account_id
+    # Сначала получаем данные по master accounts (discounted/regular)
     result = await db.execute(
         select(
-            case(
-                (RequestLog.master_account_id.is_(None), "investor"),
-                else_=MasterAccount.account_type
-            ).label("account_type"),
+            MasterAccount.account_type,
             func.sum(RequestLog.cost_to_client_usd).label("revenue"),
             func.sum(RequestLog.cost_to_us_usd).label("cost"),
             func.sum(RequestLog.profit_usd).label("profit"),
             func.count(RequestLog.id).label("requests_count")
         )
         .select_from(RequestLog)
-        .outerjoin(MasterAccount, RequestLog.master_account_id == MasterAccount.id)
+        .join(MasterAccount, RequestLog.master_account_id == MasterAccount.id)
         .filter(RequestLog.created_at >= start_date)
-        .group_by("account_type")
+        .group_by(MasterAccount.account_type)
     )
     
+    master_stats = result.all()
+    
+    # Получаем данные по investor (где master_account_id is NULL)
+    investor_result = await db.execute(
+        select(
+            func.sum(RequestLog.cost_to_client_usd).label("revenue"),
+            func.sum(RequestLog.cost_to_us_usd).label("cost"),
+            func.sum(RequestLog.profit_usd).label("profit"),
+            func.count(RequestLog.id).label("requests_count")
+        )
+        .select_from(RequestLog)
+        .filter(RequestLog.created_at >= start_date)
+        .filter(RequestLog.master_account_id.is_(None))
+    )
+    
+    investor_row = investor_result.one()
+    
+    # Объединяем результаты
     by_type = []
-    for row in result.all():
+    for row in master_stats:
         revenue = float(row.revenue or 0)
         cost = float(row.cost or 0)
         profit = float(row.profit or 0)
@@ -105,6 +120,22 @@ async def get_dashboard_stats(
             profit=profit,
             margin_percent=round(margin, 1),
             requests_count=row.requests_count or 0
+        ))
+    
+    # Добавляем investor если есть данные
+    if investor_row.revenue:
+        inv_revenue = float(investor_row.revenue or 0)
+        inv_cost = float(investor_row.cost or 0)
+        inv_profit = float(investor_row.profit or 0)
+        inv_margin = (inv_profit / inv_revenue * 100) if inv_revenue > 0 else 0
+        
+        by_type.append(RevenueByType(
+            account_type="investor",
+            revenue=inv_revenue,
+            cost=inv_cost,
+            profit=inv_profit,
+            margin_percent=round(inv_margin, 1),
+            requests_count=investor_row.requests_count or 0
         ))
     
     # 3. Статистика инвесторских ключей
