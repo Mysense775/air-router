@@ -237,6 +237,7 @@ export default function ModelAdvisor() {
                     <Layers className="w-5 h-5 text-blue-600" />
                     <h3 className="font-semibold text-gray-900">{t('modelAdvisor.recommendedStack')}</h3>
                   </div>
+                  <p className="text-xs text-gray-500 -mt-4">{t('modelAdvisor.descriptionLang')}</p>
 
                   {/* Model Cards */}
                   <div className="space-y-3">

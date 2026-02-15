@@ -111,7 +111,8 @@
     "keysWarning": "This is the only time you will see these keys. Copy them now or download. After closing the window, keys will only be available in hashed form.",
     "copied": "Copied!",
     "copyKey": "Copy key",
-    "model": "Model"
+    "model": "Model",
+    "descriptionLang": "Model descriptions are in the language of your request"
   },
   "dashboard": {
     "title": "Dashboard",
