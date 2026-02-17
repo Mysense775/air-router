@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     YOOKASSA_SHOP_ID: str = ""
     YOOKASSA_SECRET_KEY: str = ""
     
+    # AllIn Payment Configuration
+    ALLIN_CLIENT_ID: str = ""
+    ALLIN_CLIENT_SECRET: str = ""
+    ALLIN_WEBHOOK_SECRET: str = ""
+    
     # API Configuration
     API_BASE_URL: str = "https://airouter.host"
     
