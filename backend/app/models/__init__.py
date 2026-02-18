@@ -18,6 +18,12 @@ class User(Base):
     email_verified = Column(Boolean, default=False)
     email_verified_at = Column(DateTime(timezone=True))
     force_password_change = Column(Boolean, default=False)  # True for admin-created users
+    
+    # Referral system fields
+    referrer_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    referral_code = Column(String(20), unique=True, nullable=True)
+    referral_bonus_claimed = Column(Boolean, default=False)
+    
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -27,7 +33,9 @@ class User(Base):
     request_logs = relationship("RequestLog", back_populates="user")
     deposits = relationship("Deposit", back_populates="user")
     investor_accounts = relationship("InvestorAccount", back_populates="user", cascade="all, delete-orphan")
-    investor_accounts = relationship("InvestorAccount", back_populates="user", cascade="all, delete-orphan")
+    
+    # Referral relationships
+    referrer = relationship("User", remote_side=[id], backref="referrals")
 
 
 class ApiKey(Base):
@@ -264,8 +272,39 @@ class InvestorRequestLog(Base):
     
     # Relationships
     investor_account = relationship("InvestorAccount", back_populates="request_logs")
-    
+
     __table_args__ = (
         Index('idx_investor_logs_account_created', 'investor_account_id', 'created_at'),
         Index('idx_investor_logs_model_created', 'model', 'created_at'),
     )
+
+
+class ReferralClick(Base):
+    """Tracks clicks on referral links"""
+    __tablename__ = "referral_clicks"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    referral_code = Column(String(20), nullable=False, index=True)
+    clicked_by_ip = Column(String(45))
+    clicked_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    converted = Column(Boolean, default=False)
+    converted_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+
+
+class InvestorReferralEarning(Base):
+    """Tracks earnings from referrals using investor's key"""
+    __tablename__ = "investor_referral_earnings"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    investor_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    referral_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    request_log_id = Column(UUID(as_uuid=True), ForeignKey("request_logs.id", ondelete="SET NULL"), nullable=True)
+    amount_usd = Column(Numeric(12, 6), nullable=False, default=0)
+    turnover_usd = Column(Numeric(12, 6), nullable=False, default=0)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    status = Column(String(20), default="pending")  # pending, paid
+    paid_at = Column(DateTime(timezone=True))
+
+    # Relationships
+    investor = relationship("User", foreign_keys=[investor_id], backref="referral_earnings")
+    referral = relationship("User", foreign_keys=[referral_id])

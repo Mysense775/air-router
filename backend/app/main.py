@@ -52,6 +52,13 @@ app.add_middleware(
 app.include_router(api_router, prefix="/v1")
 
 
+@app.get("/r/{code}")
+async def referral_redirect(code: str):
+    """Redirect from referral code to registration page"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url=f"https://airouter.host/register?ref={code}")
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "version": "1.0.0"}

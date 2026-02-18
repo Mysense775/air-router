@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -14,6 +15,7 @@ from app.core.security import (
     generate_api_key
 )
 from app.models import User, Balance, ApiKey
+from app.services.referral import ReferralService
 
 router = APIRouter()
 security = HTTPBearer(auto_error=False)
@@ -25,6 +27,14 @@ class RegisterRequest(BaseModel):
     password: str = Field(..., min_length=8, max_length=128)
     name: Optional[str] = None
     role: Optional[str] = Field(default="client", pattern="^(client|investor)$")  # client или investor
+    referral_code: Optional[str] = None  # Optional referral code
+
+
+class ReferralRegistrationRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=128)
+    name: Optional[str] = None
+    referral_code: str  # Required when registering via referral link
 
 
 class RegisterResponse(BaseModel):
@@ -155,6 +165,7 @@ async def get_current_active_user(
 @router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     data: RegisterRequest,
+    request: Request,
     db: AsyncSession = Depends(get_db)
 ):
     """Register new user (no email confirmation required)"""
@@ -192,20 +203,41 @@ async def register(
     db.add(user)
     await db.flush()
     
-    # Create empty balance only for clients (investors don't need client balance)
+    # Process referral code if provided
+    welcome_bonus = Decimal("0.00")
+    if data.referral_code:
+        referral_service = ReferralService(db)
+        referral_processed = await referral_service.process_referral_registration(
+            code=data.referral_code,
+            new_user_id=str(user.id),
+            ip_address=request.client.host if request.client else None
+        )
+        if referral_processed:
+            welcome_bonus = Decimal("5.00")  # $5 referral bonus
+    
+    # Create balance (with referral bonus if applicable)
     if user_role == "client":
         balance = Balance(
             user_id=user.id,
-            balance_usd=Decimal("0.00"),
+            balance_usd=welcome_bonus,
             lifetime_spent=Decimal("0.00"),
-            lifetime_earned=Decimal("0.00")
+            lifetime_earned=welcome_bonus
         )
         db.add(balance)
     
+    # Generate referral code for new investor
+    if user_role == "investor":
+        referral_service = ReferralService(db)
+        await referral_service.get_or_create_code(str(user.id))
+    
     await db.commit()
     
+    message = "Registration successful. You can now log in."
+    if welcome_bonus > 0:
+        message = f"Registration successful with $5 referral bonus! You can now log in."
+    
     return RegisterResponse(
-        message="Registration successful. You can now log in.",
+        message=message,
         user_id=str(user.id),
         email=user.email
     )
@@ -409,3 +441,206 @@ async def revoke_api_key(
     await db.commit()
     
     return None
+
+
+# =============== REFERRAL SYSTEM ENDPOINTS ===============
+
+@router.post("/register/referral", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
+async def register_via_referral(
+    data: ReferralRegistrationRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Register new user via referral link (role is always 'client')"""
+    
+    # Process referral first
+    referral_service = ReferralService(db)
+    
+    # Check if referral code is valid
+    result = await db.execute(
+        select(User).where(User.referral_code == data.referral_code)
+    )
+    referrer = result.scalar_one_or_none()
+    
+    if not referrer:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid referral code"
+        )
+    
+    # Check if email already exists
+    result = await db.execute(select(User).where(User.email == data.email))
+    if result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Validate password
+    if len(data.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters"
+        )
+    
+    # Create user with referrer (always client role)
+    user = User(
+        id=uuid4(),
+        email=data.email,
+        name=data.name,
+        password_hash=get_password_hash(data.password),
+        role="client",  # Always client for referrals
+        status="active",
+        email_verified=True,
+        force_password_change=False,
+        referrer_id=referrer.id
+    )
+    db.add(user)
+    await db.flush()
+    
+    # Process referral tracking
+    await referral_service.process_referral_registration(
+        code=data.referral_code,
+        new_user_id=str(user.id),
+        ip_address=request.client.host if request.client else None
+    )
+    
+    # Create balance with $5 referral bonus
+    balance = Balance(
+        user_id=user.id,
+        balance_usd=Decimal("5.00"),  # $5 welcome bonus
+        lifetime_spent=Decimal("0.00"),
+        lifetime_earned=Decimal("5.00")
+    )
+    db.add(balance)
+    await db.commit()
+    
+    return RegisterResponse(
+        message="Registration successful with referral bonus. You received $5!",
+        user_id=str(user.id),
+        email=user.email
+    )
+
+
+@router.get("/referral/link")
+async def get_referral_link(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get user's referral link"""
+    referral_service = ReferralService(db)
+    
+    # Only investors or admins can have referral links
+    if current_user.role not in ["investor", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only investors can have referral links"
+        )
+    
+    referral_url = await referral_service.get_referral_url(
+        user_id=str(current_user.id),
+        base_url=str(request.base_url).rstrip('/')
+    )
+    
+    return {
+        "referral_code": current_user.referral_code,
+        "referral_url": referral_url
+    }
+
+
+@router.get("/referral/stats")
+async def get_referral_stats(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get detailed referral statistics for investor"""
+    
+    # Only investors can see stats
+    if current_user.role not in ["investor", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only investors can view referral stats"
+        )
+    
+    referral_service = ReferralService(db)
+    stats = await referral_service.get_referral_stats(str(current_user.id))
+    
+    return stats
+
+
+@router.get("/referral/earnings")
+async def get_referral_earnings(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get total earnings from referrals"""
+    
+    if current_user.role not in ["investor", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only investors can view earnings"
+        )
+    
+    referral_service = ReferralService(db)
+    earnings = await referral_service.calculate_referral_earnings(
+        investor_id=str(current_user.id)
+    )
+    
+    return earnings
+
+
+@router.get("/referral/qr-code")
+async def get_referral_qr_code(
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Generate QR code for referral link"""
+    
+    if current_user.role not in ["investor", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only investors can generate QR codes"
+        )
+    
+    try:
+        import qrcode
+        from io import BytesIO
+        
+        # Get or create referral code
+        referral_service = ReferralService(db)
+        referral_url = await referral_service.get_referral_url(
+            user_id=str(current_user.id),
+            base_url=str(request.base_url).rstrip('/')
+        )
+        
+        # Generate QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(referral_url)
+        qr.make(fit=True)
+        
+        # Create image
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Save to bytes
+        img_bytes = BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_bytes.seek(0)
+        
+        return StreamingResponse(img_bytes, media_type="image/png")
+        
+    except ImportError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="QR code generation not available. Install: pip install qrcode[pil]"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate QR code: {str(e)}"
+        )
