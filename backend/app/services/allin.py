@@ -122,7 +122,8 @@ class AllInPaymentService:
             "webhookUrl": webhook_url,
             "successUrl": success_url,
             "cancelUrl": cancel_url,
-            "email": email
+            "email": email,
+            "testMode": 0 if not test_mode else 1
         }
         
         logger.info(f"Creating AllIn payment: order_id={order_id}, amount={amount} {currency}")
