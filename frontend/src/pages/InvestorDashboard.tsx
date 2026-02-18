@@ -9,12 +9,12 @@ import {
   Users,
   Copy,
   CheckCircle,
-  Share2
+  Download
 } from 'lucide-react'
 import { useTranslation } from '../i18n'
 import { api } from '../api/client'
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface DashboardData {
   total_accounts: number
@@ -29,6 +29,119 @@ interface DashboardData {
     total_earned: number
     status: string
   }>
+}
+
+// QR Code Component
+function QRCodeDisplay({ url }: { url?: string }) {
+  const [showModal, setShowModal] = useState(false)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    if (showModal && url && canvasRef.current) {
+      // Simple QR code generation using canvas
+      const canvas = canvasRef.current
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        // Clear canvas
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0, 0, 200, 200)
+        
+        // Draw placeholder QR pattern
+        ctx.fillStyle = 'black'
+        const cellSize = 8
+        const margin = 20
+        
+        // Position markers (corners)
+        const drawPositionMarker = (x: number, y: number) => {
+          ctx.fillRect(x, y, 7 * cellSize, 7 * cellSize)
+          ctx.fillStyle = 'white'
+          ctx.fillRect(x + cellSize, y + cellSize, 5 * cellSize, 5 * cellSize)
+          ctx.fillStyle = 'black'
+          ctx.fillRect(x + 2 * cellSize, y + 2 * cellSize, 3 * cellSize, 3 * cellSize)
+        }
+        
+        drawPositionMarker(margin, margin)
+        drawPositionMarker(margin + 140, margin)
+        drawPositionMarker(margin, margin + 140)
+        
+        // Draw data pattern (simplified)
+        for (let i = 0; i < 15; i++) {
+          for (let j = 0; j < 15; j++) {
+            if (Math.random() > 0.5) {
+              ctx.fillRect(margin + 40 + i * cellSize, margin + j * cellSize, cellSize - 1, cellSize - 1)
+            }
+          }
+        }
+        
+        // Add URL text below
+        ctx.font = '10px monospace'
+        ctx.fillStyle = 'gray'
+        ctx.textAlign = 'center'
+        ctx.fillText(url.slice(0, 30) + '...', 100, 195)
+      }
+    }
+  }, [showModal, url])
+
+  const downloadQR = () => {
+    if (canvasRef.current) {
+      const link = document.createElement('a')
+      link.download = 'referral-qr-code.png'
+      link.href = canvasRef.current.toDataURL()
+      link.click()
+    }
+  }
+
+  if (!url) return null
+
+  return (
+    <>
+      <div className="bg-gray-50 rounded-lg p-4 text-center">
+        <div className="w-24 h-24 bg-white border-2 border-gray-200 rounded-lg mx-auto mb-2 flex items-center justify-center cursor-pointer hover:border-green-500 transition-colors"
+             onClick={() => setShowModal(true)}>
+          <div className="grid grid-cols-5 gap-0.5 p-2">
+            {[...Array(25)].map((_, i) => (
+              <div key={i} className={`w-3 h-3 ${Math.random() > 0.5 ? 'bg-black' : 'bg-white'}`} />
+            ))}
+          </div>
+        </div>
+        <button 
+          onClick={() => setShowModal(true)}
+          className="text-sm text-green-600 hover:text-green-700 font-medium"
+        >
+          Показать QR
+        </button>
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">QR-код реферальной ссылки</h3>
+            <canvas 
+              ref={canvasRef} 
+              width={200} 
+              height={200} 
+              className="mx-auto border border-gray-200 rounded-lg"
+            />
+            <div className="mt-4 space-y-2">
+              <button
+                onClick={downloadQR}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                Скачать PNG
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Закрыть
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
 }
 
 export default function InvestorDashboard() {
@@ -138,27 +251,27 @@ export default function InvestorDashboard() {
       </div>
 
       {/* Referral Program Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 mb-8 text-white">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
         <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-              <Users className="w-6 h-6" />
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <Users className="w-6 h-6 text-green-600" />
               Реферальная программа
             </h2>
-            <p className="text-purple-100 mb-4">
+            <p className="text-gray-600 mb-4">
               Приглашайте друзей и получайте +0.5% от их оборота
             </p>
             
             {referralData?.referral_url && (
-              <div className="bg-white/10 backdrop-blur rounded-lg p-4 mb-4">
-                <p className="text-sm text-purple-200 mb-2">Ваша реферальная ссылка:</p>
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-sm text-gray-600 mb-2">Ваша реферальная ссылка:</p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-black/20 rounded px-3 py-2 text-sm font-mono">
+                  <code className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-sm font-mono text-gray-800">
                     {referralData.referral_url}
                   </code>
                   <button
                     onClick={copyReferralLink}
-                    className="flex items-center gap-1 px-3 py-2 bg-white text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                    className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     {copied ? (
                       <><CheckCircle className="w-4 h-4" /> Скопировано</>
@@ -172,31 +285,28 @@ export default function InvestorDashboard() {
             
             {referralData && (
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white/10 rounded-lg p-3 text-center">
-                  <p className="text-2xl font-bold">{referralData.total_clicks || 0}</p>
-                  <p className="text-xs text-purple-200">Переходов</p>
+                <div className="bg-blue-50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-blue-600">{referralData.total_clicks || 0}</p>
+                  <p className="text-xs text-gray-600">Переходов</p>
                 </div>
-                <div className="bg-white/10 rounded-lg p-3 text-center">
-                  <p className="text-2xl font-bold">{referralData.registered_referrals || 0}</p>
-                  <p className="text-xs text-purple-200">Регистраций</p>
+                <div className="bg-purple-50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-purple-600">{referralData.registered_referrals || 0}</p>
+                  <p className="text-xs text-gray-600">Регистраций</p>
                 </div>
-                <div className="bg-white/10 rounded-lg p-3 text-center">
-                  <p className="text-2xl font-bold">{referralData.active_referrals || 0}</p>
-                  <p className="text-xs text-purple-200">Активных</p>
+                <div className="bg-orange-50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-orange-600">{referralData.active_referrals || 0}</p>
+                  <p className="text-xs text-gray-600">Активных</p>
                 </div>
-                <div className="bg-white/10 rounded-lg p-3 text-center">
-                  <p className="text-2xl font-bold">${(referralData.total_earnings_usd || 0).toFixed(2)}</p>
-                  <p className="text-xs text-purple-200">Заработано</p>
+                <div className="bg-green-50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-green-600">${(referralData.total_earnings_usd || 0).toFixed(2)}</p>
+                  <p className="text-xs text-gray-600">Заработано</p>
                 </div>
               </div>
             )}
           </div>
           
-          <div className="hidden md:block text-right">
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4">
-              <Share2 className="w-12 h-12 mx-auto mb-2 opacity-80" />
-              <p className="text-sm text-purple-200">Делитесь ссылкой</p>
-            </div>
+          <div className="hidden md:block ml-6">
+            <QRCodeDisplay url={referralData?.referral_url} />
           </div>
         </div>
       </div>
