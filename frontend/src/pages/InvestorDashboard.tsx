@@ -5,11 +5,16 @@ import {
   Key,
   DollarSign,
   ArrowUpRight,
-  Plus
+  Plus,
+  Users,
+  Copy,
+  CheckCircle,
+  Share2
 } from 'lucide-react'
 import { useTranslation } from '../i18n'
 import { api } from '../api/client'
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 interface DashboardData {
   total_accounts: number
@@ -36,6 +41,25 @@ export default function InvestorDashboard() {
       return response.data
     }
   })
+
+  // Referral stats
+  const { data: referralData } = useQuery({
+    queryKey: ['referral-stats'],
+    queryFn: async () => {
+      const response = await api.get('/auth/referral/stats')
+      return response.data
+    }
+  })
+
+  const [copied, setCopied] = useState(false)
+
+  const copyReferralLink = () => {
+    if (referralData?.referral_url) {
+      navigator.clipboard.writeText(referralData.referral_url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -111,6 +135,70 @@ export default function InvestorDashboard() {
             </div>
           )
         })}
+      </div>
+
+      {/* Referral Program Section */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 mb-8 text-white">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
+              <Users className="w-6 h-6" />
+              Реферальная программа
+            </h2>
+            <p className="text-purple-100 mb-4">
+              Приглашайте друзей и получайте +0.5% от их оборота
+            </p>
+            
+            {referralData?.referral_url && (
+              <div className="bg-white/10 backdrop-blur rounded-lg p-4 mb-4">
+                <p className="text-sm text-purple-200 mb-2">Ваша реферальная ссылка:</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-black/20 rounded px-3 py-2 text-sm font-mono">
+                    {referralData.referral_url}
+                  </code>
+                  <button
+                    onClick={copyReferralLink}
+                    className="flex items-center gap-1 px-3 py-2 bg-white text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                  >
+                    {copied ? (
+                      <><CheckCircle className="w-4 h-4" /> Скопировано</>
+                    ) : (
+                      <><Copy className="w-4 h-4" /> Копировать</>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {referralData && (
+              <div className="grid grid-cols-4 gap-4">
+                <div className="bg-white/10 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold">{referralData.total_clicks || 0}</p>
+                  <p className="text-xs text-purple-200">Переходов</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold">{referralData.registered_referrals || 0}</p>
+                  <p className="text-xs text-purple-200">Регистраций</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold">{referralData.active_referrals || 0}</p>
+                  <p className="text-xs text-purple-200">Активных</p>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold">${(referralData.total_earnings_usd || 0).toFixed(2)}</p>
+                  <p className="text-xs text-purple-200">Заработано</p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="hidden md:block text-right">
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <Share2 className="w-12 h-12 mx-auto mb-2 opacity-80" />
+              <p className="text-sm text-purple-200">Делитесь ссылкой</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Accounts List */}
