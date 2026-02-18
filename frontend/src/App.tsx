@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ReferralRegister from './pages/ReferralRegister'
 import ChangePassword from './pages/ChangePassword'
 import AdminDashboard from './pages/AdminDashboard'
 import Dashboard from './pages/Dashboard'
@@ -51,9 +52,14 @@ function App() {
         path="/login" 
         element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <Login />} 
       />
+      {/* Реферальная регистрация - отдельная страница */}
       <Route 
         path="/register" 
         element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <Register />} 
+      />
+      <Route 
+        path="/r/:code" 
+        element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <ReferralRegister />} 
       />
       {/* Investor Routes */}
       <Route
