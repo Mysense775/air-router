@@ -31,7 +31,7 @@ async def get_master_account_with_pricing(db: AsyncSession, estimated_cost: Deci
     Returns:
         - MasterAccount or InvestorAccount: selected account
         - str: decrypted API key
-        - Decimal: price multiplier for client (0.8 discounted, 0.95 investor, 1.05 regular)
+        - Decimal: price multiplier for client (0.8 discounted, 1.10 investor/regular)
     """
     import base64
     
@@ -136,7 +136,7 @@ async def chat_completions(
     )
     
     # Получаем мастер-аккаунт с учетом приоритетной очереди
-    # и ценовым множителем (0.8 для discounted, 1.05 для regular)
+    # и ценовым множителем (0.8 для discounted, 1.10 для investor/regular)
     account, master_key, price_multiplier = await get_master_account_with_pricing(
         db, 
         estimated_cost["real_cost_usd"]
@@ -265,10 +265,13 @@ async def chat_completions(
             # Handle both MasterAccount and InvestorAccount
             if isinstance(account, InvestorAccount):
                 account_type_str = "investor"
-                pricing_str = "investor (-5%)"
+                pricing_str = "investor (+10%)"
             else:
                 account_type_str = account.account_type
-                pricing_str = f"{'-' if account.markup_percent < 0 else '+'}{abs(account.markup_percent)}%"
+                if account.account_type == "discounted":
+                    pricing_str = "discounted (-20%)"
+                else:
+                    pricing_str = "regular (+10%)"
             
             response_data["cost"] = {
                 "prompt_tokens": prompt_tokens,

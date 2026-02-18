@@ -33,8 +33,12 @@ services:
       - ENCRYPTION_KEY=b7c9d2e4f5a6b7890123456789012345
       - ENVIRONMENT=production
       - DEBUG=false
-      - SITE_URL=http://localhost:3000
+      - SITE_URL=https://airouter.host
       - OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+      - ALLIN_CLIENT_ID=cgrS220JqI1k3wThqOMt2L0wyxp0U5
+      - ALLIN_CLIENT_SECRET=jFPPOZlvOnUtADRinfFCnolGqjHGO9jL5nqia4cGSNYJhSQMtYYwty2CFbR3VupOukylVYDKd9ALt7wzOIV4NKzcvDBaM3SE1tCQ
+      - ALLIN_WEBHOOK_SECRET=
+      - LOG_LEVEL=DEBUG
     depends_on:
       db:
         condition: service_healthy

@@ -1,12 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import logging
 
 from app.core.config import get_settings
 from app.db.session import init_db
 from app.api.v1.router import api_router
 
 settings = get_settings()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG if settings.LOG_LEVEL == "DEBUG" else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
 @asynccontextmanager

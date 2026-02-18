@@ -19,11 +19,12 @@ class NoAvailableAccountError(Exception):
 class MasterAccountSelector:
     """
     Smart selector для выбора оптимального мастер-аккаунта
-    
+
     Стратегия:
-    1. Сначала используем discounted аккаунты (высокая маржа)
-    2. Когда они заканчиваются — переключаемся на regular (низкая маржа)
-    3. Внутри одного типа используем round-robin (usage_weight)
+    1. Сначала используем discounted аккаунты (маржа 166%)
+    2. Когда они заканчиваются — переключаемся на investor (маржа ~14%)
+    3. Если нет investor — используем regular (маржа 10%)
+    4. Внутри одного типа используем round-robin (usage_weight)
     """
     
     def __init__(self, db: AsyncSession):
@@ -48,7 +49,7 @@ class MasterAccountSelector:
             
         Returns:
             - MasterAccount: выбранный аккаунт
-            - Decimal: множитель цены (0.8 для -20%, 0.95 для инвестора, 1.05 для +5%)
+            - Decimal: множитель цены (0.8 для -20%, 1.10 для инвестора/регулярных +10%)
             
         Raises:
             NoAvailableAccountError: если нет доступных аккаунтов
@@ -80,8 +81,8 @@ class MasterAccountSelector:
         
         investor_account = await self.select_investor_account(required_balance)
         if investor_account:
-            # Инвесторские ключи: продаем со скидкой 5% (маржа 99% после 1% инвестору)
-            price_multiplier = Decimal("0.95")
+            # Инвесторские ключи: наценка 10%
+            price_multiplier = Decimal("1.10")
             logger.info(f"Selected INVESTOR account {investor_account.name} (balance: {investor_account.current_balance}, multiplier: {price_multiplier})")
             return investor_account, price_multiplier
         
@@ -100,8 +101,8 @@ class MasterAccountSelector:
         account = regular.scalar_one_or_none()
         
         if account:
-            price_multiplier = Decimal("1.05")
-            logger.warning(f"Selected REGULAR account {account.name} (balance: {account.balance_usd}, multiplier: {price_multiplier}) - LOW MARGIN!")
+            price_multiplier = Decimal("1.10")
+            logger.warning(f"Selected REGULAR account {account.name} (balance: {account.balance_usd}, multiplier: {price_multiplier})")
             return account, price_multiplier
         
         # 4. Если вообще нет — ошибка
@@ -178,7 +179,7 @@ class MasterAccountSelector:
             strategy_name = "Приоритет дисконтных (маржа 166%)"
         elif reg_balance > 1:
             strategy = "regular_only"
-            strategy_name = "Только обычные (маржа 5%)"
+            strategy_name = "Только обычные (маржа 10%)"
         else:
             strategy = "none"
             strategy_name = "Нет доступных аккаунтов!"

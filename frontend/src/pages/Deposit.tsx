@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CreditCard, Bitcoin, ChevronRight, Loader2, Clock, CheckCircle, XCircle, Copy } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { adminApi } from '../api/client'
+import { adminApi, allinApi } from '../api/client'
 
 interface PaymentMethod {
   id: string
@@ -11,6 +11,11 @@ interface PaymentMethod {
   minAmount: number
 }
 
+// Custom ruble icon component
+const RubleIcon = () => (
+  <span className="text-xl font-bold">₽</span>
+);
+
 const paymentMethods: PaymentMethod[] = [
   {
     id: 'crypto',
@@ -18,6 +23,13 @@ const paymentMethods: PaymentMethod[] = [
     icon: Bitcoin,
     description: 'USDT, BTC, ETH via NowPayments',
     minAmount: 10
+  },
+  {
+    id: 'allin',
+    name: 'AllIn',
+    icon: RubleIcon as any,
+    description: 'Pay via AllIn payment system (Cards, SBP) - Amount in RUB',
+    minAmount: 300
   }
 ]
 
@@ -36,11 +48,12 @@ interface Payment {
 }
 
 export default function Deposit() {
-  const [selectedMethod, setSelectedMethod] = useState<string>('crypto')
+  const [selectedMethod, setSelectedMethod] = useState<string>('')
   const [amount, setAmount] = useState('50')
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20')
   const [activePayment, setActivePayment] = useState<Payment | null>(null)
   const [copied, setCopied] = useState(false)
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null)
 
   // Fetch payment history
   const { data: historyData, refetch: refetchHistory } = useQuery({
@@ -54,9 +67,25 @@ export default function Deposit() {
     queryFn: () => adminApi.getCryptoCurrencies(),
   })
 
+  // Fetch exchange rate when AllIn is selected
+  const { data: exchangeRateData } = useQuery({
+    queryKey: ['exchange-rate'],
+    queryFn: () => allinApi.getExchangeRate(),
+    enabled: selectedMethod === 'allin',
+    refetchInterval: 60000, // Refresh every minute
+  })
+
+  useEffect(() => {
+    if (exchangeRateData?.data?.rate) {
+      setExchangeRate(exchangeRateData.data.rate)
+    }
+  }, [exchangeRateData])
+
   const currencies = currenciesData?.data?.currencies || []
 
-  // Create payment mutation
+  // Create crypto payment mutation
+
+  // Create crypto payment mutation
   const createPaymentMutation = useMutation({
     mutationFn: () => adminApi.createCryptoPayment(parseFloat(amount), selectedCurrency),
     onSuccess: (response) => {
@@ -77,6 +106,18 @@ export default function Deposit() {
     }
   })
 
+  // Create AllIn payment mutation
+  const createAllinPaymentMutation = useMutation({
+    mutationFn: () => allinApi.createPayment(parseFloat(amount), 'RUB'),
+    onSuccess: (response) => {
+      if (response.data?.payment_url) {
+        window.location.href = response.data.payment_url
+      } else {
+        console.error('No payment_url in response:', response)
+      }
+    }
+  })
+
   const payments: Payment[] = historyData?.data?.payments || []
   const pendingPayments = payments.filter(p => ['pending', 'waiting', 'confirming'].includes(p.status))
   const completedPayments = payments.filter(p => ['completed', 'finished', 'confirmed'].includes(p.status))
@@ -84,11 +125,20 @@ export default function Deposit() {
   const selectedPayment = paymentMethods.find(m => m.id === selectedMethod)
   const numAmount = parseFloat(amount) || 0
 
+  // Calculate USD equivalent for AllIn
+  const usdEquivalent = selectedMethod === 'allin' && exchangeRate && numAmount > 0
+    ? (numAmount / exchangeRate).toFixed(2)
+    : null
+
   const handleCreatePayment = () => {
     if (numAmount < (selectedPayment?.minAmount || 10)) {
       return
     }
-    createPaymentMutation.mutate()
+    if (selectedMethod === 'allin') {
+      createAllinPaymentMutation.mutate()
+    } else {
+      createPaymentMutation.mutate()
+    }
   }
 
   const copyToClipboard = (text: string) => {
@@ -130,7 +180,7 @@ export default function Deposit() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
-        <p className="text-gray-500 mt-1">Deposit funds via cryptocurrency</p>
+        <p className="text-gray-500 mt-1">Deposit funds via cryptocurrency or AllIn payment system</p>
       </div>
 
       {/* Active Payment */}
@@ -204,7 +254,7 @@ export default function Deposit() {
                       <p className="text-sm text-gray-500">{method.description}</p>
                     </div>
                     <div className="text-sm text-gray-500">
-                      Min: ${method.minAmount}
+                      Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-400'}`} />
                   </button>
@@ -213,87 +263,141 @@ export default function Deposit() {
             </div>
           </div>
 
-          {/* Currency Selection */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Select Cryptocurrency
-            </label>
-            <select
-              value={selectedCurrency}
-              onChange={(e) => setSelectedCurrency(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {currencies.map((curr: any) => (
-                <option key={curr.code} value={curr.code}>
-                  {curr.name} ({curr.network}) - {curr.fee} fees
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Payment Details - only shown when method is selected */}
+          {selectedMethod && (
+            <>
+              {/* Currency Selection - only for crypto */}
+              {selectedMethod === 'crypto' && (
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Select Cryptocurrency
+                  </label>
+                  <select
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {currencies.map((curr: any) => (
+                      <option key={curr.code} value={curr.code}>
+                        {curr.name} ({curr.network}) - {curr.fee} fees
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-          {/* Amount */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Amount (USD)
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-              <input
-                type="number"
-                min={selectedPayment?.minAmount || 10}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                placeholder="50"
-              />
-            </div>
-            <p className="text-sm text-gray-500 mt-2">
-              Minimum: ${selectedPayment?.minAmount || 10}
-            </p>
-          </div>
+              {/* AllIn Info - only for allin */}
+              {selectedMethod === 'allin' && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <h3 className="font-medium text-blue-900 mb-2">AllIn Payment</h3>
+                  <p className="text-sm text-blue-700 mb-2">
+                    You will be redirected to AllIn payment page to complete your payment via card or SBP.
+                  </p>
+                  {exchangeRate ? (
+                    <p className="text-sm text-blue-600">
+                      Current exchange rate: <strong>{exchangeRate.toFixed(2)} ₽/$</strong> (CBR)
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-500">Loading exchange rate...</p>
+                  )}
+                </div>
+              )}
 
-          {/* Summary */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Deposit amount</span>
-                <span className="font-medium">${numAmount.toFixed(2)}</span>
+              {/* Amount */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {selectedMethod === 'allin' ? 'Amount (RUB)' : 'Amount (USD)'}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    {selectedMethod === 'allin' ? '₽' : '$'}
+                  </span>
+                  <input
+                    type="number"
+                    min={selectedPayment?.minAmount || 10}
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                    placeholder={selectedMethod === 'allin' ? '1000' : '50'}
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  Minimum: {selectedMethod === 'allin' ? '₽' : '$'}{selectedPayment?.minAmount || 10}
+                </p>
+                {selectedMethod === 'allin' && usdEquivalent && (
+                  <p className="text-sm text-blue-600 mt-1">
+                    ≈ ${usdEquivalent} USD
+                    {exchangeRate && (
+                      <span className="text-gray-400 ml-2">(rate: {exchangeRate.toFixed(2)} ₽/$)</span>
+                    )}
+                  </p>
+                )}
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Payment method</span>
-                <span className="font-medium">{selectedPayment?.name}</span>
-              </div>
-              <div className="border-t border-gray-200 pt-2 mt-2">
-                <div className="flex justify-between">
-                  <span className="font-semibold text-gray-900">Total</span>
-                  <span className="font-bold text-xl text-gray-900">${numAmount.toFixed(2)}</span>
+
+              {/* Summary */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Deposit amount</span>
+                    <span className="font-medium">
+                      {selectedMethod === 'allin' ? `₽${numAmount.toFixed(2)}` : `$${numAmount.toFixed(2)}`}
+                    </span>
+                  </div>
+                  {selectedMethod === 'allin' && usdEquivalent && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">≈ USD equivalent</span>
+                      <span className="font-medium text-blue-600">${usdEquivalent}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Payment method</span>
+                    <span className="font-medium">{selectedPayment?.name}</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-2 mt-2">
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-gray-900">Total</span>
+                      <span className="font-bold text-xl text-gray-900">
+                        {selectedMethod === 'allin' ? `₽${numAmount.toFixed(2)}` : `$${numAmount.toFixed(2)}`}
+                      </span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Submit */}
-          {createPaymentMutation.isError && (
+          {(createPaymentMutation.isError || createAllinPaymentMutation.isError) && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-              {(createPaymentMutation.error as any)?.response?.data?.detail || 'Failed to create payment'}
+              {(createPaymentMutation.error as any)?.response?.data?.detail || 
+               (createAllinPaymentMutation.error as any)?.response?.data?.detail || 
+               'Failed to create payment'}
             </div>
           )}
 
           <button
             onClick={handleCreatePayment}
-            disabled={createPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
+            disabled={!selectedMethod || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
             className="w-full bg-blue-600 text-white py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {createPaymentMutation.isPending ? (
+            {createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 Creating payment...
               </>
             ) : (
-              <>Create Payment ${numAmount.toFixed(2)}</>
+              <>
+                {selectedMethod === 'allin' ? (
+                  <>Create Payment ₽{numAmount.toFixed(2)}</>
+                ) : selectedMethod === 'crypto' ? (
+                  <>Create Payment ${numAmount.toFixed(2)}</>
+                ) : (
+                  <>Select payment method</>
+                )}
+              </>
             )}
           </button>
+            </>
+          )}
         </>
       )}
 

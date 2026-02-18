@@ -151,3 +151,15 @@ export const adminApi = {
   addUserBalance: (userId: string, amount: number, reason?: string) =>
     api.post(`/admin/users/${userId}/balance/add`, null, { params: { amount, reason } }),
 }
+
+// AllIn Payment API
+export const allinApi = {
+  createPayment: (amount: number, currency: string = 'RUB') =>
+    api.post('/payments/allin/create', { amount, currency }),
+  getStatus: (orderId: string) =>
+    api.get(`/payments/allin/status/${orderId}`),
+  getInfo: (transactionId: string) =>
+    api.get(`/payments/allin/info/${transactionId}`),
+  getExchangeRate: () =>
+    api.get('/payments/allin/exchange-rate'),
+}
