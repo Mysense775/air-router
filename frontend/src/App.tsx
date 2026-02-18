@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+// v2026.02.18-1048 - Referral registration page added
 import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -52,7 +53,6 @@ function App() {
         path="/login" 
         element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <Login />} 
       />
-      {/* Реферальная регистрация - отдельная страница */}
       <Route 
         path="/register" 
         element={token ? <Navigate to={userRole === 'admin' ? "/admin" : userRole === 'investor' ? "/investor" : "/dashboard"} /> : <Register />} 

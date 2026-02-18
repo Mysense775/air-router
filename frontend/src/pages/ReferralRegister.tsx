@@ -20,6 +20,7 @@ interface ReferrerInfo {
 }
 
 export default function ReferralRegister() {
+  console.log('ReferralRegister v2026.02.18 rendered')
   const navigate = useNavigate()
   const { code } = useParams<{ code: string }>()
   const referralCode = code || ''
