@@ -79,13 +79,22 @@ export const authApi = {
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }),
   
-  register: (email: string, password: string, name?: string) =>
-    api.post('/auth/register', { email, password, name }),
+  register: (email: string, password: string, name?: string, role?: string) =>
+    api.post('/auth/register', { email, password, name, role }),
+  
+  registerViaReferral: (email: string, password: string, name: string | undefined, referralCode: string) =>
+    api.post('/auth/register/referral', { email, password, name, referral_code: referralCode }),
   
   getMe: (token?: string) => api.get('/auth/me', token ? { headers: { Authorization: `Bearer ${token}` } } : undefined),
   
   refresh: (refreshToken: string) =>
     api.post('/auth/refresh', {}, { headers: { Authorization: `Bearer ${refreshToken}` } }),
+  
+  // Referral
+  getReferralLink: () => api.get('/auth/referral/link'),
+  getReferralStats: () => api.get('/auth/referral/stats'),
+  getReferralEarnings: () => api.get('/auth/referral/earnings'),
+  getReferralQRCode: () => api.get('/auth/referral/qr-code', { responseType: 'blob' }),
 }
 
 // Client API

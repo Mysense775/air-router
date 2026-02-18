@@ -18,6 +18,7 @@ import InvestorLayout from './layouts/InvestorLayout'
 import InvestorDashboard from './pages/InvestorDashboard'
 import InvestorKeys from './pages/InvestorKeys'
 import AddInvestorKey from './pages/AddInvestorKey'
+import InvestorFlow from './pages/InvestorFlow'
 
 function App() {
   const { token, checkAuth, forcePasswordChange } = useAuthStore()
@@ -61,6 +62,7 @@ function App() {
                 <Route path="/" element={<InvestorDashboard />} />
                 <Route path="/keys" element={<InvestorKeys />} />
                 <Route path="/keys/add" element={<AddInvestorKey />} />
+                <Route path="/flow" element={<InvestorFlow />} />
                 <Route path="*" element={<Navigate to="/investor" />} />
               </Routes>
             </InvestorLayout>

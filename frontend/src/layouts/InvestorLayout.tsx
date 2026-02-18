@@ -9,6 +9,7 @@ import {
   Settings,
   LogOut,
   Globe,
+  BookOpen,
 } from 'lucide-react'
 
 interface InvestorLayoutProps {
@@ -27,6 +28,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
 
   const menuItems = [
     { path: '/investor', icon: LayoutDashboard, label: t('investor.dashboard') || 'Главная' },
+    { path: '/investor/flow', icon: BookOpen, label: t('investor.flow') || 'Схема заработка' },
     { path: '/investor/keys', icon: Key, label: t('investor.keys') || 'Мои ключи' },
     { path: '/investor/stats', icon: BarChart3, label: t('investor.stats') || 'Статистика' },
     { path: '/investor/payouts', icon: Wallet, label: t('investor.payouts') || 'Выплаты' },

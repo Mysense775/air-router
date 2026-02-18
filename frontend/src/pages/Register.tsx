@@ -1,19 +1,32 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { authApi } from '../api/client'
-import { UserPlus, AlertCircle, CheckCircle } from 'lucide-react'
+import { UserPlus, AlertCircle, CheckCircle, Gift, Users, Key } from 'lucide-react'
+
+type UserRole = 'client' | 'investor'
 
 export default function Register() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const referralCode = searchParams.get('ref')
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    name: ''
+    name: '',
+    role: 'client' as UserRole
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  // Check referral code validity on load
+  useEffect(() => {
+    if (referralCode) {
+      // Could validate code here via API
+      console.log('Referral code:', referralCode)
+    }
+  }, [referralCode])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,11 +46,22 @@ export default function Register() {
     setLoading(true)
 
     try {
-      await authApi.register(
-        formData.email,
-        formData.password,
-        formData.name || undefined
-      )
+      // Use different endpoint for referral registration
+      if (referralCode) {
+        await authApi.registerViaReferral(
+          formData.email,
+          formData.password,
+          formData.name || undefined,
+          referralCode
+        )
+      } else {
+        await authApi.register(
+          formData.email,
+          formData.password,
+          formData.name || undefined,
+          formData.role
+        )
+      }
 
       setSuccess(true)
       
@@ -57,26 +81,49 @@ export default function Register() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
           <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Registration Successful!</h2>
-          <p className="text-gray-300">Redirecting to login...</p>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {referralCode ? 'Registration Successful! 🎉' : 'Registration Successful!'}
+          </h2>
+          <p className="text-gray-300">
+            {referralCode 
+              ? 'You received $5 welcome bonus! Redirecting to login...' 
+              : 'Redirecting to login...'}
+          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
               <UserPlus className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white">Create Account</h1>
+            <h1 className="text-2xl font-bold text-white">
+              {referralCode ? 'Join by Invitation' : 'Create Account'}
+            </h1>
             <p className="text-gray-400 mt-2">
-              Register to access AI Router API
+              {referralCode 
+                ? 'Register using referral link and get $5 bonus!' 
+                : 'Register to access AI Router API'}
             </p>
           </div>
+
+          {/* Referral Banner */}
+          {referralCode && (
+            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Gift className="w-6 h-6 text-green-400 flex-shrink-0" />
+                <div>
+                  <p className="text-green-200 text-sm font-medium">Referral Bonus Active!</p>
+                  <p className="text-green-300 text-xs">You'll receive $5 on your balance after registration</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-3">
@@ -86,6 +133,52 @@ export default function Register() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Role Selection - Only show for regular registration */}
+            {!referralCode && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Select Role *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, role: 'client' })}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                      formData.role === 'client'
+                        ? 'bg-blue-600/30 border-blue-500 text-white'
+                        : 'bg-slate-800/50 border-slate-600 text-gray-400 hover:border-slate-500'
+                    }`}
+                  >
+                    <Users className="w-6 h-6" />
+                    <span className="text-sm font-medium">Client</span>
+                    <span className="text-xs opacity-70">Use AI API</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, role: 'investor' })}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                      formData.role === 'investor'
+                        ? 'bg-green-600/30 border-green-500 text-white'
+                        : 'bg-slate-800/50 border-slate-600 text-gray-400 hover:border-slate-500'
+                    }`}
+                  >
+                    <Key className="w-6 h-6" />
+                    <span className="text-sm font-medium">Investor</span>
+                    <span className="text-xs opacity-70">Earn with keys</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Referral role info */}
+            {referralCode && (
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <p className="text-blue-200 text-sm text-center">
+                  Role: <strong>Client</strong> (fixed for referrals)
+                </p>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Email *
@@ -147,7 +240,7 @@ export default function Register() {
               disabled={loading}
               className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {loading ? 'Creating Account...' : referralCode ? 'Create Account & Get $5' : 'Create Account'}
             </button>
           </form>
 
