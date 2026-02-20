@@ -43,11 +43,11 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <div className="bg-green-600 p-2 rounded-lg">
-              <LayoutDashboard className="w-6 h-6 text-white" />
+              <LayoutDashboard className="w-6 h-6 text-white" aria-hidden="true" />
             </div>
             <div>
               <h2 className="font-bold text-gray-900">AI Router</h2>
-              <p className="text-xs text-green-600 font-medium">{t('investor.title') || 'Инвестор'}</p>
+              <p className="text-xs text-green-700 font-medium">{t('investor.title') || 'Инвестор'}</p>
             </div>
           </div>
         </div>
@@ -61,13 +61,14 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
                   isActive
                     ? 'bg-green-50 text-green-600'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-5 h-5" aria-hidden="true" />
                 <span className="font-medium">{item.label}</span>
               </Link>
             )
@@ -79,18 +80,20 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
           {/* Language */}
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Переключить язык"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <Globe className="w-5 h-5" />
+            <Globe className="w-5 h-5" aria-hidden="true" />
             <span>{language === 'ru' ? 'Русский' : 'English'}</span>
           </button>
 
           {/* Logout */}
           <button
             onClick={logout}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+            aria-label={t('navigation.logout') || 'Выйти'}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-5 h-5" aria-hidden="true" />
             <span>{t('navigation.logout') || 'Выйти'}</span>
           </button>
         </div>

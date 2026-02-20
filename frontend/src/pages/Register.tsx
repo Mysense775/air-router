@@ -105,7 +105,7 @@ export default function Register() {
             <h1 className="text-2xl font-bold text-white">
               {referralCode ? 'Join by Invitation' : 'Create Account'}
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-gray-300 mt-2">
               {referralCode 
                 ? 'Register using referral link and get $5 bonus!' 
                 : 'Register to access AI Router API'}
@@ -126,8 +126,8 @@ export default function Register() {
           )}
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-3" role="alert" aria-live="polite">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" aria-hidden="true" />
               <p className="text-red-200 text-sm">{error}</p>
             </div>
           )}
@@ -143,26 +143,30 @@ export default function Register() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, role: 'client' })}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                    aria-label="Select Client role"
+                    aria-pressed={formData.role === 'client'}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       formData.role === 'client'
                         ? 'bg-blue-600/30 border-blue-500 text-white'
                         : 'bg-slate-800/50 border-slate-600 text-gray-400 hover:border-slate-500'
                     }`}
                   >
-                    <Users className="w-6 h-6" />
+                    <Users className="w-6 h-6" aria-hidden="true" />
                     <span className="text-sm font-medium">Client</span>
                     <span className="text-xs opacity-70">Use AI API</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, role: 'investor' })}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                    aria-label="Select Investor role"
+                    aria-pressed={formData.role === 'investor'}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-green-500 ${
                       formData.role === 'investor'
                         ? 'bg-green-600/30 border-green-500 text-white'
                         : 'bg-slate-800/50 border-slate-600 text-gray-400 hover:border-slate-500'
                     }`}
                   >
-                    <Key className="w-6 h-6" />
+                    <Key className="w-6 h-6" aria-hidden="true" />
                     <span className="text-sm font-medium">Investor</span>
                     <span className="text-xs opacity-70">Earn with keys</span>
                   </button>
@@ -180,37 +184,42 @@ export default function Register() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="reg-email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email *
               </label>
               <input
+                id="reg-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="your@email.com"
                 required
+                autoComplete="email"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="reg-name" className="block text-sm font-medium text-gray-300 mb-2">
                 Name (optional)
               </label>
               <input
+                id="reg-name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Your name"
+                autoComplete="name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="reg-password" className="block text-sm font-medium text-gray-300 mb-2">
                 Password *
               </label>
               <input
+                id="reg-password"
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -218,20 +227,23 @@ export default function Register() {
                 placeholder="At least 8 characters"
                 required
                 minLength={8}
+                autoComplete="new-password"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="reg-confirm-password" className="block text-sm font-medium text-gray-300 mb-2">
                 Confirm Password *
               </label>
               <input
+                id="reg-confirm-password"
                 type="password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Repeat password"
                 required
+                autoComplete="new-password"
               />
             </div>
 
