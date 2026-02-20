@@ -37,16 +37,20 @@ class BillingService:
             }
         """
         if pricing is None:
-            # Default pricing if not found
-            prompt_price = Decimal("0.000005")  # $5 per million tokens
-            completion_price = Decimal("0.000015")  # $15 per million tokens
+            # Default pricing per token (OpenRouter format)
+            # gpt-4o-mini: prompt $0.15/1M = $0.00000015/token
+            #              completion $0.60/1M = $0.0000006/token
+            prompt_price_per_token = Decimal("0.00000015")
+            completion_price_per_token = Decimal("0.0000006")
         else:
-            prompt_price = Decimal(str(pricing.prompt_price))
-            completion_price = Decimal(str(pricing.completion_price))
+            # model_pricing stores price per token (OpenRouter format)
+            prompt_price_per_token = Decimal(str(pricing.prompt_price))
+            completion_price_per_token = Decimal(str(pricing.completion_price))
         
         # Calculate real cost (what OpenRouter charges)
-        prompt_cost = (Decimal(prompt_tokens) / 1000) * prompt_price
-        completion_cost = (Decimal(completion_tokens) / 1000) * completion_price
+        # Formula: tokens * price_per_token
+        prompt_cost = Decimal(prompt_tokens) * prompt_price_per_token
+        completion_cost = Decimal(completion_tokens) * completion_price_per_token
         real_cost = prompt_cost + completion_cost
         
         # Calculate our costs and client price

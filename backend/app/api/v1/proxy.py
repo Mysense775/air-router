@@ -14,8 +14,9 @@ from app.services.master_selector import MasterAccountSelector, NoAvailableAccou
 from app.models import ApiKey, User, MasterAccount, Balance, InvestorAccount
 from typing import Union
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from decimal import Decimal
+from datetime import datetime
 
 router = APIRouter()
 settings = get_settings()
@@ -211,9 +212,23 @@ async def chat_completions(
             # Если фактическая стоимость выше резерва — списываем дополнительно
             if actual_client_cost > reserved_amount:
                 extra_charge = actual_client_cost - reserved_amount
-                await BillingService.deduct_balance(db, user_id, extra_charge)
+                # Используем прямой update (как в reserve), чтобы НЕ обновлять lifetime_spent здесь
+                # (он обновится целиком ниже, чтобы избежать двойного учета extra_charge)
+                await db.execute(
+                    update(Balance)
+                    .where(
+                        Balance.user_id == user_id,
+                        Balance.balance_usd >= extra_charge
+                    )
+                    .values(
+                        balance_usd=Balance.balance_usd - extra_charge,
+                        updated_at=datetime.utcnow()
+                    )
+                )
+                await db.commit()
             
             # Update lifetime_spent напрямую (не через deduct_balance чтобы не списать дважды)
+            # Это единственное место, где обновляется статистика расходов за запрос
             result = await db.execute(
                 select(Balance).where(Balance.user_id == user_id)
             )
