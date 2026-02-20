@@ -13,7 +13,7 @@ interface PaymentMethod {
 
 // Custom ruble icon component
 const RubleIcon = () => (
-  <span className="text-xl font-bold">₽</span>
+  <span className="text-xl font-bold" aria-label="Russian Ruble">₽</span>
 );
 
 const paymentMethods: PaymentMethod[] = [
@@ -208,16 +208,18 @@ export default function Deposit() {
                   </code>
                   <button
                     onClick={() => copyToClipboard(activePayment.metadata?.pay_address || '')}
-                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                    aria-label={copied ? "Address copied" : "Copy address to clipboard"}
+                    aria-live="polite"
+                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}
+                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" aria-hidden="true" /> : <Copy className="w-5 h-5 text-gray-500" aria-hidden="true" />}
                   </button>
                 </div>
               </div>
             )}
             <button
               onClick={() => setActivePayment(null)}
-              className="text-blue-600 hover:text-blue-700 text-sm"
+              className="text-blue-600 hover:text-blue-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
             >
               Create new payment
             </button>
@@ -242,21 +244,23 @@ export default function Deposit() {
                   <button
                     key={method.id}
                     onClick={() => setSelectedMethod(method.id)}
-                    className={`w-full px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors ${
+                    aria-pressed={isSelected}
+                    aria-label={`Select ${method.name} payment method`}
+                    className={`w-full px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent'
                     }`}
                   >
                     <div className={`p-3 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                      <Icon className={`w-6 h-6 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
+                      <Icon className={`w-6 h-6 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
                     </div>
                     <div className="flex-1 text-left">
                       <h3 className="font-medium text-gray-900">{method.name}</h3>
-                      <p className="text-sm text-gray-500">{method.description}</p>
+                      <p className="text-sm text-gray-600">{method.description}</p>
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-600">
                       Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
                     </div>
-                    <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-400'}`} />
+                    <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-500'}`} aria-hidden="true" />
                   </button>
                 )
               })}
@@ -269,10 +273,11 @@ export default function Deposit() {
               {/* Currency Selection - only for crypto */}
               {selectedMethod === 'crypto' && (
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label htmlFor="currency-select" className="block text-sm font-medium text-gray-700 mb-3">
                     Select Cryptocurrency
                   </label>
                   <select
+                    id="currency-select"
                     value={selectedCurrency}
                     onChange={(e) => setSelectedCurrency(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -298,30 +303,32 @@ export default function Deposit() {
                       Current exchange rate: <strong>{exchangeRate.toFixed(2)} ₽/$</strong> (CBR)
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500">Loading exchange rate...</p>
+                    <p className="text-sm text-gray-600">Loading exchange rate...</p>
                   )}
                 </div>
               )}
 
               {/* Amount */}
               <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="amount-input" className="block text-sm font-medium text-gray-700 mb-2">
                   {selectedMethod === 'allin' ? 'Amount (RUB)' : 'Amount (USD)'}
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" aria-hidden="true">
                     {selectedMethod === 'allin' ? '₽' : '$'}
                   </span>
                   <input
+                    id="amount-input"
                     type="number"
                     min={selectedPayment?.minAmount || 10}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
                     placeholder={selectedMethod === 'allin' ? '1000' : '50'}
+                    aria-describedby="amount-min"
                   />
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p id="amount-min" className="text-sm text-gray-600 mt-2">
                   Minimum: {selectedMethod === 'allin' ? '₽' : '$'}{selectedPayment?.minAmount || 10}
                 </p>
                 {selectedMethod === 'allin' && usdEquivalent && (
@@ -367,7 +374,7 @@ export default function Deposit() {
 
           {/* Submit */}
           {(createPaymentMutation.isError || createAllinPaymentMutation.isError) && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700" role="alert" aria-live="polite">
               {(createPaymentMutation.error as any)?.response?.data?.detail || 
                (createAllinPaymentMutation.error as any)?.response?.data?.detail || 
                'Failed to create payment'}
@@ -377,11 +384,13 @@ export default function Deposit() {
           <button
             onClick={handleCreatePayment}
             disabled={!selectedMethod || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
-            className="w-full bg-blue-600 text-white py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            aria-label={createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? 'Creating payment' : 'Create payment'}
+            aria-busy={createPaymentMutation.isPending || createAllinPaymentMutation.isPending}
+            className="w-full bg-blue-600 text-white py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
                 Creating payment...
               </>
             ) : (
