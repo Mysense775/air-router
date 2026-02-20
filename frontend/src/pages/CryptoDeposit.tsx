@@ -291,7 +291,7 @@ export default function CryptoDeposit() {
                 rel="noopener noreferrer"
                 className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4" aria-hidden="true" />
                 Open in Wallet
               </a>
             )}

@@ -97,7 +97,11 @@ function QRCodeDisplay({ url }: { url?: string }) {
     <>
       <div className="bg-gray-50 rounded-lg p-4 text-center">
         <div className="w-24 h-24 bg-white border-2 border-gray-200 rounded-lg mx-auto mb-2 flex items-center justify-center cursor-pointer hover:border-green-500 transition-colors"
-             onClick={() => setShowModal(true)}>
+             onClick={() => setShowModal(true)}
+             role="button"
+             aria-label="Show QR code"
+             tabIndex={0}
+        >
           <div className="grid grid-cols-5 gap-0.5 p-2">
             {[...Array(25)].map((_, i) => (
               <div key={i} className={`w-3 h-3 ${Math.random() > 0.5 ? 'bg-black' : 'bg-white'}`} />
