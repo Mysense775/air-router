@@ -7,3 +7,8 @@
     font-family: system-ui, -apple-system, sans-serif;
   }
 }
+
+/* Rounded icons */
+.lucide {
+  border-radius: 4px;
+}
