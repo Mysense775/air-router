@@ -117,9 +117,9 @@ export default function ModelAdvisor() {
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+        className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-[20px] font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
       >
-        <Sparkles className="w-5 h-5" />
+        <Sparkles className="w-4 h-4" />
         <span>{t('modelAdvisor.button')}</span>
       </button>
 
@@ -130,8 +130,8 @@ export default function ModelAdvisor() {
             {/* Header */}
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Brain className="w-6 h-6 text-blue-600" />
+                <div className="p-2 bg-blue-100 rounded-[20px]">
+                  <Brain className="w-4 h-4 text-blue-600" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{t('modelAdvisor.title')}</h2>
@@ -140,9 +140,9 @@ export default function ModelAdvisor() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-[20px] transition-colors"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-4 h-4 text-gray-600" />
               </button>
             </div>
 
@@ -158,7 +158,7 @@ export default function ModelAdvisor() {
                       value={userTask}
                       onChange={(e) => setUserTask(e.target.value)}
                       placeholder={t('modelAdvisor.placeholder')}
-                      className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      className="w-full h-32 p-4 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                       maxLength={500}
                     />
                     <div className="mt-2 text-sm text-gray-600 text-right">
@@ -167,7 +167,7 @@ export default function ModelAdvisor() {
                   </div>
 
                   {/* Examples */}
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="bg-gray-50 rounded-[20px] p-4">
                     <p className="text-sm font-medium text-gray-700 mb-2">{t('modelAdvisor.examples')}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <button
@@ -212,16 +212,16 @@ export default function ModelAdvisor() {
                   <button
                     onClick={handleAnalyze}
                     disabled={userTask.trim().length < 10 || analyzeMutation.isPending}
-                    className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-blue-600 text-white rounded-[20px] font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                   >
                     {analyzeMutation.isPending ? (
                       <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                         {t('modelAdvisor.analyzing')}
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-5 h-5" />
+                        <Sparkles className="w-4 h-4" />
                         {t('modelAdvisor.selectStack')}
                       </>
                     )}
@@ -234,7 +234,7 @@ export default function ModelAdvisor() {
                 <div className="space-y-6">
                   {/* Recommended Stack Header */}
                   <div className="flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-blue-600" />
+                    <Layers className="w-4 h-4 text-blue-600" />
                     <h3 className="font-semibold text-gray-900">{t('modelAdvisor.recommendedStack')}</h3>
                   </div>
                   <p className="text-xs text-gray-600 -mt-4">{t('modelAdvisor.descriptionLang')}</p>
@@ -242,10 +242,10 @@ export default function ModelAdvisor() {
                   {/* Model Cards */}
                   <div className="space-y-3">
                     {analyzeMutation.data.recommendations.map((rec, i) => (
-                      <div key={i} className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
+                      <div key={i} className="border border-gray-200 rounded-[20px] p-4 hover:border-blue-300 transition-colors">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-3">
-                            <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm font-medium">
+                            <span className="flex-shrink-0 w-4 h-4 bg-blue-100 text-blue-600 rounded-[20px] flex items-center justify-center text-sm font-medium">
                               {i + 1}
                             </span>
                             <div>
@@ -255,12 +255,12 @@ export default function ModelAdvisor() {
                           </div>
                           <button
                             onClick={() => copyModelId(rec.model)}
-                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-[20px] transition-colors"
                           >
                             {copiedModels.has(rec.model) ? (
-                              <Check className="w-5 h-5 text-green-600" />
+                              <Check className="w-4 h-4 text-green-600" />
                             ) : (
-                              <Copy className="w-5 h-5" />
+                              <Copy className="w-4 h-4" />
                             )}
                           </button>
                         </div>
@@ -270,12 +270,12 @@ export default function ModelAdvisor() {
                   </div>
 
                   {/* Workflow */}
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-[20px] p-4">
                     <p className="font-medium text-gray-900 mb-3">{t('modelAdvisor.stepByStepPlan')}</p>
                     <ol className="space-y-2">
                       {analyzeMutation.data.workflow.map((step, i) => (
                         <li key={i} className="flex items-start gap-3">
-                          <span className="flex-shrink-0 w-6 h-6 bg-white text-blue-600 rounded-full flex items-center justify-center text-sm font-medium shadow-sm">
+                          <span className="flex-shrink-0 w-4 h-4 bg-white text-blue-600 rounded-full flex items-center justify-center text-sm font-medium shadow-sm">
                             {i + 1}
                           </span>
                           <span className="text-gray-700">{step}</span>
@@ -288,23 +288,23 @@ export default function ModelAdvisor() {
                   <div className="flex gap-3">
                     <button
                       onClick={reset}
-                      className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+                      className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-[20px] font-medium hover:bg-gray-50 transition-colors"
                     >
                       {t('modelAdvisor.newRequest')}
                     </button>
                     <button
                       onClick={() => createKeysMutation.mutate(analyzeMutation.data!.recommendations.map(r => r.model))}
                       disabled={createKeysMutation.isPending}
-                      className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-3 bg-blue-600 text-white rounded-[20px] font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                     >
                       {createKeysMutation.isPending ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                           {language === 'ru' ? 'Создаю ключи...' : 'Creating keys...'}
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="w-5 h-5" />
+                          <CheckCircle className="w-4 h-4" />
                           {t('modelAdvisor.createKeys')} ({analyzeMutation.data.recommendations.length})
                         </>
                       )}
@@ -324,8 +324,8 @@ export default function ModelAdvisor() {
             {/* Header */}
             <div className="p-6 border-b border-gray-200 bg-green-50">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Key className="w-6 h-6 text-green-600" />
+                <div className="p-2 bg-green-100 rounded-[20px]">
+                  <Key className="w-4 h-4 text-green-600" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-green-900">{t('modelAdvisor.keysCreated')}</h2>
@@ -336,8 +336,8 @@ export default function ModelAdvisor() {
 
             <div className="p-6 space-y-4">
               {/* Warning */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div className="bg-yellow-50 border border-yellow-200 rounded-[20px] p-4 flex items-start gap-3">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-yellow-900">{t('modelAdvisor.important')}</p>
                   <p className="text-sm text-yellow-800">
@@ -349,23 +349,23 @@ export default function ModelAdvisor() {
               {/* Keys List */}
               <div className="space-y-3">
                 {createdKeys.map((key, i) => (
-                  <div key={key.id} className="border border-gray-200 rounded-xl p-4 bg-gray-50">
+                  <div key={key.id} className="border border-gray-200 rounded-[20px] p-4 bg-gray-50">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+                        <span className="w-4 h-4 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
                           {i + 1}
                         </span>
                         <span className="font-medium text-gray-900">{key.name}</span>
                       </div>
                       <button
                         onClick={() => copyKey(key.key)}
-                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-100 rounded-[20px] transition-colors"
                         title={t('modelAdvisor.copyKey')}
                       >
                         <Copy className="w-4 h-4" />
                       </button>
                     </div>
-                    <code className="block bg-gray-900 text-green-400 px-3 py-2 rounded-lg text-sm font-mono break-all">
+                    <code className="block bg-gray-900 text-green-400 px-3 py-2 rounded-[20px] text-sm font-mono break-all">
                       {key.key}
                     </code>
                     {key.allowed_model && (
@@ -378,16 +378,16 @@ export default function ModelAdvisor() {
               {/* Copy All Button */}
               <button
                 onClick={copyAllKeys}
-                className="w-full py-3 border-2 border-blue-600 text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 border-2 border-blue-600 text-blue-600 rounded-[20px] font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
               >
                 {copiedAll ? (
                   <>
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4" />
                     {t('modelAdvisor.copied')}
                   </>
                 ) : (
                   <>
-                    <Copy className="w-5 h-5" />
+                    <Copy className="w-4 h-4" />
                     {t('modelAdvisor.copyAllKeys')}
                   </>
                 )}
@@ -397,7 +397,7 @@ export default function ModelAdvisor() {
               <div className="flex gap-3 pt-4 border-t border-gray-200">
                 <button
                   onClick={handleCloseKeysModal}
-                  className="flex-1 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+                  className="flex-1 py-3 bg-gray-900 text-white rounded-[20px] font-medium hover:bg-gray-800 transition-colors"
                 >
                   {t('modelAdvisor.goToApiKeys')}
                 </button>

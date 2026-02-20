@@ -33,7 +33,7 @@ export default function ProfitDistributionChart() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 h-80">
+      <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100 h-80">
         <div className="animate-pulse space-y-4">
           <div className="h-4 bg-gray-200 rounded w-1/3"></div>
           <div className="h-56 bg-gray-200 rounded"></div>
@@ -55,7 +55,7 @@ export default function ProfitDistributionChart() {
   const totalProfit = chartData.reduce((sum, item) => sum + item.value, 0)
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
       <h3 className="font-semibold text-gray-900 mb-4">Распределение прибыли</h3>
       
       {chartData.length > 0 ? (

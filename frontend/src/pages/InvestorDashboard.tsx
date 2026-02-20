@@ -95,8 +95,8 @@ function QRCodeDisplay({ url }: { url?: string }) {
 
   return (
     <>
-      <div className="bg-gray-50 rounded-lg p-4 text-center">
-        <div className="w-24 h-24 bg-white border-2 border-gray-200 rounded-lg mx-auto mb-2 flex items-center justify-center cursor-pointer hover:border-green-500 transition-colors"
+      <div className="bg-gray-50 rounded-[20px] p-4 text-center">
+        <div className="w-24 h-24 bg-white border-2 border-gray-200 rounded-[20px] mx-auto mb-2 flex items-center justify-center cursor-pointer hover:border-green-500 transition-colors"
              onClick={() => setShowModal(true)}
              role="button"
              aria-label="Show QR code"
@@ -118,25 +118,25 @@ function QRCodeDisplay({ url }: { url?: string }) {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full">
+          <div className="bg-white rounded-[20px] p-6 max-w-sm w-full">
             <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">QR-код реферальной ссылки</h3>
             <canvas 
               ref={canvasRef} 
               width={200} 
               height={200} 
-              className="mx-auto border border-gray-200 rounded-lg"
+              className="mx-auto border border-gray-200 rounded-[20px]"
             />
             <div className="mt-4 space-y-2">
               <button
                 onClick={downloadQR}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors"
               >
                 <Download className="w-4 h-4" />
                 Скачать PNG
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-[20px] hover:bg-gray-50 transition-colors"
               >
                 Закрыть
               </button>
@@ -227,9 +227,9 @@ export default function InvestorDashboard() {
         </div>
         <Link
           to="/investor/keys/add"
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           {t('investor.addKey') || 'Добавить ключ'}
         </Link>
       </div>
@@ -239,14 +239,14 @@ export default function InvestorDashboard() {
         {stats.map((stat, i) => {
           const Icon = stat.icon
           return (
-            <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div key={i} className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">{stat.title}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
                 <div className={`p-3 bg-${stat.color}-100 rounded-lg`}>
-                  <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                  <Icon className={`w-4 h-4 text-${stat.color}-600`} />
                 </div>
               </div>
             </div>
@@ -255,11 +255,11 @@ export default function InvestorDashboard() {
       </div>
 
       {/* Referral Program Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-200 p-6 mb-8">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-              <Users className="w-6 h-6 text-green-600" />
+              <Users className="w-4 h-4 text-green-600" />
               Реферальная программа
             </h2>
             <p className="text-gray-600 mb-4">
@@ -267,7 +267,7 @@ export default function InvestorDashboard() {
             </p>
             
             {referralData?.referral_url && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <div className="bg-gray-50 rounded-[20px] p-4 mb-4">
                 <p className="text-sm text-gray-600 mb-2">Ваша реферальная ссылка:</p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-sm font-mono text-gray-800">
@@ -275,7 +275,7 @@ export default function InvestorDashboard() {
                   </code>
                   <button
                     onClick={copyReferralLink}
-                    className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors"
                   >
                     {copied ? (
                       <><CheckCircle className="w-4 h-4" /> Скопировано</>
@@ -289,19 +289,19 @@ export default function InvestorDashboard() {
             
             {referralData && (
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-blue-50 rounded-lg p-3 text-center">
+                <div className="bg-blue-50 rounded-[20px] p-3 text-center">
                   <p className="text-2xl font-bold text-blue-600">{referralData.total_clicks || 0}</p>
                   <p className="text-xs text-gray-600">Переходов</p>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-3 text-center">
+                <div className="bg-purple-50 rounded-[20px] p-3 text-center">
                   <p className="text-2xl font-bold text-purple-600">{referralData.registered_referrals || 0}</p>
                   <p className="text-xs text-gray-600">Регистраций</p>
                 </div>
-                <div className="bg-orange-50 rounded-lg p-3 text-center">
+                <div className="bg-orange-50 rounded-[20px] p-3 text-center">
                   <p className="text-2xl font-bold text-orange-600">{referralData.active_referrals || 0}</p>
                   <p className="text-xs text-gray-600">Активных</p>
                 </div>
-                <div className="bg-green-50 rounded-lg p-3 text-center">
+                <div className="bg-green-50 rounded-[20px] p-3 text-center">
                   <p className="text-2xl font-bold text-green-600">${(referralData.total_earnings_usd || 0).toFixed(2)}</p>
                   <p className="text-xs text-gray-600">Заработано</p>
                 </div>
@@ -316,7 +316,7 @@ export default function InvestorDashboard() {
       </div>
 
       {/* Accounts List */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-900">
             {t('investor.myAccounts') || 'Мои аккаунты'}

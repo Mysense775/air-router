@@ -140,7 +140,7 @@ export default function Models() {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+      <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 text-red-700">
         Failed to load models
       </div>
     )
@@ -203,27 +203,27 @@ export default function Models() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+      <div className="bg-white rounded-[20px] p-4 border border-gray-200 shadow-sm">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search models..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           
           {/* Provider Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <select
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="all">All Providers</option>
               {providers.filter(p => p !== 'all').map(provider => (
@@ -237,11 +237,11 @@ export default function Models() {
           
           {/* Price Filter */}
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <select
               value={priceFilter}
               onChange={(e) => setPriceFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="all">All Prices</option>
               <option value="cheap">Cheap (&lt; $1/M)</option>
@@ -265,15 +265,15 @@ export default function Models() {
           const contextLength = getContextLength(model)
           
           return (
-            <div key={model.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all">
+            <div key={model.id} className="bg-white rounded-[20px] border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-blue-600" />
+                  <Brain className="w-4 h-4 text-blue-600" />
                   <span className="text-xs font-medium text-gray-600 uppercase">{provider}</span>
                 </div>
                 <button
                   onClick={() => copyToClipboard(model.id)}
-                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-[20px] transition-colors"
                   title="Copy model ID"
                 >
                   {copiedId === model.id ? (
@@ -325,7 +325,7 @@ export default function Models() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4">
+        <div className="flex items-center justify-between bg-white rounded-[20px] border border-gray-200 p-4">
           <div className="text-sm text-gray-600">
             Page {currentPage} of {totalPages}
           </div>
@@ -334,7 +334,7 @@ export default function Models() {
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-2 rounded-[20px] border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
@@ -373,7 +373,7 @@ export default function Models() {
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-2 rounded-[20px] border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

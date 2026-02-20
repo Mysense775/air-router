@@ -21,7 +21,7 @@ export default function RevenueOverviewWidget() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
         <div className="animate-pulse space-y-4">
           <div className="h-4 bg-gray-200 rounded w-1/3"></div>
           <div className="grid grid-cols-3 gap-4">
@@ -56,9 +56,9 @@ export default function RevenueOverviewWidget() {
   ]
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
       <div className="flex items-center gap-2 mb-6">
-        <DollarSign className="w-5 h-5 text-gray-600" />
+        <DollarSign className="w-4 h-4 text-gray-600" />
         <h3 className="font-semibold text-gray-900">Доходы платформы</h3>
       </div>
 
@@ -68,7 +68,7 @@ export default function RevenueOverviewWidget() {
           return (
             <div key={i} className="text-center">
               <div className={`inline-flex p-3 rounded-lg bg-${stat.color}-100 mb-2`}>
-                <Icon className={`w-5 h-5 text-${stat.color}-600`} />
+                <Icon className={`w-4 h-4 text-${stat.color}-600`} />
               </div>
               <p className="text-sm text-gray-600">{stat.title}</p>
               <p className="text-xl font-bold text-gray-900">

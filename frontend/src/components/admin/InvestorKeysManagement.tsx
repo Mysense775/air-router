@@ -79,7 +79,7 @@ export default function InvestorKeysManagement() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="bg-white rounded-[20px] shadow-sm border border-gray-100">
       {/* Header */}
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center justify-between mb-4">
@@ -98,14 +98,14 @@ export default function InvestorKeysManagement() {
               placeholder="Поиск по email или названию..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-[20px] text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 rounded-[20px] text-sm focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Все статусы</option>
             <option value="active">Активен</option>
@@ -118,7 +118,7 @@ export default function InvestorKeysManagement() {
             placeholder="Мин. баланс"
             value={minBalance}
             onChange={(e) => setMinBalance(e.target.value)}
-            className="w-32 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-32 px-4 py-2 border border-gray-300 rounded-[20px] text-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function InvestorKeysManagement() {
             {isLoading ? (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center">
-                  <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-500" />
+                  <RefreshCw className="w-4 h-4 animate-spin mx-auto text-gray-500" />
                 </td>
               </tr>
             ) : accounts?.length === 0 ? (
@@ -154,7 +154,7 @@ export default function InvestorKeysManagement() {
                 <tr key={account.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-blue-600" />
                       </div>
                       <div>
@@ -191,7 +191,7 @@ export default function InvestorKeysManagement() {
                       {account.status === 'active' && (
                         <button
                           onClick={() => pauseMutation.mutate(account.id)}
-                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg"
+                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-[20px]"
                           title="Приостановить"
                         >
                           <Pause className="w-4 h-4" />
@@ -200,7 +200,7 @@ export default function InvestorKeysManagement() {
                       {account.status === 'paused' && (
                         <button
                           onClick={() => activateMutation.mutate(account.id)}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-[20px]"
                           title="Активировать"
                         >
                           <Play className="w-4 h-4" />
@@ -213,7 +213,7 @@ export default function InvestorKeysManagement() {
                               revokeMutation.mutate(account.id)
                             }
                           }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-[20px]"
                           title="Отозвать"
                         >
                           <Trash2 className="w-4 h-4" />

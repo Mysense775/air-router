@@ -35,7 +35,7 @@ export default function UsagePage() {
         <select
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500"
         >
           <option value={7}>Last 7 days</option>
           <option value={30}>Last 30 days</option>
@@ -45,10 +45,10 @@ export default function UsagePage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-blue-50 rounded-lg">
-              <Activity className="w-5 h-5 text-blue-600" />
+            <div className="p-3 bg-blue-50 rounded-[20px]">
+              <Activity className="w-4 h-4 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Total Requests</p>
@@ -59,10 +59,10 @@ export default function UsagePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-green-50 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-green-600" />
+            <div className="p-3 bg-green-50 rounded-[20px]">
+              <TrendingUp className="w-4 h-4 text-green-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Total Cost</p>
@@ -73,10 +73,10 @@ export default function UsagePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-purple-50 rounded-lg">
-              <Clock className="w-5 h-5 text-purple-600" />
+            <div className="p-3 bg-purple-50 rounded-[20px]">
+              <Clock className="w-4 h-4 text-purple-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Period</p>
@@ -87,7 +87,7 @@ export default function UsagePage() {
       </div>
 
       {/* Models Usage */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[20px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h3 className="text-lg font-semibold text-gray-900">Usage by Model</h3>
         </div>
@@ -116,7 +116,7 @@ export default function UsagePage() {
       </div>
 
       {/* Daily Breakdown */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[20px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h3 className="text-lg font-semibold text-gray-900">Daily Breakdown</h3>
         </div>

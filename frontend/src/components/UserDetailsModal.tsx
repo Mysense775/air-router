@@ -144,7 +144,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-[20px] max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
             <button
               onClick={() => impersonateMutation.mutate(userId)}
               disabled={impersonateMutation.isPending}
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm"
+              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 disabled:opacity-50 text-sm"
             >
               {impersonateMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -169,8 +169,8 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
               )}
               Войти как пользователь
             </button>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
-              <X className="w-5 h-5 text-gray-600" />
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-[20px]">
+              <X className="w-4 h-4 text-gray-600" />
             </button>
           </div>
         </div>
@@ -204,37 +204,37 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
         <div className="flex-1 overflow-auto p-6">
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
-              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+              <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-64 text-red-500">
-              <AlertCircle className="w-6 h-6 mr-2" />
+              <AlertCircle className="w-4 h-4 mr-2" />
               Ошибка загрузки
             </div>
           ) : activeTab === 'info' ? (
             <div className="space-y-6">
               {/* Stats Grid */}
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-blue-50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-[20px] p-4">
                   <p className="text-sm text-blue-600 mb-1">Баланс</p>
                   <p className="text-2xl font-bold text-blue-900">${balance?.balance_usd.toFixed(2) || '0.00'}</p>
                 </div>
-                <div className="bg-green-50 rounded-lg p-4">
+                <div className="bg-green-50 rounded-[20px] p-4">
                   <p className="text-sm text-green-600 mb-1">Пополнено</p>
                   <p className="text-2xl font-bold text-green-900">${stats?.total_deposits.toFixed(2) || '0.00'}</p>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-4">
+                <div className="bg-purple-50 rounded-[20px] p-4">
                   <p className="text-sm text-purple-600 mb-1">Запросов</p>
                   <p className="text-2xl font-bold text-purple-900">{stats?.total_requests || 0}</p>
                 </div>
-                <div className="bg-orange-50 rounded-lg p-4">
+                <div className="bg-orange-50 rounded-[20px] p-4">
                   <p className="text-sm text-orange-600 mb-1">Потрачено</p>
                   <p className="text-2xl font-bold text-orange-900">${stats?.total_spent.toFixed(2) || '0.00'}</p>
                 </div>
               </div>
 
               {/* User Details */}
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <div className="bg-gray-50 rounded-[20px] p-4 space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
                   <span className="text-gray-600">ID</span>
                   <span className="font-mono text-sm">{user?.id}</span>
@@ -284,7 +284,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowBalanceModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700"
                 >
                   <DollarSign className="w-4 h-4" />
                   Добавить баланс
@@ -297,7 +297,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
                 <p className="text-center text-gray-600 py-8">Нет API ключей</p>
               ) : (
                 data?.api_keys.map((key) => (
-                  <div key={key.id} className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                  <div key={key.id} className="bg-gray-50 rounded-[20px] p-4 flex items-center justify-between">
                     <div>
                       <p className="font-medium">{key.name}</p>
                       <p className="text-sm text-gray-600">
@@ -388,12 +388,12 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
       {/* Role Change Modal */}
       {showRoleModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
+          <div className="bg-white rounded-[20px] max-w-sm w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold">Изменить роль</h3>
             <select
               value={newRole}
               onChange={(e) => setNewRole(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+              className="w-full px-4 py-2 border border-gray-200 rounded-[20px]"
             >
               <option value="client">Client (Клиент)</option>
               <option value="admin">Admin (Администратор)</option>
@@ -402,14 +402,14 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
             <div className="flex gap-3">
               <button
                 onClick={() => setShowRoleModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-[20px] hover:bg-gray-50"
               >
                 Отмена
               </button>
               <button
                 onClick={() => updateRoleMutation.mutate({ id: userId!, role: newRole })}
                 disabled={updateRoleMutation.isPending}
-                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-[20px] hover:bg-purple-700 disabled:opacity-50"
               >
                 {updateRoleMutation.isPending ? 'Сохранение...' : 'Сохранить'}
               </button>
@@ -421,7 +421,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
       {/* Add Balance Modal */}
       {showBalanceModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
+          <div className="bg-white rounded-[20px] max-w-sm w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold">Добавить баланс</h3>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Сумма (USD)</label>
@@ -431,7 +431,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
                 min="0.01"
                 value={balanceAmount}
                 onChange={(e) => setBalanceAmount(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                className="w-full px-4 py-2 border border-gray-200 rounded-[20px]"
                 placeholder="100.00"
               />
             </div>
@@ -441,14 +441,14 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
                 type="text"
                 value={balanceReason}
                 onChange={(e) => setBalanceReason(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                className="w-full px-4 py-2 border border-gray-200 rounded-[20px]"
                 placeholder="Бонус, компенсация..."
               />
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowBalanceModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-[20px] hover:bg-gray-50"
               >
                 Отмена
               </button>
@@ -459,7 +459,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
                   reason: balanceReason
                 })}
                 disabled={addBalanceMutation.isPending || !balanceAmount || parseFloat(balanceAmount) <= 0}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 disabled:opacity-50"
               >
                 {addBalanceMutation.isPending ? 'Добавление...' : 'Добавить'}
               </button>

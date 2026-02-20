@@ -105,8 +105,8 @@ export default function ApiKeysPage() {
 
       {/* Error Message */}
       {hasError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3" role="alert" aria-live="polite">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+        <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 flex items-start gap-3" role="alert" aria-live="polite">
+          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div className="text-sm text-red-800">
             <p className="font-medium mb-1">Failed to load data</p>
             <p>{errorMessage || 'Please refresh the page to try again'}</p>
@@ -116,25 +116,25 @@ export default function ApiKeysPage() {
 
       {/* New Key Modal/Form */}
       {showNewKey && (
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-[20px] p-6 text-white">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className="font-semibold mb-2">New API Key Created!</h3>
               <p className="text-sm opacity-90 mb-4">
                 Copy this key now. You won't be able to see it again.
               </p>
-              <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 mb-3">
+              <div className="flex items-center gap-2 bg-white/10 rounded-[20px] p-3 mb-3">
                 <code className="font-mono text-sm break-all flex-1">{showNewKey}</code>
                 <button
                   onClick={() => copyToClipboard(showNewKey)}
                   aria-label="Copy API key to clipboard"
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="p-2 hover:bg-white/10 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
                 >
                   <Copy className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
               {newKeyModel && (
-                <div className="flex items-center gap-2 text-sm bg-white/10 rounded-lg p-2">
+                <div className="flex items-center gap-2 text-sm bg-white/10 rounded-[20px] p-2">
                   <Brain className="w-4 h-4" aria-hidden="true" />
                   <span>Restricted to model: <strong>{newKeyModel}</strong></span>
                 </div>
@@ -152,11 +152,11 @@ export default function ApiKeysPage() {
       )}
 
       {/* Create New Key */}
-      <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+      <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New API Key</h3>
         <div className="space-y-4">
           {createError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700" role="alert" aria-live="polite">
+            <div className="bg-red-50 border border-red-200 rounded-[20px] p-3 text-sm text-red-700" role="alert" aria-live="polite">
               {createError}
             </div>
           )}
@@ -170,7 +170,7 @@ export default function ApiKeysPage() {
                 setCreateError('')
               }}
               placeholder="Key name (e.g., Production, Development)"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               aria-describedby="key-name-hint"
             />
           </div>
@@ -184,7 +184,7 @@ export default function ApiKeysPage() {
               id="model-select"
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               aria-describedby="model-hint"
             >
               <option value="">Any model (no restriction)</option>
@@ -203,7 +203,7 @@ export default function ApiKeysPage() {
             onClick={() => createMutation.mutate()}
             disabled={createMutation.isPending}
             aria-busy={createMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             {createMutation.isPending ? (
               <>
@@ -221,7 +221,7 @@ export default function ApiKeysPage() {
       </div>
 
       {/* API Keys List */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[20px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900">Your API Keys</h3>
         </div>
@@ -240,7 +240,7 @@ export default function ApiKeysPage() {
               <div key={key.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${key.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    <Key className={`w-5 h-5 ${key.is_active ? 'text-green-600' : 'text-gray-600'}`} aria-hidden="true" />
+                    <Key className={`w-4 h-4 ${key.is_active ? 'text-green-600' : 'text-gray-600'}`} aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{key.name}</p>
@@ -267,7 +267,7 @@ export default function ApiKeysPage() {
                     <button
                       onClick={() => revokeMutation.mutate(key.id)}
                       disabled={revokeMutation.isPending}
-                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
                       aria-label={`Revoke key ${key.name}`}
                       title="Revoke key"
                     >
@@ -282,8 +282,8 @@ export default function ApiKeysPage() {
       </div>
 
       {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+      <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4 flex items-start gap-3">
+        <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
         <div className="text-sm text-blue-800">
           <p className="font-medium mb-1">Model Restriction</p>
           <p>

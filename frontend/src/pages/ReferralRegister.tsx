@@ -140,7 +140,7 @@ export default function ReferralRegister() {
               {/* Заголовок */}
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-2">
-                  <UserPlus className="w-6 h-6 text-indigo-600" />
+                  <UserPlus className="w-4 h-4 text-indigo-600" />
                   <span className="text-sm text-indigo-600 font-medium">Регистрация по приглашению</span>
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900">Создать аккаунт</h1>
@@ -151,8 +151,8 @@ export default function ReferralRegister() {
 
               {/* Ошибка */}
               {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-[20px] flex items-center gap-3">
+                  <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
               )}
@@ -167,7 +167,7 @@ export default function ReferralRegister() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="Как к вам обращаться?"
                   />
                 </div>
@@ -180,7 +180,7 @@ export default function ReferralRegister() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="your@email.com"
                     required
                   />
@@ -194,7 +194,7 @@ export default function ReferralRegister() {
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="Минимум 8 символов"
                     required
                     minLength={8}
@@ -209,7 +209,7 @@ export default function ReferralRegister() {
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="Введите пароль ещё раз"
                     required
                   />
@@ -220,7 +220,7 @@ export default function ReferralRegister() {
                     type="checkbox"
                     checked={formData.agreeToTerms}
                     onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
-                    className="mt-1 w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                    className="mt-1 w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
                   />
                   <span className="text-sm text-gray-600">
                     Я согласен с{' '}
@@ -237,17 +237,17 @@ export default function ReferralRegister() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                  className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-[20px] transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       Создание аккаунта...
                     </>
                   ) : (
                     <>
                       <span>Создать аккаунт и получить $5</span>
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
@@ -270,7 +270,7 @@ export default function ReferralRegister() {
             {/* Блок бонуса */}
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <Gift className="w-6 h-6" />
+                <Gift className="w-4 h-4" />
                 <span className="text-green-100 font-medium">Вы получите</span>
               </div>
               
@@ -284,11 +284,11 @@ export default function ReferralRegister() {
             {referrerInfo && (
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
-                  <User className="w-5 h-5" />
+                  <User className="w-4 h-4" />
                   <span className="text-green-100 font-medium">Вас пригласил</span>
                 </div>
                 
-                <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/20">
+                <div className="bg-white/10 backdrop-blur rounded-[20px] p-4 border border-white/20">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-xl font-bold">
                       {referrerInfo.name.charAt(0)}
@@ -309,13 +309,13 @@ export default function ReferralRegister() {
             {/* Преимущества */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg flex items-center gap-2">
-                <Zap className="w-5 h-5" />
+                <Zap className="w-4 h-4" />
                 Преимущества платформы
               </h3>
               
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-200 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-green-200 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">$5 бонусом</p>
                     <p className="text-sm text-green-100">Сразу на баланс после регистрации</p>
@@ -323,7 +323,7 @@ export default function ReferralRegister() {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-200 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-green-200 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">100+ AI моделей</p>
                     <p className="text-sm text-green-100">Доступ к GPT-4, Claude, Gemini и другим</p>
@@ -331,7 +331,7 @@ export default function ReferralRegister() {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-200 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-green-200 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">Цены ниже на 10-20%</p>
                     <p className="text-sm text-green-100">Чем напрямую у OpenRouter</p>
@@ -339,7 +339,7 @@ export default function ReferralRegister() {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-200 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-green-200 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">Простая интеграция</p>
                     <p className="text-sm text-green-100">OpenAI-compatible API</p>
@@ -351,21 +351,21 @@ export default function ReferralRegister() {
             {/* Как это работает */}
             <div className="mt-8 pt-6 border-t border-white/20">
               <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                <Wallet className="w-5 h-5" />
+                <Wallet className="w-4 h-4" />
                 Как это работает
               </h3>
               
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">1</span>
+                  <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">1</span>
                   <span>Создаёте аккаунт</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">2</span>
+                  <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">2</span>
                   <span>Получаете $5 бонусом</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">3</span>
+                  <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">3</span>
                   <span>Используете API с баланса</span>
                 </div>
               </div>

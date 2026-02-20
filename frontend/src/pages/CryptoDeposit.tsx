@@ -131,14 +131,14 @@ export default function CryptoDeposit() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500" />
+        <div className="p-4 bg-red-50 border border-red-200 rounded-[20px] flex items-center gap-3">
+          <AlertCircle className="w-4 h-4 text-red-500" />
           <p className="text-red-700">{error}</p>
         </div>
       )}
 
       {!payment ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-[20px] border border-gray-200 p-6 shadow-sm">
           <form onSubmit={handleCreate} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -148,10 +148,10 @@ export default function CryptoDeposit() {
                 <button
                   type="button"
                   onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-                  className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-[20px] hover:border-gray-400 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Wallet className="w-5 h-5 text-gray-500" />
+                    <Wallet className="w-4 h-4 text-gray-500" />
                     <div className="text-left">
                       <div className="font-medium text-gray-900">
                         {selectedCurrencyData?.name || 'Select currency'}
@@ -161,11 +161,11 @@ export default function CryptoDeposit() {
                       </div>
                     </div>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showCurrencyDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-[20px] shadow-lg max-h-60 overflow-auto">
                     {currencies?.map((currency) => (
                       <button
                         key={currency.code}
@@ -183,7 +183,7 @@ export default function CryptoDeposit() {
                           </div>
                         </div>
                         {selectedCurrency === currency.code && (
-                          <Check className="w-5 h-5 text-blue-600" />
+                          <Check className="w-4 h-4 text-blue-600" />
                         )}
                       </button>
                     ))}
@@ -205,7 +205,7 @@ export default function CryptoDeposit() {
                   step="0.01"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-[20px] focus:outline-none focus:border-blue-500"
                   placeholder="100.00"
                   required
                 />
@@ -218,22 +218,22 @@ export default function CryptoDeposit() {
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-medium rounded-[20px] transition-colors flex items-center justify-center gap-2"
             >
               {createMutation.isPending ? (
-                <RefreshCw className="w-5 h-5 animate-spin" />
+                <RefreshCw className="w-4 h-4 animate-spin" />
               ) : (
-                <Bitcoin className="w-5 h-5" />
+                <Bitcoin className="w-4 h-4" />
               )}
               {createMutation.isPending ? 'Creating...' : 'Create Payment'}
             </button>
           </form>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-[20px] border border-gray-200 p-6 shadow-sm">
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+              <Check className="w-4 h-4 text-green-600" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">Платёж создан!</h2>
             <p className="text-gray-600 mt-1">
@@ -242,12 +242,12 @@ export default function CryptoDeposit() {
           </div>
 
           <div className="space-y-4 mb-6">
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 rounded-[20px] p-4">
               <div className="text-sm text-gray-600 mb-1">Payment ID</div>
               <div className="font-mono text-gray-900">{payment.payment_id}</div>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-6 text-white text-center">
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-[20px] p-6 text-white text-center">
               <div className="text-sm opacity-90 mb-2">Отправьте точно эту сумму:</div>
               <div className="text-5xl font-black tracking-tight">
                 {payment.pay_amount.toFixed(6)}
@@ -260,7 +260,7 @@ export default function CryptoDeposit() {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 rounded-[20px] p-4">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm text-gray-600">Deposit Address</span>
                 <button
@@ -280,7 +280,7 @@ export default function CryptoDeposit() {
           <div className="flex gap-3">
             <button
               onClick={() => setPayment(null)}
-              className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-[20px] hover:bg-gray-50"
             >
               Create New
             </button>
@@ -289,7 +289,7 @@ export default function CryptoDeposit() {
                 href={payment.payment_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-[20px] hover:bg-blue-500 flex items-center justify-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" aria-hidden="true" />
                 Open in Wallet
@@ -297,8 +297,8 @@ export default function CryptoDeposit() {
             )}
           </div>
 
-          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-3">
-            <Clock className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-[20px] flex items-start gap-3">
+            <Clock className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-yellow-800">
               <p className="font-medium">Important:</p>
               <ul className="list-disc list-inside mt-1 space-y-1">
@@ -313,7 +313,7 @@ export default function CryptoDeposit() {
       )}
 
       {/* Payment History */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Recent Deposits</h2>
           <button

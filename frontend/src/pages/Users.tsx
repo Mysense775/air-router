@@ -139,15 +139,15 @@ export default function Users() {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-[20px] transition-colors"
         >
-          <UserPlus className="w-5 h-5" />
+          <UserPlus className="w-4 h-4" />
           Add User
         </button>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
@@ -210,7 +210,7 @@ export default function Users() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setSelectedUserId(user.id)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-[20px] text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label={`View user ${user.email}`}
                       >
                         <Eye className="w-4 h-4" aria-hidden="true" />
@@ -218,7 +218,7 @@ export default function Users() {
                       </button>
                       <button
                         onClick={() => openBalanceModal(user)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-[20px] text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
                         aria-label={`Manage balance for ${user.email}`}
                       >
                         <Wallet className="w-4 h-4" aria-hidden="true" />
@@ -236,27 +236,27 @@ export default function Users() {
       {/* Add User Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md shadow-xl">
+          <div className="bg-white rounded-[20px] border border-gray-200 p-6 w-full max-w-md shadow-xl">
             {!createdUser ? (
               <>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Add New User</h2>
                   <button onClick={closeModal} aria-label="Close modal" className="text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
-                    <X className="w-5 h-5" aria-hidden="true" />
+                    <X className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-red-500" />
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-[20px] flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
                     <p className="text-red-700 text-sm">{error}</p>
                   </div>
                 )}
 
                 <form onSubmit={handleCreate} className="space-y-4">
                   {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2" role="alert" aria-live="polite">
-                      <AlertCircle className="w-5 h-5 text-red-500" aria-hidden="true" />
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-[20px] flex items-center gap-2" role="alert" aria-live="polite">
+                      <AlertCircle className="w-4 h-4 text-red-500" aria-hidden="true" />
                       <p className="text-red-700 text-sm">{error}</p>
                     </div>
                   )}
@@ -270,7 +270,7 @@ export default function Users() {
                       type="email"
                       value={newUser.email}
                       onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                       required
                       autoComplete="email"
                     />
@@ -285,7 +285,7 @@ export default function Users() {
                       type="text"
                       value={newUser.name}
                       onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                       autoComplete="name"
                     />
                   </div>
@@ -298,7 +298,7 @@ export default function Users() {
                       id="user-role"
                       value={newUser.role}
                       onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="client">Client</option>
                       <option value="admin">Admin</option>
@@ -309,7 +309,7 @@ export default function Users() {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-[20px] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       Cancel
                     </button>
@@ -317,7 +317,7 @@ export default function Users() {
                       type="submit"
                       disabled={createUserMutation.isPending}
                       aria-busy={createUserMutation.isPending}
-                      className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-[20px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       {createUserMutation.isPending ? 'Creating...' : 'Create User'}
                     </button>
@@ -328,7 +328,7 @@ export default function Users() {
               <>
                 <div className="text-center mb-6">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Check className="w-6 h-6 text-green-600" />
+                    <Check className="w-4 h-4 text-green-600" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-900">User Created!</h2>
                   <p className="text-gray-600 text-sm mt-1">
@@ -336,12 +336,12 @@ export default function Users() {
                   </p>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="bg-gray-50 rounded-[20px] p-4 mb-4">
                   <div className="text-sm text-gray-600 mb-1">Email</div>
                   <div className="text-gray-900 font-medium">{createdUser.email}</div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="bg-gray-50 rounded-[20px] p-4 mb-4">
                   <div className="text-sm text-gray-600 mb-1">Temporary Password</div>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 text-green-700 font-mono bg-white border px-3 py-2 rounded">
@@ -352,14 +352,14 @@ export default function Users() {
                       className="p-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
                       title="Copy password"
                     >
-                      {copied ? <Check className="w-5 h-5 text-green-600" /> : <Copy className="w-5 h-5" />}
+                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
                 <button
                   onClick={closeModal}
-                  className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+                  className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-[20px]"
                 >
                   Done
                 </button>
@@ -372,24 +372,24 @@ export default function Users() {
       {/* Add Balance Modal */}
       {isBalanceModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md shadow-xl">
+          <div className="bg-white rounded-[20px] border border-gray-200 p-6 w-full max-w-md shadow-xl">
             {!balanceSuccess ? (
               <>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Add Balance</h2>
                   <button onClick={closeBalanceModal} className="text-gray-500 hover:text-gray-600">
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="mb-4 p-3 bg-gray-50 rounded-[20px]">
                   <div className="text-sm text-gray-600">User</div>
                   <div className="text-gray-900 font-medium">{selectedUser.email}</div>
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-red-500" />
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-[20px] flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
                     <p className="text-red-700 text-sm">{error}</p>
                   </div>
                 )}
@@ -405,7 +405,7 @@ export default function Users() {
                       min="0.01"
                       value={balanceAmount}
                       onChange={(e) => setBalanceAmount(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:border-green-500"
                       placeholder="10.00"
                       required
                     />
@@ -419,7 +419,7 @@ export default function Users() {
                       type="text"
                       value={balanceReason}
                       onChange={(e) => setBalanceReason(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:border-green-500"
                       placeholder="Bonus, refund, etc."
                     />
                   </div>
@@ -428,14 +428,14 @@ export default function Users() {
                     <button
                       type="button"
                       onClick={closeBalanceModal}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-[20px] hover:bg-gray-50"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={addBalanceMutation.isPending}
-                      className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-lg"
+                      className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-[20px]"
                     >
                       {addBalanceMutation.isPending ? 'Adding...' : 'Add Balance'}
                     </button>
@@ -446,21 +446,21 @@ export default function Users() {
               <>
                 <div className="text-center mb-6">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Check className="w-6 h-6 text-green-600" />
+                    <Check className="w-4 h-4 text-green-600" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-900">Balance Added!</h2>
                 </div>
 
                 <div className="space-y-3 mb-6">
-                  <div className="bg-gray-50 rounded-lg p-4 flex justify-between">
+                  <div className="bg-gray-50 rounded-[20px] p-4 flex justify-between">
                     <span className="text-gray-600">Previous Balance</span>
                     <span className="text-gray-900">${balanceSuccess.old.toFixed(2)}</span>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-4 flex justify-between">
+                  <div className="bg-green-50 rounded-[20px] p-4 flex justify-between">
                     <span className="text-green-700">Added Amount</span>
                     <span className="text-green-600 font-medium">+${balanceSuccess.amount.toFixed(2)}</span>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-4 flex justify-between">
+                  <div className="bg-gray-50 rounded-[20px] p-4 flex justify-between">
                     <span className="text-gray-600">New Balance</span>
                     <span className="text-gray-900 font-bold">${balanceSuccess.new.toFixed(2)}</span>
                   </div>
@@ -468,7 +468,7 @@ export default function Users() {
 
                 <button
                   onClick={closeBalanceModal}
-                  className="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg"
+                  className="w-full px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-[20px]"
                 >
                   Done
                 </button>

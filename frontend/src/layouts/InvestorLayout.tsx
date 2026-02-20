@@ -47,7 +47,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
       {/* Skip to content link for keyboard users */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-green-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-green-600 focus:text-white focus:rounded-[20px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
       >
         Skip to content
       </a>
@@ -55,8 +55,8 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <div className="bg-green-600 p-2 rounded-lg">
-            <LayoutDashboard className="w-5 h-5 text-white" aria-hidden="true" />
+          <div className="bg-green-600 p-2 rounded-[20px]">
+            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden="true" />
           </div>
           <h2 className="font-bold text-gray-900">AI Router</h2>
         </div>
@@ -64,9 +64,9 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
           aria-expanded={isMobileMenuOpen}
-          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="p-2 rounded-[20px] text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
       </header>
 
@@ -87,8 +87,8 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="bg-green-600 p-2 rounded-lg">
-              <LayoutDashboard className="w-6 h-6 text-white" aria-hidden="true" />
+            <div className="bg-green-600 p-2 rounded-[20px]">
+              <LayoutDashboard className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
             <div>
               <h2 className="font-bold text-gray-900">AI Router</h2>
@@ -114,7 +114,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Icon className="w-5 h-5" aria-hidden="true" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
                 <span className="font-medium">{item.label}</span>
               </Link>
             )
@@ -127,9 +127,9 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
           <button
             onClick={toggleLanguage}
             aria-label="Переключить язык"
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-[20px] text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <Globe className="w-5 h-5" aria-hidden="true" />
+            <Globe className="w-4 h-4" aria-hidden="true" />
             <span>{language === 'ru' ? 'Русский' : 'English'}</span>
           </button>
 
@@ -137,9 +137,9 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
           <button
             onClick={logout}
             aria-label={t('navigation.logout') || 'Выйти'}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-[20px] text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <LogOut className="w-5 h-5" aria-hidden="true" />
+            <LogOut className="w-4 h-4" aria-hidden="true" />
             <span>{t('navigation.logout') || 'Выйти'}</span>
           </button>
         </div>

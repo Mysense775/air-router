@@ -99,8 +99,8 @@ export default function Register() {
       <div className="max-w-md w-full">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <UserPlus className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-indigo-600 rounded-[20px] flex items-center justify-center mx-auto mb-4">
+              <UserPlus className="w-4 h-4 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-white">
               {referralCode ? 'Join by Invitation' : 'Create Account'}
@@ -114,9 +114,9 @@ export default function Register() {
 
           {/* Referral Banner */}
           {referralCode && (
-            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
+            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-[20px]">
               <div className="flex items-center gap-3">
-                <Gift className="w-6 h-6 text-green-400 flex-shrink-0" />
+                <Gift className="w-4 h-4 text-green-400 flex-shrink-0" />
                 <div>
                   <p className="text-green-200 text-sm font-medium">Referral Bonus Active!</p>
                   <p className="text-green-300 text-xs">You'll receive $5 on your balance after registration</p>
@@ -126,8 +126,8 @@ export default function Register() {
           )}
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-3" role="alert" aria-live="polite">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" aria-hidden="true" />
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-[20px] flex items-center gap-3" role="alert" aria-live="polite">
+              <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" aria-hidden="true" />
               <p className="text-red-200 text-sm">{error}</p>
             </div>
           )}
@@ -151,7 +151,7 @@ export default function Register() {
                         : 'bg-slate-800/50 border-slate-600 text-gray-500 hover:border-slate-500'
                     }`}
                   >
-                    <Users className="w-6 h-6" aria-hidden="true" />
+                    <Users className="w-4 h-4" aria-hidden="true" />
                     <span className="text-sm font-medium">Client</span>
                     <span className="text-xs opacity-70">Use AI API</span>
                   </button>
@@ -166,7 +166,7 @@ export default function Register() {
                         : 'bg-slate-800/50 border-slate-600 text-gray-500 hover:border-slate-500'
                     }`}
                   >
-                    <Key className="w-6 h-6" aria-hidden="true" />
+                    <Key className="w-4 h-4" aria-hidden="true" />
                     <span className="text-sm font-medium">Investor</span>
                     <span className="text-xs opacity-70">Earn with keys</span>
                   </button>
@@ -176,7 +176,7 @@ export default function Register() {
 
             {/* Referral role info */}
             {referralCode && (
-              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-[20px]">
                 <p className="text-blue-200 text-sm text-center">
                   Role: <strong>Client</strong> (fixed for referrals)
                 </p>
@@ -192,7 +192,7 @@ export default function Register() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-[20px] text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="your@email.com"
                 required
                 autoComplete="email"
@@ -208,7 +208,7 @@ export default function Register() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-[20px] text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Your name"
                 autoComplete="name"
               />
@@ -223,7 +223,7 @@ export default function Register() {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-[20px] text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="At least 8 characters"
                 required
                 minLength={8}
@@ -240,7 +240,7 @@ export default function Register() {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-[20px] text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Repeat password"
                 required
                 autoComplete="new-password"
@@ -250,7 +250,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-[20px] transition-all duration-200 transform hover:scale-[1.02]"
             >
               {loading ? 'Creating Account...' : referralCode ? 'Create Account & Get $5' : 'Create Account'}
             </button>

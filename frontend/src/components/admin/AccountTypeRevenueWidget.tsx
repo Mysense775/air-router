@@ -27,7 +27,7 @@ export default function AccountTypeRevenueWidget() {
     return (
       <div className="grid grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-pulse">
+          <div key={i} className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100 animate-pulse">
             <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
             <div className="h-8 bg-gray-200 rounded w-3/4 mb-2"></div>
             <div className="h-4 bg-gray-200 rounded w-1/2"></div>

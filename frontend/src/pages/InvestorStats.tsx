@@ -59,7 +59,7 @@ export default function InvestorStats() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <BarChart3 className="w-8 h-8 text-green-600" />
+          <BarChart3 className="w-4 h-4 text-green-600" />
           Статистика
         </h1>
         <p className="text-gray-600 mt-1">
@@ -72,14 +72,14 @@ export default function InvestorStats() {
         {stats.map((stat, i) => {
           const Icon = stat.icon
           return (
-            <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div key={i} className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">{stat.title}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
                 <div className={`p-3 bg-${stat.color}-100 rounded-lg`}>
-                  <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                  <Icon className={`w-4 h-4 text-${stat.color}-600`} />
                 </div>
               </div>
             </div>
@@ -88,10 +88,10 @@ export default function InvestorStats() {
       </div>
 
       {/* Daily Stats Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-gray-600" />
+            <Calendar className="w-4 h-4 text-gray-600" />
             Статистика по дням
           </h2>
         </div>
@@ -101,7 +101,7 @@ export default function InvestorStats() {
             {data.daily_stats.map((day, index) => (
               <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-blue-100 rounded-[20px] flex items-center justify-center">
                     <span className="text-sm font-bold text-blue-600">
                       {new Date(day.date).getDate()}
                     </span>

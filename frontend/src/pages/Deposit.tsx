@@ -152,13 +152,13 @@ export default function Deposit() {
       case 'completed':
       case 'finished':
       case 'confirmed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
+        return <CheckCircle className="w-4 h-4 text-green-500" />
       case 'pending':
       case 'waiting':
       case 'confirming':
-        return <Clock className="w-5 h-5 text-yellow-500" />
+        return <Clock className="w-4 h-4 text-yellow-500" />
       default:
-        return <XCircle className="w-5 h-5 text-red-500" />
+        return <XCircle className="w-4 h-4 text-red-500" />
     }
   }
 
@@ -185,7 +185,7 @@ export default function Deposit() {
 
       {/* Active Payment */}
       {activePayment && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-6">
           <h3 className="font-semibold text-blue-900 mb-4">Active Payment</h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -200,7 +200,7 @@ export default function Deposit() {
               </span>
             </div>
             {activePayment.metadata?.pay_address && (
-              <div className="bg-white rounded-lg p-4">
+              <div className="bg-white rounded-[20px] p-4">
                 <p className="text-sm text-gray-600 mb-2">Send {activePayment.metadata.pay_amount} {activePayment.metadata.pay_currency?.toUpperCase()} to:</p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 bg-gray-100 p-2 rounded text-sm break-all">
@@ -210,9 +210,9 @@ export default function Deposit() {
                     onClick={() => copyToClipboard(activePayment.metadata?.pay_address || '')}
                     aria-label={copied ? "Address copied" : "Copy address to clipboard"}
                     aria-live="polite"
-                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 hover:bg-gray-200 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" aria-hidden="true" /> : <Copy className="w-5 h-5 text-gray-600" aria-hidden="true" />}
+                    {copied ? <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" /> : <Copy className="w-4 h-4 text-gray-600" aria-hidden="true" />}
                   </button>
                 </div>
               </div>
@@ -231,7 +231,7 @@ export default function Deposit() {
       {!activePayment && (
         <>
           {/* Payment Method */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="font-semibold text-gray-900">Payment Method</h2>
             </div>
@@ -251,7 +251,7 @@ export default function Deposit() {
                     }`}
                   >
                     <div className={`p-3 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                      <Icon className={`w-6 h-6 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
+                      <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
                     </div>
                     <div className="flex-1 text-left">
                       <h3 className="font-medium text-gray-900">{method.name}</h3>
@@ -260,7 +260,7 @@ export default function Deposit() {
                     <div className="text-sm text-gray-600">
                       Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
                     </div>
-                    <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
+                    <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
                   </button>
                 )
               })}
@@ -272,7 +272,7 @@ export default function Deposit() {
             <>
               {/* Currency Selection - only for crypto */}
               {selectedMethod === 'crypto' && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-[20px] border border-gray-200 p-6">
                   <label htmlFor="currency-select" className="block text-sm font-medium text-gray-700 mb-3">
                     Select Cryptocurrency
                   </label>
@@ -280,7 +280,7 @@ export default function Deposit() {
                     id="currency-select"
                     value={selectedCurrency}
                     onChange={(e) => setSelectedCurrency(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {currencies.map((curr: any) => (
                       <option key={curr.code} value={curr.code}>
@@ -293,7 +293,7 @@ export default function Deposit() {
 
               {/* AllIn Info - only for allin */}
               {selectedMethod === 'allin' && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-6">
                   <h3 className="font-medium text-blue-900 mb-2">AllIn Payment</h3>
                   <p className="text-sm text-blue-700 mb-2">
                     You will be redirected to AllIn payment page to complete your payment via card or SBP.
@@ -309,7 +309,7 @@ export default function Deposit() {
               )}
 
               {/* Amount */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-white rounded-[20px] border border-gray-200 p-6">
                 <label htmlFor="amount-input" className="block text-sm font-medium text-gray-700 mb-2">
                   {selectedMethod === 'allin' ? 'Amount (RUB)' : 'Amount (USD)'}
                 </label>
@@ -323,7 +323,7 @@ export default function Deposit() {
                     min={selectedPayment?.minAmount || 10}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
                     placeholder={selectedMethod === 'allin' ? '1000' : '50'}
                     aria-describedby="amount-min"
                   />
@@ -342,7 +342,7 @@ export default function Deposit() {
               </div>
 
               {/* Summary */}
-              <div className="bg-gray-50 rounded-lg p-6">
+              <div className="bg-gray-50 rounded-[20px] p-6">
                 <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -374,7 +374,7 @@ export default function Deposit() {
 
           {/* Submit */}
           {(createPaymentMutation.isError || createAllinPaymentMutation.isError) && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700" role="alert" aria-live="polite">
+            <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 text-red-700" role="alert" aria-live="polite">
               {(createPaymentMutation.error as any)?.response?.data?.detail || 
                (createAllinPaymentMutation.error as any)?.response?.data?.detail || 
                'Failed to create payment'}
@@ -386,11 +386,11 @@ export default function Deposit() {
             disabled={!selectedMethod || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
             aria-label={createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? 'Creating payment' : 'Create payment'}
             aria-busy={createPaymentMutation.isPending || createAllinPaymentMutation.isPending}
-            className="w-full bg-blue-600 text-white py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-blue-600 text-white py-4 rounded-[20px] font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                 Creating payment...
               </>
             ) : (
@@ -412,7 +412,7 @@ export default function Deposit() {
 
       {/* Pending Payments */}
       {pendingPayments.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="font-semibold text-gray-900">Pending Payments</h2>
           </div>
@@ -437,7 +437,7 @@ export default function Deposit() {
 
       {/* Payment History */}
       {completedPayments.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="font-semibold text-gray-900">Payment History</h2>
           </div>

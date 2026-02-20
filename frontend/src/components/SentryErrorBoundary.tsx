@@ -35,7 +35,7 @@ class SentryErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+          <div className="bg-white rounded-[20px] shadow-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h2>
             <p className="text-gray-600 mb-4">
               An error occurred in the application. The error has been logged.

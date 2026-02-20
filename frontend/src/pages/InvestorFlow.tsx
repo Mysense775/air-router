@@ -25,9 +25,9 @@ const EarningsCalculator = () => {
   const totalEarnings = baseCommission + totalBonuses + referralBonus;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-[20px] border border-gray-200 p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <Calculator className="w-5 h-5" />
+        <Calculator className="w-4 h-4" />
         Калькулятор дохода
       </h3>
       
@@ -142,12 +142,12 @@ const InvestFlowStep = ({
     </div>
     <div className="flex-1">
       <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-        <Icon className="w-5 h-5 text-blue-600" />
+        <Icon className="w-4 h-4 text-blue-600" />
         {title}
       </h3>
       <p className="text-gray-600 mb-3">{description}</p>
       {formula && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+        <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-3 mb-3">
           <code className="text-blue-800 text-sm">{formula}</code>
         </div>
       )}
@@ -176,7 +176,7 @@ export default function InvestorFlow() {
       </div>
 
       {/* Steps */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+      <div className="bg-white rounded-[20px] border border-gray-200 p-6 mb-8">
         <InvestFlowStep
           number={1}
           title="Добавьте ключ"
@@ -199,17 +199,17 @@ export default function InvestorFlow() {
           icon={RefreshCw}
         >
           <div className="grid grid-cols-2 gap-4 mt-3">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="bg-green-50 border border-green-200 rounded-[20px] p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Gift className="w-5 h-5 text-green-600" />
+                <Gift className="w-4 h-4 text-green-600" />
                 <span className="font-semibold text-green-800">Быстрый бонус</span>
               </div>
               <p className="text-2xl font-bold text-green-600">$5</p>
               <p className="text-sm text-green-700">Пополнение в течение 6 часов</p>
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4">
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
+                <CheckCircle className="w-4 h-4 text-blue-600" />
                 <span className="font-semibold text-blue-800">Обычный бонус</span>
               </div>
               <p className="text-2xl font-bold text-blue-600">$3</p>
@@ -231,9 +231,9 @@ export default function InvestorFlow() {
       <EarningsCalculator />
 
       {/* Scenarios Table */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mt-8">
+      <div className="bg-white rounded-[20px] border border-gray-200 p-6 mt-8">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <DollarSign className="w-5 h-5" />
+          <DollarSign className="w-4 h-4" />
           Примеры сценариев
         </h3>
         <div className="overflow-x-auto">
@@ -274,10 +274,10 @@ export default function InvestorFlow() {
       <div className="mt-8 text-center">
         <a
           href="/investor/dashboard"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-[20px] font-medium hover:bg-blue-700 transition-colors"
         >
           Перейти в инвесторский кабинет
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </a>
       </div>
     </div>

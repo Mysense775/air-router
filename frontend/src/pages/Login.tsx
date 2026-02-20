@@ -77,8 +77,8 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <div className="flex items-center justify-center mb-8">
-          <div className="bg-blue-600 p-3 rounded-xl">
-            <Zap className="w-8 h-8 text-white" />
+          <div className="bg-blue-600 p-3 rounded-[20px]">
+            <Zap className="w-4 h-4 text-white" />
           </div>
         </div>
         
@@ -90,7 +90,7 @@ export default function Login() {
         </p>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm" role="alert" aria-live="polite">
+          <div className="bg-red-50 text-red-600 p-3 rounded-[20px] mb-4 text-sm" role="alert" aria-live="polite">
             {error}
           </div>
         )}
@@ -105,7 +105,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="your@email.com"
               required
               autoComplete="email"
@@ -122,7 +122,7 @@ export default function Login() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
@@ -141,7 +141,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting || loginMutation.isPending}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-blue-600 text-white py-2.5 rounded-[20px] font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {(isSubmitting || loginMutation.isPending) ? (
               <>

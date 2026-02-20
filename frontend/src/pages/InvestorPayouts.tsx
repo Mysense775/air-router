@@ -43,13 +43,13 @@ export default function InvestorPayouts() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-600" />
+        return <CheckCircle className="w-4 h-4 text-green-600" />
       case 'pending':
-        return <Clock className="w-5 h-5 text-yellow-600" />
+        return <Clock className="w-4 h-4 text-yellow-600" />
       case 'processing':
-        return <Clock className="w-5 h-5 text-blue-600" />
+        return <Clock className="w-4 h-4 text-blue-600" />
       case 'failed':
-        return <AlertCircle className="w-5 h-5 text-red-600" />
+        return <AlertCircle className="w-4 h-4 text-red-600" />
       default:
         return null
     }
@@ -74,7 +74,7 @@ export default function InvestorPayouts() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Wallet className="w-8 h-8 text-green-600" />
+          <Wallet className="w-4 h-4 text-green-600" />
           Выплаты
         </h1>
         <p className="text-gray-600 mt-1">
@@ -84,24 +84,24 @@ export default function InvestorPayouts() {
 
       {/* Balance Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-600">Всего заработано</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">
             ${(data?.total_earned || 0).toFixed(2)}
           </p>
         </div>
-        <div className="bg-green-50 rounded-xl p-6 shadow-sm border border-green-200">
+        <div className="bg-green-50 rounded-[20px] p-6 shadow-sm border border-green-200">
           <p className="text-sm text-green-600">Доступно для вывода</p>
           <p className="text-2xl font-bold text-green-700 mt-1">
             ${(data?.available_for_withdrawal || 0).toFixed(2)}
           </p>
           {data && data.available_for_withdrawal >= 50 && (
-            <button className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+            <button className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors">
               Запросить выплату
             </button>
           )}
         </div>
-        <div className="bg-yellow-50 rounded-xl p-6 shadow-sm border border-yellow-200">
+        <div className="bg-yellow-50 rounded-[20px] p-6 shadow-sm border border-yellow-200">
           <p className="text-sm text-yellow-600">В обработке</p>
           <p className="text-2xl font-bold text-yellow-700 mt-1">
             ${(data?.pending_amount || 0).toFixed(2)}
@@ -110,9 +110,9 @@ export default function InvestorPayouts() {
       </div>
 
       {/* Minimum Payout Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+      <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4 mb-8">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-medium text-blue-800">Минимальная сумма выплаты: $50</p>
             <p className="text-sm text-blue-600 mt-1">
@@ -124,7 +124,7 @@ export default function InvestorPayouts() {
       </div>
 
       {/* Payouts History */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-900">История выплат</h2>
         </div>

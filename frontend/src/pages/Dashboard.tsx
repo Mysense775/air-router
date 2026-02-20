@@ -119,15 +119,15 @@ export default function Dashboard() {
   const StatsSkeleton = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div key={i} className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="h-4 bg-gray-200 rounded w-24 mb-2 animate-pulse" />
               <div className="h-8 bg-gray-200 rounded w-32 mb-1 animate-pulse" />
               <div className="h-3 bg-gray-200 rounded w-20 animate-pulse" />
             </div>
-            <div className="p-3 rounded-lg bg-gray-100">
-              <div className="w-5 h-5 bg-gray-200 rounded animate-pulse" />
+            <div className="p-3 rounded-[20px] bg-gray-100">
+              <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
             </div>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function Dashboard() {
 
   // Skeleton for charts
   const ChartSkeleton = () => (
-    <div className="h-64 bg-gray-50 rounded-lg animate-pulse" />
+    <div className="h-64 bg-gray-50 rounded-[20px] animate-pulse" />
   )
 
   return (
@@ -160,7 +160,7 @@ export default function Dashboard() {
           return (
             <div
               key={stat.title}
-              className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm"
+              className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -169,7 +169,7 @@ export default function Dashboard() {
                   <p className="text-xs text-gray-600 mt-1">{stat.trend}</p>
                 </div>
                 <div className={`p-3 rounded-lg ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
-                  <Icon className="w-5 h-5" aria-hidden="true" />
+                  <Icon className="w-4 h-4" aria-hidden="true" />
                 </div>
               </div>
             </div>
@@ -180,16 +180,16 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions')}</h3>
           <div className="grid grid-cols-2 gap-4">
             <button 
               onClick={() => navigate('/deposit')}
               aria-label={t('dashboard.topUpBalance')}
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex items-center gap-3 p-4 rounded-[20px] border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Wallet className="w-5 h-5 text-blue-600" aria-hidden="true" />
+              <div className="p-2 bg-blue-100 rounded-[20px]">
+                <Wallet className="w-4 h-4 text-blue-600" aria-hidden="true" />
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dashboard.topUpBalance')}</p>
@@ -198,10 +198,10 @@ export default function Dashboard() {
             <button 
               onClick={() => navigate('/api-keys')}
               aria-label={t('dashboard.createKey')}
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="flex items-center gap-3 p-4 rounded-[20px] border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Key className="w-5 h-5 text-purple-600" aria-hidden="true" />
+              <div className="p-2 bg-purple-100 rounded-[20px]">
+                <Key className="w-4 h-4 text-purple-600" aria-hidden="true" />
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dashboard.createKey')}</p>
@@ -210,7 +210,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.recentActivity')}</h3>
           {usage.by_model.length > 0 ? (
             <div className="space-y-3">
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-4 h-4 bg-gray-100 rounded-[20px] flex items-center justify-center">
                       <ArrowUpRight className="w-4 h-4 text-gray-600" aria-hidden="true" />
                     </div>
                     <div>
@@ -246,24 +246,24 @@ export default function Dashboard() {
 
       {/* Price Comparison */}
       {usage.total_cost_usd > 0 && (
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.priceComparison')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 rounded-[20px] p-4">
               <p className="text-sm text-gray-600 mb-1">{t('dashboard.openRouterPrice')}</p>
               <p className="text-xl font-mono font-bold text-gray-900">
                 ${(usage.total_cost_usd / 0.8).toFixed(5)}
               </p>
               <p className="text-xs text-gray-600">{t('dashboard.ifUsingDirectly')}</p>
             </div>
-            <div className="bg-blue-50 rounded-lg p-4">
+            <div className="bg-blue-50 rounded-[20px] p-4">
               <p className="text-sm text-blue-700 mb-1">{t('dashboard.yourPrice')}</p>
               <p className="text-xl font-mono font-bold text-blue-900">
                 ${usage.total_cost_usd.toFixed(5)}
               </p>
               <p className="text-xs text-blue-600">{t('dashboard.withAiRouter')}</p>
             </div>
-            <div className="bg-green-50 rounded-lg p-4">
+            <div className="bg-green-50 rounded-[20px] p-4">
               <p className="text-sm text-green-700 mb-1">{t('dashboard.youSaved')}</p>
               <p className="text-xl font-mono font-bold text-green-900">
                 ${(usage.total_cost_usd / 0.8 - usage.total_cost_usd).toFixed(5)}
@@ -277,7 +277,7 @@ export default function Dashboard() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Usage Line Chart */}
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.dailySpending')}</h3>
           {isLoadingDaily ? (
             <ChartSkeleton />
@@ -314,14 +314,14 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-64 bg-gray-50 rounded-[20px] flex items-center justify-center">
               <p className="text-gray-600">{t('common.noData')}</p>
             </div>
           )}
         </div>
 
         {/* Models Bar Chart */}
-        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.topModelsByCost')}</h3>
           {isLoadingModels ? (
             <ChartSkeleton />
@@ -360,7 +360,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-64 bg-gray-50 rounded-[20px] flex items-center justify-center">
               <p className="text-gray-600">{t('common.noData')}</p>
             </div>
           )}

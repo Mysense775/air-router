@@ -62,9 +62,9 @@ export default function AddInvestorKey() {
       <div className="flex items-center gap-4 mb-8">
         <Link
           to="/investor/keys"
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-[20px] transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -77,9 +77,9 @@ export default function AddInvestorKey() {
       </div>
 
       {/* Form */}
-      <div className="max-w-2xl bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+      <div className="max-w-2xl bg-white rounded-[20px] p-8 shadow-sm border border-gray-100">
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-800">
+          <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 mb-6 text-red-800">
             {error}
           </div>
         )}
@@ -95,7 +95,7 @@ export default function AddInvestorKey() {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder={t('investor.keyNamePlaceholder') || 'Например: Мой ключ #1'}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
           </div>
@@ -110,7 +110,7 @@ export default function AddInvestorKey() {
               value={formData.apiKey}
               onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
               placeholder="sk-or-v1-..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
             <p className="text-sm text-gray-600 mt-1">
@@ -128,7 +128,7 @@ export default function AddInvestorKey() {
               min={100}
               value={formData.initialBalance}
               onChange={(e) => setFormData({ ...formData, initialBalance: Number(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
             <p className="text-sm text-gray-600 mt-1">
@@ -146,7 +146,7 @@ export default function AddInvestorKey() {
               min={10}
               value={formData.minThreshold}
               onChange={(e) => setFormData({ ...formData, minThreshold: Number(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
             <p className="text-sm text-gray-600 mt-1">
@@ -173,18 +173,18 @@ export default function AddInvestorKey() {
           <div className="flex gap-4 pt-4">
             <Link
               to="/investor/keys"
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-center transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-[20px] hover:bg-gray-50 text-center transition-colors"
             >
               {t('common.cancel') || 'Отмена'}
             </Link>
             <button
               type="submit"
               disabled={addMutation.isPending}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
             >
               {addMutation.isPending ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   {t('investor.adding') || 'Добавление...'}
                 </>
               ) : (
@@ -195,8 +195,8 @@ export default function AddInvestorKey() {
         </form>
 
         {/* Info */}
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+        <div className="mt-8 p-4 bg-blue-50 rounded-[20px] flex items-start gap-3">
+          <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">{t('investor.important') || 'Важно:'}</p>
             <ul className="list-disc list-inside space-y-1">

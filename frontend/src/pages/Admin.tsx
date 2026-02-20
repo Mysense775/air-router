@@ -163,34 +163,34 @@ export default function Admin() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 text-red-700">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700">
+        <div className="bg-green-50 border border-green-200 rounded-[20px] p-4 text-green-700">
           {success}
         </div>
       )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-[20px] shadow-sm border border-gray-200">
           <div className="text-sm text-gray-600">Total Users</div>
           <div className="text-2xl font-bold text-gray-900">{stats?.total_users || 0}</div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-[20px] shadow-sm border border-gray-200">
           <div className="text-sm text-gray-600">Requests Today</div>
           <div className="text-2xl font-bold text-blue-600">{stats?.total_requests_today || 0}</div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-[20px] shadow-sm border border-gray-200">
           <div className="text-sm text-gray-600">Revenue Today</div>
           <div className="text-2xl font-bold text-green-600">
             ${stats?.revenue_today?.toFixed(2) || '0.00'}
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-[20px] shadow-sm border border-gray-200">
           <div className="text-sm text-gray-600">Profit Today</div>
           <div className="text-2xl font-bold text-purple-600">
             ${stats?.profit_today?.toFixed(2) || '0.00'}
@@ -199,13 +199,13 @@ export default function Admin() {
       </div>
 
       {/* Master Accounts */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">OpenRouter Master Accounts</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={testSentry}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-[20px] transition-colors"
               title="Test Sentry error tracking"
             >
               <Bug className="w-4 h-4" />
@@ -213,7 +213,7 @@ export default function Admin() {
             </button>
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Account
@@ -232,7 +232,7 @@ export default function Admin() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="e.g., Primary Account"
                     required
                   />
@@ -243,7 +243,7 @@ export default function Admin() {
                     type="password"
                     value={formData.api_key}
                     onChange={(e) => setFormData({ ...formData, api_key: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="sk-or-v1-..."
                     required
                   />
@@ -256,7 +256,7 @@ export default function Admin() {
                     max="100"
                     value={formData.discount_percent}
                     onChange={(e) => setFormData({ ...formData, discount_percent: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
@@ -266,7 +266,7 @@ export default function Admin() {
                     type="number"
                     value={formData.monthly_limit_usd}
                     onChange={(e) => setFormData({ ...formData, monthly_limit_usd: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Optional"
                   />
                 </div>
@@ -275,7 +275,7 @@ export default function Admin() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
                   {submitting ? 'Creating...' : 'Create Account'}
                 </button>
@@ -344,7 +344,7 @@ export default function Admin() {
                         onClick={() => syncBalance(acc.id)}
                         disabled={syncing === acc.id}
                         aria-label={`Sync balance for ${acc.name}`}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-[20px] transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <RefreshCcw className={`w-4 h-4 ${syncing === acc.id ? 'animate-spin' : ''}`} aria-hidden="true" />
                         {syncing === acc.id ? 'Syncing...' : 'Sync'}
@@ -359,7 +359,7 @@ export default function Admin() {
       </div>
 
       {/* Users */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Users</h2>
         </div>

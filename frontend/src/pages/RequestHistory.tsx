@@ -50,11 +50,11 @@ export default function RequestHistory() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
+        return <CheckCircle className="w-4 h-4 text-green-500" />
       case 'error':
-        return <XCircle className="w-5 h-5 text-red-500" />
+        return <XCircle className="w-4 h-4 text-red-500" />
       default:
-        return <Clock className="w-5 h-5 text-yellow-500" />
+        return <Clock className="w-4 h-4 text-yellow-500" />
     }
   }
 
@@ -82,14 +82,14 @@ export default function RequestHistory() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+      <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 text-red-700">
         Failed to load request history
       </div>
     )
@@ -106,7 +106,7 @@ export default function RequestHistory() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className="bg-blue-50 rounded-[20px] p-4">
           <div className="flex items-center gap-2 text-blue-600 mb-1">
             <Zap className="w-4 h-4" />
             <span className="text-sm font-medium">Total Requests</span>
@@ -114,7 +114,7 @@ export default function RequestHistory() {
           <p className="text-2xl font-bold text-blue-900">{totalRequests}</p>
         </div>
 
-        <div className="bg-green-50 rounded-lg p-4">
+        <div className="bg-green-50 rounded-[20px] p-4">
           <div className="flex items-center gap-2 text-green-600 mb-1">
             <DollarSign className="w-4 h-4" />
             <span className="text-sm font-medium">Total Spent</span>
@@ -122,7 +122,7 @@ export default function RequestHistory() {
           <p className="text-2xl font-bold text-green-900">${totalSpent.toFixed(6)}</p>
         </div>
 
-        <div className="bg-pink-50 rounded-lg p-4">
+        <div className="bg-pink-50 rounded-[20px] p-4">
           <div className="flex items-center gap-2 text-pink-600 mb-1">
             <PiggyBank className="w-4 h-4" />
             <span className="text-sm font-medium">Total Saved</span>
@@ -130,7 +130,7 @@ export default function RequestHistory() {
           <p className="text-2xl font-bold text-pink-900">${totalSavings.toFixed(6)}</p>
         </div>
 
-        <div className="bg-purple-50 rounded-lg p-4">
+        <div className="bg-purple-50 rounded-[20px] p-4">
           <div className="flex items-center gap-2 text-purple-600 mb-1">
             <ArrowUpRight className="w-4 h-4" />
             <span className="text-sm font-medium">Total Tokens</span>
@@ -140,7 +140,7 @@ export default function RequestHistory() {
       </div>
 
       {/* Requests Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -224,7 +224,7 @@ export default function RequestHistory() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-[20px] text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
@@ -232,7 +232,7 @@ export default function RequestHistory() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-[20px] text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
@@ -243,7 +243,7 @@ export default function RequestHistory() {
       </div>
 
       {/* Legend */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4">
         <h4 className="font-medium text-blue-900 mb-2">Price Breakdown</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-blue-800">
           <div>

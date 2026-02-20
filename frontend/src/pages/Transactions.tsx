@@ -121,13 +121,13 @@ export default function Transactions() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
+        return <CheckCircle className="w-4 h-4 text-green-500" />
       case 'pending':
-        return <Clock className="w-5 h-5 text-yellow-500" />
+        return <Clock className="w-4 h-4 text-yellow-500" />
       case 'failed':
-        return <XCircle className="w-5 h-5 text-red-500" />
+        return <XCircle className="w-4 h-4 text-red-500" />
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-600" />
+        return <AlertCircle className="w-4 h-4 text-gray-600" />
     }
   }
 
@@ -150,14 +150,14 @@ export default function Transactions() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Receipt className="w-8 h-8 text-purple-600" />
+            <Receipt className="w-4 h-4 text-purple-600" />
             Транзакции
           </h1>
           <p className="text-gray-600 mt-1">Управление пополнениями и платежами</p>
         </div>
         <button
           onClick={exportToCSV}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors"
         >
           <Download className="w-4 h-4" />
           Экспорт CSV
@@ -166,10 +166,10 @@ export default function Transactions() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <DollarSign className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-blue-100 rounded-[20px]">
+              <DollarSign className="w-4 h-4 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Сегодня</p>
@@ -177,10 +177,10 @@ export default function Transactions() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Calendar className="w-5 h-5 text-purple-600" />
+            <div className="p-2 bg-purple-100 rounded-[20px]">
+              <Calendar className="w-4 h-4 text-purple-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">За месяц</p>
@@ -188,10 +188,10 @@ export default function Transactions() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <div className="p-2 bg-green-100 rounded-[20px]">
+              <CheckCircle className="w-4 h-4 text-green-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Успешных</p>
@@ -201,10 +201,10 @@ export default function Transactions() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="p-2 bg-yellow-100 rounded-[20px]">
+              <Clock className="w-4 h-4 text-yellow-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">В ожидании</p>
@@ -217,7 +217,7 @@ export default function Transactions() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100">
         <div className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-[200px]">
             <div className="relative">
@@ -227,14 +227,14 @@ export default function Transactions() {
                 placeholder="Поиск по email или TXID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-[20px] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2 border border-gray-200 rounded-[20px] focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Все статусы</option>
             <option value="completed">Завершено</option>
@@ -244,7 +244,7 @@ export default function Transactions() {
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2 border border-gray-200 rounded-[20px] focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Все методы</option>
             <option value="nowpayments">NowPayments</option>
@@ -254,21 +254,21 @@ export default function Transactions() {
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2 border border-gray-200 rounded-[20px] focus:ring-2 focus:ring-purple-500"
             placeholder="С"
           />
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2 border border-gray-200 rounded-[20px] focus:ring-2 focus:ring-purple-500"
             placeholder="По"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-[20px] shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -393,7 +393,7 @@ export default function Transactions() {
             <button
               onClick={() => setPage(p => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 border border-gray-200 rounded-[20px] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -403,7 +403,7 @@ export default function Transactions() {
             <button
               onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
-              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 border border-gray-200 rounded-[20px] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -414,14 +414,14 @@ export default function Transactions() {
       {/* Detail Modal */}
       {selectedTransaction && !showFailModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 space-y-4">
+          <div className="bg-white rounded-[20px] max-w-lg w-full p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900">Детали транзакции</h3>
               <button
                 onClick={() => setSelectedTransaction(null)}
                 className="text-gray-500 hover:text-gray-600"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
             
@@ -475,7 +475,7 @@ export default function Transactions() {
               {Object.keys(selectedTransaction.metadata_).length > 0 && (
                 <div className="pt-2">
                   <span className="text-gray-600">Метаданные:</span>
-                  <pre className="mt-2 p-3 bg-gray-50 rounded-lg text-xs overflow-auto max-h-40">
+                  <pre className="mt-2 p-3 bg-gray-50 rounded-[20px] text-xs overflow-auto max-h-40">
                     {JSON.stringify(selectedTransaction.metadata_, null, 2)}
                   </pre>
                 </div>
@@ -490,14 +490,14 @@ export default function Transactions() {
                     setSelectedTransaction(null)
                   }}
                   disabled={confirmMutation.isPending}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
                   Подтвердить
                 </button>
                 <button
                   onClick={() => setShowFailModal(true)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-[20px] hover:bg-red-700"
                 >
                   <X className="w-4 h-4" />
                   Отклонить
@@ -511,14 +511,14 @@ export default function Transactions() {
       {/* Fail Modal */}
       {showFailModal && selectedTransaction && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-white rounded-[20px] max-w-md w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Отклонить транзакцию</h3>
             <p className="text-gray-600">Укажите причину отклонения:</p>
             <textarea
               value={failReason}
               onChange={(e) => setFailReason(e.target.value)}
               placeholder="Причина..."
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 min-h-[100px]"
+              className="w-full px-4 py-2 border border-gray-200 rounded-[20px] focus:ring-2 focus:ring-red-500 min-h-[100px]"
             />
             <div className="flex gap-3">
               <button
@@ -526,14 +526,14 @@ export default function Transactions() {
                   setShowFailModal(false)
                   setFailReason('')
                 }}
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-[20px] hover:bg-gray-50"
               >
                 Отмена
               </button>
               <button
                 onClick={() => failMutation.mutate({ id: selectedTransaction.id, reason: failReason })}
                 disabled={failMutation.isPending}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-[20px] hover:bg-red-700 disabled:opacity-50"
               >
                 Отклонить
               </button>

@@ -74,16 +74,16 @@ export default function InvestorKeys() {
         </div>
         <Link
           to="/investor/keys/add"
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           {t('investor.addKey') || 'Добавить ключ'}
         </Link>
       </div>
 
       {/* Info Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+      <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4 mb-6 flex items-start gap-3">
+        <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
         <div className="text-sm text-blue-800">
           <p className="font-medium">{t('investor.howItWorks') || 'Как это работает:'}</p>
           <p className="mt-1">
@@ -97,13 +97,13 @@ export default function InvestorKeys() {
       {accounts && accounts.length > 0 ? (
         <div className="grid gap-4">
           {accounts.map((account) => (
-            <div key={account.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div key={account.id} className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                   <div className={`p-3 rounded-lg ${
                     account.status === 'active' ? 'bg-green-100' : 'bg-gray-100'
                   }`}>
-                    <Key className={`w-6 h-6 ${
+                    <Key className={`w-4 h-4 ${
                       account.status === 'active' ? 'text-green-600' : 'text-gray-600'
                     }`} />
                   </div>
@@ -164,7 +164,7 @@ export default function InvestorKeys() {
                 <div className="flex gap-2 mt-6">
                   <button
                     onClick={() => copyToClipboard(account.id)}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-[20px] hover:bg-gray-200 transition-colors"
                   >
                     {copiedId === account.id ? (
                       <>
@@ -185,7 +185,7 @@ export default function InvestorKeys() {
                         revokeMutation.mutate(account.id)
                       }
                     }}
-                    className="flex items-center gap-2 px-4 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-red-600 bg-red-50 rounded-[20px] hover:bg-red-100 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     {t('investor.revoke') || 'Отозвать'}
@@ -196,7 +196,7 @@ export default function InvestorKeys() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-gray-100">
+        <div className="bg-white rounded-[20px] p-12 text-center shadow-sm border border-gray-100">
           <Key className="w-16 h-16 text-gray-200 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             {t('investor.noKeys') || 'Нет ключей'}
@@ -206,9 +206,9 @@ export default function InvestorKeys() {
           </p>
           <Link
             to="/investor/keys/add"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-[20px] hover:bg-green-700 transition-colors"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
             {t('investor.addKey') || 'Добавить ключ'}
           </Link>
         </div>

@@ -131,7 +131,7 @@ export default function Docs() {
 
   const CodeBlock = ({ code, id }: { code: string; id: string }) => (
     <div className="relative">
-      <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+      <pre className="bg-gray-900 text-gray-100 p-4 rounded-[20px] overflow-x-auto text-sm">
         <code>{code}</code>
       </pre>
       <button
@@ -150,7 +150,7 @@ export default function Docs() {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">{t('docs.quickstart')}</h2>
             
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4">
               <h3 className="font-semibold text-blue-900 mb-2">{t('docs.baseUrl')}</h3>
               <div className="space-y-2 text-sm">
                 <p><strong>Base URL:</strong> <code className="bg-blue-100 px-2 py-1 rounded">https://airouter.host/v1</code></p>
@@ -175,7 +175,7 @@ export default function Docs() {
 
             <div>
               <h3 className="font-semibold text-gray-900 mb-3">{t('docs.parameters')}</h3>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <div className="bg-gray-50 rounded-[20px] p-4 space-y-3">
                 <div>
                   <code className="font-semibold text-blue-600">model</code>
                   <p className="text-sm text-gray-600">
@@ -219,7 +219,7 @@ export default function Docs() {
             <h2 className="text-2xl font-bold text-gray-900">n8n {language === 'ru' ? 'Интеграция' : 'Integration'}</h2>
             
             <div className="space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+              <div className="bg-green-50 border border-green-200 rounded-[20px] p-4">
                 <h3 className="font-semibold text-green-900 mb-2">{t('docs.n8nTemplate')}</h3>
                 <p className="text-sm text-green-800 mb-3">
                   {language === 'ru'
@@ -258,7 +258,7 @@ export default function Docs() {
                 </ol>
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-[20px] p-4">
                 <h3 className="font-semibold text-yellow-900 mb-2">💡 Совет</h3>
                 <p className="text-sm text-gray-700">
                   Сохраните API ключ в Credentials n8n, чтобы не вставлять его в каждый workflow.
@@ -282,7 +282,7 @@ export default function Docs() {
                   </li>
                   <li className="text-gray-700">
                     <strong>Настройте параметры</strong>
-                    <div className="bg-gray-50 rounded-lg p-4 mt-2 ml-6 space-y-2 text-sm">
+                    <div className="bg-gray-50 rounded-[20px] p-4 mt-2 ml-6 space-y-2 text-sm">
                       <p><strong>URL:</strong> https://airouter.host/v1/chat/completions</p>
                       <p><strong>Method:</strong> POST</p>
                       <p><strong>Headers:</strong></p>
@@ -325,7 +325,7 @@ export default function Docs() {
             <h2 className="text-2xl font-bold text-gray-900">Интеграция с Zapier</h2>
             
             <div className="space-y-4">
-              <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+              <div className="bg-orange-50 border border-orange-200 rounded-[20px] p-4">
                 <p className="text-orange-800">
                   <strong>Важно:</strong> Zapier не имеет нативной интеграции с OpenRouter-совместимыми API.
                   Используйте Webhooks или Code by Zapier.
@@ -397,7 +397,7 @@ output = {'reply': response.json()['choices'][0]['message']['content']}`} id="za
 
             <CodeBlock code={CODE_EXAMPLES[selectedLang]} id={`code-${selectedLang}`} />
 
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 rounded-[20px] p-4">
               <h3 className="font-semibold text-gray-900 mb-2">{t('docs.openaiSdk')}</h3>
               <p className="text-sm text-gray-600 mb-3">
                 {language === 'ru'
@@ -490,7 +490,7 @@ print(response.choices[0].message.content)`} id="openai-sdk" />
 }`} id="function-calling" />
               </div>
 
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="bg-red-50 border border-red-200 rounded-[20px] p-4">
                 <h3 className="font-semibold text-red-900 mb-2">Обработка ошибок</h3>
                 <div className="space-y-2 text-sm">
                   <p><strong>401</strong> — Неверный API ключ</p>
@@ -560,9 +560,9 @@ print(response.choices[0].message.content)`} id="openai-sdk" />
         <div className="flex gap-8">
           {/* Sidebar */}
           <div className="w-64 flex-shrink-0">
-            <div className="bg-white rounded-xl shadow-sm p-4 sticky top-8">
+            <div className="bg-white rounded-[20px] shadow-sm p-4 sticky top-8">
               <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Book className="w-5 h-5" />
+                <Book className="w-4 h-4" />
                 {t('docs.title')}
               </h2>
               <nav className="space-y-1">
@@ -592,7 +592,7 @@ print(response.choices[0].message.content)`} id="openai-sdk" />
 
           {/* Content */}
           <div className="flex-1">
-            <div className="bg-white rounded-xl shadow-sm p-8">
+            <div className="bg-white rounded-[20px] shadow-sm p-8">
               {renderContent()}
             </div>
           </div>
