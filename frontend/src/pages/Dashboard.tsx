@@ -28,34 +28,36 @@ export default function Dashboard() {
   const { t } = useTranslation()
   
   // Fetch balance
-  const { data: balanceData } = useQuery({
+  const { data: balanceData, isLoading: isLoadingBalance } = useQuery({
     queryKey: ['balance'],
     queryFn: () => clientApi.getBalance(),
   })
 
   // Fetch usage stats
-  const { data: usageData } = useQuery({
+  const { data: usageData, isLoading: isLoadingUsage } = useQuery({
     queryKey: ['usage', 7],
     queryFn: () => clientApi.getUsage(7),
   })
 
   // Fetch API keys
-  const { data: apiKeysData } = useQuery({
+  const { data: apiKeysData, isLoading: isLoadingKeys } = useQuery({
     queryKey: ['apiKeys'],
     queryFn: () => apiKeysApi.getApiKeys(),
   })
 
   // Fetch daily usage for line chart
-  const { data: dailyUsageData } = useQuery({
+  const { data: dailyUsageData, isLoading: isLoadingDaily } = useQuery({
     queryKey: ['dailyUsage', 30],
     queryFn: () => clientApi.getDailyUsageForCharts(30),
   })
 
   // Fetch models usage for bar chart
-  const { data: modelsUsageData } = useQuery({
+  const { data: modelsUsageData, isLoading: isLoadingModels } = useQuery({
     queryKey: ['modelsUsage', 30],
     queryFn: () => clientApi.getModelsUsage(30),
   })
+
+  const isLoading = isLoadingBalance || isLoadingUsage || isLoadingKeys || isLoadingDaily || isLoadingModels
 
   const balance: Balance = balanceData?.data || {
     balance_usd: 0,
@@ -113,9 +115,37 @@ export default function Dashboard() {
     },
   ]
 
+  // Skeleton component for stats
+  const StatsSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 rounded w-24 mb-2 animate-pulse" />
+              <div className="h-8 bg-gray-200 rounded w-32 mb-1 animate-pulse" />
+              <div className="h-3 bg-gray-200 rounded w-20 animate-pulse" />
+            </div>
+            <div className="p-3 rounded-lg bg-gray-100">
+              <div className="w-5 h-5 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+
+  // Skeleton for charts
+  const ChartSkeleton = () => (
+    <div className="h-64 bg-gray-50 rounded-lg animate-pulse" />
+  )
+
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
+      {isLoading ? (
+        <StatsSkeleton />
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => {
           const Icon = stat.icon
@@ -146,6 +176,7 @@ export default function Dashboard() {
           )
         })}
       </div>
+      )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -248,7 +279,9 @@ export default function Dashboard() {
         {/* Daily Usage Line Chart */}
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.dailySpending')}</h3>
-          {dailyData.length > 0 ? (
+          {isLoadingDaily ? (
+            <ChartSkeleton />
+          ) : dailyData.length > 0 ? (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData}>
@@ -290,7 +323,9 @@ export default function Dashboard() {
         {/* Models Bar Chart */}
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.topModelsByCost')}</h3>
-          {modelsData.length > 0 ? (
+          {isLoadingModels ? (
+            <ChartSkeleton />
+          ) : modelsData.length > 0 ? (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={modelsData} layout="vertical">

@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useState } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { useTranslation } from '../i18n'
 import {
@@ -12,15 +13,52 @@ import {
   Globe,
   Book,
   Receipt,
+  Menu,
+  X,
 } from 'lucide-react'
 
 export default function Sidebar() {
   const location = useLocation()
   const { user } = useAuthStore()
   const { language, toggleLanguage, t } = useTranslation()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
+  const closeMobileMenu = () => setIsMobileMenuOpen(false)
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <>
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 p-2 rounded-lg">
+            <LayoutDashboard className="w-5 h-5 text-white" aria-hidden="true" />
+          </div>
+          <h2 className="font-bold text-gray-900">AI Router</h2>
+        </div>
+        <button
+          onClick={toggleMobileMenu}
+          aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+          aria-expanded={isMobileMenuOpen}
+          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={closeMobileMenu}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed lg:static inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex flex-col z-50 transform transition-transform duration-300 lg:transform-none ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="bg-blue-600 p-2 rounded-lg">
@@ -39,6 +77,7 @@ export default function Sidebar() {
           <>
             <Link
               to="/admin"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/admin' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 location.pathname === '/admin'
@@ -51,6 +90,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/admin/users"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/admin/users' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 location.pathname === '/admin/users'
@@ -63,6 +103,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/admin/transactions"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/admin/transactions' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 location.pathname === '/admin/transactions'
@@ -79,6 +120,7 @@ export default function Sidebar() {
           <>
             <Link
               to="/dashboard"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/dashboard' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 location.pathname === '/dashboard'
@@ -91,6 +133,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/deposit"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/deposit' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 location.pathname === '/deposit'
@@ -103,6 +146,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/api-keys"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/api-keys' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 location.pathname === '/api-keys'
@@ -115,6 +159,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/requests"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/requests' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 location.pathname === '/requests'
@@ -127,6 +172,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/models"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/models' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 location.pathname === '/models'
@@ -139,6 +185,7 @@ export default function Sidebar() {
             </Link>
             <Link
               to="/docs"
+              onClick={closeMobileMenu}
               aria-current={location.pathname === '/docs' ? 'page' : undefined}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 location.pathname === '/docs'
@@ -177,5 +224,7 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+
+    </>
   )
 }
