@@ -99,14 +99,14 @@ export default function ApiKeysPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
-          <p className="text-gray-500">Manage your API keys for accessing the platform</p>
+          <p className="text-gray-600">Manage your API keys for accessing the platform</p>
         </div>
       </div>
 
       {/* Error Message */}
       {hasError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3" role="alert" aria-live="polite">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div className="text-sm text-red-800">
             <p className="font-medium mb-1">Failed to load data</p>
             <p>{errorMessage || 'Please refresh the page to try again'}</p>
@@ -127,21 +127,23 @@ export default function ApiKeysPage() {
                 <code className="font-mono text-sm break-all flex-1">{showNewKey}</code>
                 <button
                   onClick={() => copyToClipboard(showNewKey)}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  aria-label="Copy API key to clipboard"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
                 >
-                  <Copy className="w-4 h-4" />
+                  <Copy className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
               {newKeyModel && (
                 <div className="flex items-center gap-2 text-sm bg-white/10 rounded-lg p-2">
-                  <Brain className="w-4 h-4" />
+                  <Brain className="w-4 h-4" aria-hidden="true" />
                   <span>Restricted to model: <strong>{newKeyModel}</strong></span>
                 </div>
               )}
             </div>
             <button
               onClick={() => setShowNewKey(null)}
-              className="text-white/70 hover:text-white"
+              aria-label="Close new key notification"
+              className="text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50 rounded"
             >
               ✕
             </button>
@@ -154,12 +156,13 @@ export default function ApiKeysPage() {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New API Key</h3>
         <div className="space-y-4">
           {createError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700" role="alert" aria-live="polite">
               {createError}
             </div>
           )}
           <div className="flex gap-4">
             <input
+              id="key-name"
               type="text"
               value={newKeyName}
               onChange={(e) => {
@@ -168,18 +171,21 @@ export default function ApiKeysPage() {
               }}
               placeholder="Key name (e.g., Production, Development)"
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-describedby="key-name-hint"
             />
           </div>
           
           {/* Model Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="model-select" className="block text-sm font-medium text-gray-700 mb-2">
               Restrict to Specific Model (Optional)
             </label>
             <select
+              id="model-select"
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-describedby="model-hint"
             >
               <option value="">Any model (no restriction)</option>
               {models.map((model: Model) => (
@@ -188,7 +194,7 @@ export default function ApiKeysPage() {
                 </option>
               ))}
             </select>
-            <p className="text-sm text-gray-500 mt-1">
+            <p id="model-hint" className="text-sm text-gray-600 mt-1">
               If selected, this key will only work with the chosen model
             </p>
           </div>
@@ -196,16 +202,17 @@ export default function ApiKeysPage() {
           <button
             onClick={() => createMutation.mutate()}
             disabled={createMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center"
+            aria-busy={createMutation.isPending}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             {createMutation.isPending ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
                 <span>Creating...</span>
               </>
             ) : (
               <>
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4" aria-hidden="true" />
                 <span>Create Key</span>
               </>
             )}
@@ -220,12 +227,12 @@ export default function ApiKeysPage() {
         </div>
         
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <div className="p-8 text-center text-gray-600">Loading...</div>
         ) : apiKeys.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">
-            <Key className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <div className="p-8 text-center text-gray-600">
+            <Key className="w-12 h-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
             <p>No API keys yet</p>
-            <p className="text-sm">Create your first key to get started</p>
+            <p className="text-sm text-gray-600">Create your first key to get started</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
@@ -233,15 +240,15 @@ export default function ApiKeysPage() {
               <div key={key.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${key.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    <Key className={`w-5 h-5 ${key.is_active ? 'text-green-600' : 'text-gray-400'}`} />
+                    <Key className={`w-5 h-5 ${key.is_active ? 'text-green-600' : 'text-gray-500'}`} aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{key.name}</p>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
                       <span>Created {new Date(key.created_at).toLocaleDateString()}</span>
                       {key.allowed_model && (
-                        <span className="flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                          <Brain className="w-3 h-3" />
+                        <span className="flex items-center gap-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                          <Brain className="w-3 h-3" aria-hidden="true" />
                           {key.allowed_model}
                         </span>
                       )}
@@ -260,10 +267,11 @@ export default function ApiKeysPage() {
                     <button
                       onClick={() => revokeMutation.mutate(key.id)}
                       disabled={revokeMutation.isPending}
-                      className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                      aria-label={`Revoke key ${key.name}`}
                       title="Revoke key"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                   )}
                 </div>
@@ -275,7 +283,7 @@ export default function ApiKeysPage() {
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+        <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
         <div className="text-sm text-blue-800">
           <p className="font-medium mb-1">Model Restriction</p>
           <p>

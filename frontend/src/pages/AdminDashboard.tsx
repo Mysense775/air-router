@@ -228,7 +228,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-500 mt-1">Platform overview and statistics</p>
+          <p className="text-gray-600 mt-1">Platform overview and statistics</p>
         </div>
       </div>
 
@@ -267,7 +267,7 @@ export default function Dashboard() {
               <div className="text-2xl font-bold text-gray-900">
                 {stat.suffix === 'USD' ? formatCurrency(stat.value) : stat.value}
               </div>
-              <div className="text-sm text-gray-500 mt-1">{stat.title}</div>
+              <div className="text-sm text-gray-600 mt-1">{stat.title}</div>
             </div>
           )
         })}
@@ -296,7 +296,7 @@ export default function Dashboard() {
             <TrendingUp className="w-5 h-5 text-blue-600" />
             Master Account Pools
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-600 mt-1">
             {poolData?.pools.strategy_name || 'Loading...'}
           </p>
         </div>
@@ -375,25 +375,25 @@ export default function Dashboard() {
             </div>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-500">Total Balance</p>
+                <p className="text-sm text-gray-600">Total Balance</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {formatCurrency(poolData?.pools.discounted.total_balance || 0)}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Accounts</p>
+                  <p className="text-sm text-gray-600">Accounts</p>
                   <p className="text-lg font-medium text-gray-900">
                     {poolData?.pools.discounted.count || 0}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Margin</p>
+                  <p className="text-sm text-gray-600">Margin</p>
                   <p className="text-lg font-medium text-green-600">166%</p>
                 </div>
               </div>
               <div className="pt-3 border-t border-gray-200">
-                <p className="text-xs text-gray-500">Buy: -70% → Sell: -20%</p>
+                <p className="text-xs text-gray-600">Buy: -70% → Sell: -20%</p>
                 <p className="text-xs text-green-600 font-medium">High Profit</p>
               </div>
             </div>
@@ -421,25 +421,25 @@ export default function Dashboard() {
             </div>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-500">Total Balance</p>
+                <p className="text-sm text-gray-600">Total Balance</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {formatCurrency(poolData?.pools.regular.total_balance || 0)}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Accounts</p>
+                  <p className="text-sm text-gray-600">Accounts</p>
                   <p className="text-lg font-medium text-gray-900">
                     {poolData?.pools.regular.count || 0}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Margin</p>
+                  <p className="text-sm text-gray-600">Margin</p>
                   <p className="text-lg font-medium text-blue-600">5%</p>
                 </div>
               </div>
               <div className="pt-3 border-t border-gray-200">
-                <p className="text-xs text-gray-500">Buy: 0% → Sell: +5%</p>
+                <p className="text-xs text-gray-600">Buy: 0% → Sell: +5%</p>
                 <p className="text-xs text-blue-600 font-medium">Backup Only</p>
               </div>
             </div>
@@ -451,7 +451,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-700">Current Strategy</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-600">
                 {poolData?.pools.strategy === 'discounted_first'
                   ? '🟢 Prioritizing high-margin accounts (166% profit)'
                   : poolData?.pools.strategy === 'regular_only'
@@ -460,7 +460,7 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">Total Available</p>
+              <p className="text-sm text-gray-600">Total Available</p>
               <p className="text-xl font-bold text-gray-900">
                 {formatCurrency(poolData?.pools.total_available || 0)}
               </p>
@@ -477,7 +477,7 @@ export default function Dashboard() {
             Master Accounts
           </h2>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-600">
               {data?.master_accounts.length || 0} accounts
             </span>
             <button
@@ -492,11 +492,11 @@ export default function Dashboard() {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monthly Usage</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Balance</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Discount</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Monthly Usage</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -523,12 +523,12 @@ export default function Dashboard() {
                           }}
                         />
                       </div>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-600">
                         ${account.monthly_used_usd.toFixed(0)} / ${account.monthly_limit_usd.toFixed(0)}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-gray-400 text-sm">No limit</span>
+                    <span className="text-gray-500 text-sm">No limit</span>
                   )}
                 </td>
                 <td className="px-6 py-4">
@@ -536,17 +536,19 @@ export default function Dashboard() {
                     <button
                       onClick={() => handleSync(account.id)}
                       disabled={syncingId === account.id}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 disabled:opacity-50 text-blue-700 rounded-lg text-sm transition-colors"
+                      aria-label={`Sync balance for ${account.name}`}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 disabled:opacity-50 text-blue-700 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <RefreshCw className={`w-4 h-4 ${syncingId === account.id ? 'animate-spin' : ''}`} />
+                      <RefreshCw className={`w-4 h-4 ${syncingId === account.id ? 'animate-spin' : ''}`} aria-hidden="true" />
                       {syncingId === account.id ? 'Syncing...' : 'Sync'}
                     </button>
                     <button
                       onClick={() => handleRevoke(account.id, account.name)}
                       disabled={revokingId === account.id}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-red-100 hover:bg-red-200 disabled:opacity-50 text-red-700 rounded-lg text-sm transition-colors"
+                      aria-label={`Revoke account ${account.name}`}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-100 hover:bg-red-200 disabled:opacity-50 text-red-700 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
-                      <Trash2 className={`w-4 h-4 ${revokingId === account.id ? 'animate-spin' : ''}`} />
+                      <Trash2 className={`w-4 h-4 ${revokingId === account.id ? 'animate-spin' : ''}`} aria-hidden="true" />
                       {revokingId === account.id ? 'Revoking...' : 'Revoke'}
                     </button>
                   </div>
@@ -562,27 +564,27 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-green-600" />
+              <TrendingUp className="w-5 h-5 text-green-600" aria-hidden="true" />
             </div>
             <h3 className="text-sm font-medium text-gray-700">Manual Deposits</h3>
           </div>
           <div className="text-2xl font-bold text-gray-900">
             {formatCurrency(data?.manual_deposits || 0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">Added by admin</div>
+          <div className="text-xs text-gray-600 mt-1">Added by admin</div>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <CreditCard className="w-5 h-5 text-blue-600" />
+              <CreditCard className="w-5 h-5 text-blue-600" aria-hidden="true" />
             </div>
             <h3 className="text-sm font-medium text-gray-700">Payment Deposits</h3>
           </div>
           <div className="text-2xl font-bold text-gray-900">
             {formatCurrency(data?.payment_deposits || 0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">Via payment system</div>
+          <div className="text-xs text-gray-600 mt-1">Via payment system</div>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
@@ -595,7 +597,7 @@ export default function Dashboard() {
           <div className="text-2xl font-bold text-gray-900">
             {formatCurrency(data?.total_deposits || 0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">All time</div>
+          <div className="text-xs text-gray-600 mt-1">All time</div>
         </div>
       </div>
 
@@ -610,10 +612,10 @@ export default function Dashboard() {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Email</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Balance</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -626,7 +628,7 @@ export default function Dashboard() {
                   <td className="px-6 py-4 text-gray-600">{client.name || '-'}</td>
                   <td className="px-6 py-4">
                     <span className={`font-mono font-medium ${
-                      client.balance_usd > 0 ? 'text-green-600' : 'text-gray-400'
+                      client.balance_usd > 0 ? 'text-green-600' : 'text-gray-500'
                     }`}>
                       {formatCurrency(client.balance_usd)}
                     </span>
@@ -652,26 +654,27 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Add Master Account</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-5 h-5" />
+              <button onClick={() => setIsModalOpen(false)} aria-label="Close modal" className="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
+                <X className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-red-500" />
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2" role="alert" aria-live="polite">
+                <AlertCircle className="w-5 h-5 text-red-500" aria-hidden="true" />
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
             )}
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <label htmlFor="account-name" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
+                  id="account-name"
                   type="text"
                   value={newAccount.name}
                   onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   placeholder="Main Account"
                   required
                 />
@@ -694,7 +697,7 @@ export default function Dashboard() {
                       <span className="font-medium text-gray-900">Discounted</span>
                       {newAccount.account_type === 'discounted' && <Check className="w-4 h-4 text-green-600" />}
                     </div>
-                    <p className="text-xs text-gray-500">Buy: -70% → Sell: -20%</p>
+                    <p className="text-xs text-gray-600">Buy: -70% → Sell: -20%</p>
                     <p className="text-xs text-green-600 font-medium mt-1">166% margin ✅</p>
                   </button>
                   
@@ -711,7 +714,7 @@ export default function Dashboard() {
                       <span className="font-medium text-gray-900">Regular</span>
                       {newAccount.account_type === 'regular' && <Check className="w-4 h-4 text-blue-600" />}
                     </div>
-                    <p className="text-xs text-gray-500">Buy: 0% → Sell: +5%</p>
+                    <p className="text-xs text-gray-600">Buy: 0% → Sell: +5%</p>
                     <p className="text-xs text-blue-600 font-medium mt-1">5% margin (backup)</p>
                   </button>
                 </div>

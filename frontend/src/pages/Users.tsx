@@ -198,28 +198,30 @@ export default function Users() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`font-mono font-medium ${
-                      (user.balance_usd || 0) > 0 ? 'text-green-600' : 'text-gray-400'
+                      (user.balance_usd || 0) > 0 ? 'text-green-600' : 'text-gray-500'
                     }`}>
                       ${(user.balance_usd || 0).toFixed(2)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500 text-sm">
+                  <td className="px-6 py-4 text-gray-600 text-sm">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setSelectedUserId(user.id)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        aria-label={`View user ${user.email}`}
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4" aria-hidden="true" />
                         Просмотр
                       </button>
                       <button
                         onClick={() => openBalanceModal(user)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                        aria-label={`Manage balance for ${user.email}`}
                       >
-                        <Wallet className="w-4 h-4" />
+                        <Wallet className="w-4 h-4" aria-hidden="true" />
                         Баланс
                       </button>
                     </div>
@@ -239,8 +241,8 @@ export default function Users() {
               <>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Add New User</h2>
-                  <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
-                    <X className="w-5 h-5" />
+                  <button onClick={closeModal} aria-label="Close modal" className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
+                    <X className="w-5 h-5" aria-hidden="true" />
                   </button>
                 </div>
 
@@ -252,39 +254,51 @@ export default function Users() {
                 )}
 
                 <form onSubmit={handleCreate} className="space-y-4">
+                  {error && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2" role="alert" aria-live="polite">
+                      <AlertCircle className="w-5 h-5 text-red-500" aria-hidden="true" />
+                      <p className="text-red-700 text-sm">{error}</p>
+                    </div>
+                  )}
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="user-email" className="block text-sm font-medium text-gray-700 mb-1">
                       Email *
                     </label>
                     <input
+                      id="user-email"
                       type="email"
                       value={newUser.email}
                       onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                       required
+                      autoComplete="email"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="user-name" className="block text-sm font-medium text-gray-700 mb-1">
                       Name
                     </label>
                     <input
+                      id="user-name"
                       type="text"
                       value={newUser.name}
                       onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                      autoComplete="name"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="user-role" className="block text-sm font-medium text-gray-700 mb-1">
                       Role
                     </label>
                     <select
+                      id="user-role"
                       value={newUser.role}
                       onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="client">Client</option>
                       <option value="admin">Admin</option>
@@ -295,14 +309,15 @@ export default function Users() {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={createUserMutation.isPending}
-                      className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg"
+                      aria-busy={createUserMutation.isPending}
+                      className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       {createUserMutation.isPending ? 'Creating...' : 'Create User'}
                     </button>
