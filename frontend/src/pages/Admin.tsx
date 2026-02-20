@@ -177,21 +177,21 @@ export default function Admin() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500">Total Users</div>
+          <div className="text-sm text-gray-600">Total Users</div>
           <div className="text-2xl font-bold text-gray-900">{stats?.total_users || 0}</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500">Requests Today</div>
+          <div className="text-sm text-gray-600">Requests Today</div>
           <div className="text-2xl font-bold text-blue-600">{stats?.total_requests_today || 0}</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500">Revenue Today</div>
+          <div className="text-sm text-gray-600">Revenue Today</div>
           <div className="text-2xl font-bold text-green-600">
             ${stats?.revenue_today?.toFixed(2) || '0.00'}
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500">Profit Today</div>
+          <div className="text-sm text-gray-600">Profit Today</div>
           <div className="text-2xl font-bold text-purple-600">
             ${stats?.profit_today?.toFixed(2) || '0.00'}
           </div>
@@ -295,19 +295,19 @@ export default function Admin() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monthly Used</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Balance</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Monthly Used</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Discount</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Priority</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {accounts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-600">
                     No master accounts configured
                   </td>
                 </tr>
@@ -323,7 +323,7 @@ export default function Admin() {
                     <td className="px-6 py-4 text-gray-600">
                       ${acc.monthly_used_usd?.toFixed(2)}
                       {acc.monthly_limit_usd && (
-                        <span className="text-xs text-gray-400 ml-1">
+                        <span className="text-xs text-gray-500 ml-1">
                           / ${acc.monthly_limit_usd?.toFixed(0)}
                         </span>
                       )}
@@ -343,9 +343,10 @@ export default function Admin() {
                       <button
                         onClick={() => syncBalance(acc.id)}
                         disabled={syncing === acc.id}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                        aria-label={`Sync balance for ${acc.name}`}
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        <RefreshCcw className={`w-4 h-4 ${syncing === acc.id ? 'animate-spin' : ''}`} />
+                        <RefreshCcw className={`w-4 h-4 ${syncing === acc.id ? 'animate-spin' : ''}`} aria-hidden="true" />
                         {syncing === acc.id ? 'Syncing...' : 'Sync'}
                       </button>
                     </td>
@@ -366,17 +367,17 @@ export default function Admin() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Created</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-600">
                     No users found
                   </td>
                 </tr>
