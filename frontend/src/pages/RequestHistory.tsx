@@ -99,7 +99,7 @@ export default function RequestHistory() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Request History</h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-600 mt-1">
           Detailed log of all API requests with price breakdown
         </p>
       </div>
@@ -145,20 +145,20 @@ export default function RequestHistory() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Model</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Tokens</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  <span className="text-gray-400">OpenRouter</span>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Model</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">Tokens</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">
+                  <span className="text-gray-500">OpenRouter</span>
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">
                   <span className="text-blue-600">Your Price</span>
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">
                   <span className="text-green-600">Saved</span>
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Time</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -187,7 +187,7 @@ export default function RequestHistory() {
                   <td className="px-4 py-3 text-sm text-right text-gray-600">
                     {req.total_tokens.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right font-mono text-gray-400">
+                  <td className="px-4 py-3 text-sm text-right font-mono text-gray-500">
                     ${req.openrouter_cost_usd.toFixed(6)}
                   </td>
                   <td className="px-4 py-3 text-sm text-right font-mono text-blue-600 font-medium">
@@ -196,7 +196,7 @@ export default function RequestHistory() {
                   <td className="px-4 py-3 text-sm text-right font-mono text-green-600">
                     ${req.savings_usd.toFixed(6)}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-500">
+                  <td className="px-4 py-3 text-sm text-right text-gray-600">
                     {formatDuration(req.duration_ms)}
                   </td>
                 </tr>
@@ -207,7 +207,7 @@ export default function RequestHistory() {
 
         {/* Empty State */}
         {requests.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
+          <div className="text-center py-12 text-gray-500">
             <Zap className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No requests yet</p>
             <p className="text-sm">Make your first API call to see history</p>
@@ -217,7 +217,7 @@ export default function RequestHistory() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-600">
               Page {page} of {totalPages}
             </div>
             <div className="flex gap-2">

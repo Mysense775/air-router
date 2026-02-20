@@ -84,7 +84,7 @@ export default function InvestorKeysManagement() {
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Управление инвесторскими ключами</h3>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-600">
             Всего: {accounts?.length || 0}
           </span>
         </div>
@@ -92,7 +92,7 @@ export default function InvestorKeysManagement() {
         {/* Filters */}
         <div className="flex gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
               type="text"
               placeholder="Поиск по email или названию..."
@@ -128,24 +128,24 @@ export default function InvestorKeysManagement() {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Инвестор</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ключ</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Баланс</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Заработано</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Действия</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Инвестор</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Ключ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Баланс</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Заработано</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Статус</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Действия</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center">
-                  <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-400" />
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-500" />
                 </td>
               </tr>
             ) : accounts?.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-600">
                   Нет инвесторских ключей
                 </td>
               </tr>
@@ -159,20 +159,20 @@ export default function InvestorKeysManagement() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{account.user_name || '—'}</p>
-                        <p className="text-sm text-gray-500">{account.user_email}</p>
+                        <p className="text-sm text-gray-600">{account.user_email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <p className="font-medium text-gray-900">{account.name}</p>
-                    <p className="text-xs text-gray-500">ID: {account.id.slice(0, 8)}...</p>
+                    <p className="text-xs text-gray-600">ID: {account.id.slice(0, 8)}...</p>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-gray-400" />
+                      <DollarSign className="w-4 h-4 text-gray-500" />
                       <span className="font-medium">${account.current_balance.toFixed(2)}</span>
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-600">
                       из ${account.initial_balance.toFixed(2)}
                     </p>
                   </td>

@@ -125,7 +125,7 @@ export default function CryptoDeposit() {
           <Bitcoin className="w-7 h-7 text-orange-500" />
           Crypto Deposit
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-600 mt-1">
           Deposit funds using cryptocurrency
         </p>
       </div>
@@ -151,17 +151,17 @@ export default function CryptoDeposit() {
                   className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Wallet className="w-5 h-5 text-gray-400" />
+                    <Wallet className="w-5 h-5 text-gray-500" />
                     <div className="text-left">
                       <div className="font-medium text-gray-900">
                         {selectedCurrencyData?.name || 'Select currency'}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-600">
                         Network: {selectedCurrencyData?.network} • Fee: {selectedCurrencyData?.fee}
                       </div>
                     </div>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showCurrencyDropdown && (
@@ -178,7 +178,7 @@ export default function CryptoDeposit() {
                       >
                         <div className="flex-1">
                           <div className="font-medium text-gray-900">{currency.name}</div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-gray-600">
                             Network: {currency.network} • Fee: {currency.fee}
                           </div>
                         </div>
@@ -197,7 +197,7 @@ export default function CryptoDeposit() {
                 Amount (USD)
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600">$</span>
                 <input
                   type="number"
                   min="5"
@@ -210,7 +210,7 @@ export default function CryptoDeposit() {
                   required
                 />
               </div>
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-600 mt-2">
                 Minimum: $10 • Maximum: $10,000
               </p>
             </div>
@@ -236,14 +236,14 @@ export default function CryptoDeposit() {
               <Check className="w-8 h-8 text-green-600" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">Платёж создан!</h2>
-            <p className="text-gray-500 mt-1">
+            <p className="text-gray-600 mt-1">
               Отправьте указанную сумму на адрес ниже
             </p>
           </div>
 
           <div className="space-y-4 mb-6">
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-sm text-gray-500 mb-1">Payment ID</div>
+              <div className="text-sm text-gray-600 mb-1">Payment ID</div>
               <div className="font-mono text-gray-900">{payment.payment_id}</div>
             </div>
 
@@ -262,7 +262,7 @@ export default function CryptoDeposit() {
 
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-500">Deposit Address</span>
+                <span className="text-sm text-gray-600">Deposit Address</span>
                 <button
                   onClick={copyAddress}
                   className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
@@ -326,7 +326,7 @@ export default function CryptoDeposit() {
         </div>
         
         {history?.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-gray-600">
             No deposits yet
           </div>
         ) : (
@@ -334,10 +334,10 @@ export default function CryptoDeposit() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Currency</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Currency</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">

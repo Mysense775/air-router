@@ -81,23 +81,23 @@ export default function AccountTypeRevenueWidget() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="font-semibold text-gray-900">{card.title}</h4>
-              <p className="text-xs text-gray-500">{card.subtitle}</p>
+              <p className="text-xs text-gray-600">{card.subtitle}</p>
             </div>
             <div className={`w-3 h-3 rounded-full bg-${card.color}-500`}></div>
           </div>
 
           <div className="space-y-3">
             <div>
-              <p className="text-xs text-gray-500">Revenue</p>
+              <p className="text-xs text-gray-600">Revenue</p>
               <p className="text-lg font-bold text-gray-900">${card.data.revenue.toFixed(2)}</p>
             </div>
             <div className="flex justify-between">
               <div>
-                <p className="text-xs text-gray-500">Cost</p>
+                <p className="text-xs text-gray-600">Cost</p>
                 <p className="text-sm text-gray-700">${card.data.cost.toFixed(2)}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-gray-500">Profit</p>
+                <p className="text-xs text-gray-600">Profit</p>
                 <p className={`text-sm font-semibold text-${card.color}-600`}>
                   ${card.data.profit.toFixed(2)}
                 </p>
@@ -105,13 +105,13 @@ export default function AccountTypeRevenueWidget() {
             </div>
             <div className="pt-2 border-t border-gray-100">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-500">Margin</span>
+                <span className="text-xs text-gray-600">Margin</span>
                 <span className={`text-sm font-bold text-${card.color}-600`}>
                   {card.data.margin_percent.toFixed(1)}%
                 </span>
               </div>
               <div className="flex justify-between items-center mt-1">
-                <span className="text-xs text-gray-500">Requests</span>
+                <span className="text-xs text-gray-600">Requests</span>
                 <span className="text-sm text-gray-700">{card.data.requests_count}</span>
               </div>
             </div>

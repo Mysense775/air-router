@@ -166,7 +166,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
                   <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{stat.trend}</p>
+                  <p className="text-xs text-gray-600 mt-1">{stat.trend}</p>
                 </div>
                 <div className={`p-3 rounded-lg ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
                   <Icon className="w-5 h-5" aria-hidden="true" />
@@ -238,7 +238,7 @@ export default function Dashboard() {
             <div className="text-center py-8 text-gray-600">
               <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
               <p>{t('dashboard.noRecentActivity')}</p>
-              <p className="text-sm text-gray-500">{t('dashboard.makeYourFirstApiCall')}</p>
+              <p className="text-sm text-gray-600">{t('dashboard.makeYourFirstApiCall')}</p>
             </div>
           )}
         </div>
@@ -254,7 +254,7 @@ export default function Dashboard() {
               <p className="text-xl font-mono font-bold text-gray-900">
                 ${(usage.total_cost_usd / 0.8).toFixed(5)}
               </p>
-              <p className="text-xs text-gray-500">{t('dashboard.ifUsingDirectly')}</p>
+              <p className="text-xs text-gray-600">{t('dashboard.ifUsingDirectly')}</p>
             </div>
             <div className="bg-blue-50 rounded-lg p-4">
               <p className="text-sm text-blue-700 mb-1">{t('dashboard.yourPrice')}</p>

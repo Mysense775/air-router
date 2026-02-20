@@ -127,7 +127,7 @@ export default function Transactions() {
       case 'failed':
         return <XCircle className="w-5 h-5 text-red-500" />
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-500" />
+        return <AlertCircle className="w-5 h-5 text-gray-600" />
     }
   }
 
@@ -153,7 +153,7 @@ export default function Transactions() {
             <Receipt className="w-8 h-8 text-purple-600" />
             Транзакции
           </h1>
-          <p className="text-gray-500 mt-1">Управление пополнениями и платежами</p>
+          <p className="text-gray-600 mt-1">Управление пополнениями и платежами</p>
         </div>
         <button
           onClick={exportToCSV}
@@ -172,7 +172,7 @@ export default function Transactions() {
               <DollarSign className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Сегодня</p>
+              <p className="text-sm text-gray-600">Сегодня</p>
               <p className="text-xl font-bold text-gray-900">${stats.today_amount.toFixed(2)}</p>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function Transactions() {
               <Calendar className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">За месяц</p>
+              <p className="text-sm text-gray-600">За месяц</p>
               <p className="text-xl font-bold text-gray-900">${stats.month_amount.toFixed(2)}</p>
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function Transactions() {
               <CheckCircle className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Успешных</p>
+              <p className="text-sm text-gray-600">Успешных</p>
               <p className="text-xl font-bold text-gray-900">
                 {stats.by_status.completed?.count || 0}
               </p>
@@ -207,7 +207,7 @@ export default function Transactions() {
               <Clock className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">В ожидании</p>
+              <p className="text-sm text-gray-600">В ожидании</p>
               <p className="text-xl font-bold text-gray-900">
                 {stats.by_status.pending?.count || 0}
               </p>
@@ -221,7 +221,7 @@ export default function Transactions() {
         <div className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-[200px]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Поиск по email или TXID..."
@@ -273,26 +273,26 @@ export default function Transactions() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Дата</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Пользователь</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Сумма</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Крипта</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Метод</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">TXID</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Действия</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Дата</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Пользователь</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Сумма</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Крипта</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Метод</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Статус</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">TXID</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Действия</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-600">
                     Загрузка...
                   </td>
                 </tr>
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-600">
                     Нет транзакций
                   </td>
                 </tr>
@@ -305,7 +305,7 @@ export default function Transactions() {
                     <td className="px-4 py-3">
                       <div>
                         <p className="text-sm font-medium text-gray-900">{tx.user_name || '—'}</p>
-                        <p className="text-xs text-gray-500">{tx.user_email}</p>
+                        <p className="text-xs text-gray-600">{tx.user_email}</p>
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -375,7 +375,7 @@ export default function Transactions() {
         {/* Pagination */}
         <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Показано: {transactions.length} из {total}</span>
+            <span className="text-sm text-gray-600">Показано: {transactions.length} из {total}</span>
             <select
               value={limit}
               onChange={(e) => {
@@ -419,7 +419,7 @@ export default function Transactions() {
               <h3 className="text-lg font-semibold text-gray-900">Детали транзакции</h3>
               <button
                 onClick={() => setSelectedTransaction(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-500 hover:text-gray-600"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -427,19 +427,19 @@ export default function Transactions() {
             
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">ID</span>
+                <span className="text-gray-600">ID</span>
                 <span className="font-mono text-sm">{selectedTransaction.id}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Пользователь</span>
+                <span className="text-gray-600">Пользователь</span>
                 <span>{selectedTransaction.user_name || '—'} ({selectedTransaction.user_email})</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Сумма USD</span>
+                <span className="text-gray-600">Сумма USD</span>
                 <span className="font-semibold">${selectedTransaction.amount_usd.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Криптовалюта</span>
+                <span className="text-gray-600">Криптовалюта</span>
                 <span>
                   {selectedTransaction.amount_original 
                     ? `${selectedTransaction.amount_original.toFixed(6)} ${selectedTransaction.currency}`
@@ -447,34 +447,34 @@ export default function Transactions() {
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Метод</span>
+                <span className="text-gray-600">Метод</span>
                 <span className="capitalize">{selectedTransaction.payment_method}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Статус</span>
+                <span className="text-gray-600">Статус</span>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(selectedTransaction.status)}`}>
                   {selectedTransaction.status}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">TXID</span>
+                <span className="text-gray-600">TXID</span>
                 <span className="font-mono text-sm truncate max-w-[200px]">
                   {selectedTransaction.provider_transaction_id || '—'}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Создано</span>
+                <span className="text-gray-600">Создано</span>
                 <span>{new Date(selectedTransaction.created_at).toLocaleString('ru-RU')}</span>
               </div>
               {selectedTransaction.completed_at && (
                 <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-500">Завершено</span>
+                  <span className="text-gray-600">Завершено</span>
                   <span>{new Date(selectedTransaction.completed_at).toLocaleString('ru-RU')}</span>
                 </div>
               )}
               {Object.keys(selectedTransaction.metadata_).length > 0 && (
                 <div className="pt-2">
-                  <span className="text-gray-500">Метаданные:</span>
+                  <span className="text-gray-600">Метаданные:</span>
                   <pre className="mt-2 p-3 bg-gray-50 rounded-lg text-xs overflow-auto max-h-40">
                     {JSON.stringify(selectedTransaction.metadata_, null, 2)}
                   </pre>
@@ -513,7 +513,7 @@ export default function Transactions() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Отклонить транзакцию</h3>
-            <p className="text-gray-500">Укажите причину отклонения:</p>
+            <p className="text-gray-600">Укажите причину отклонения:</p>
             <textarea
               value={failReason}
               onChange={(e) => setFailReason(e.target.value)}

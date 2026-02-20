@@ -217,7 +217,7 @@ export default function InvestorDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">
             {t('investor.dashboardTitle') || 'Инвесторский дашборд'}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-600 mt-1">
             {t('investor.dashboardSubtitle') || 'Управляйте вашими инвестициями и следите за доходом'}
           </p>
         </div>
@@ -238,7 +238,7 @@ export default function InvestorDashboard() {
             <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">{stat.title}</p>
+                  <p className="text-sm text-gray-600">{stat.title}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
                 <div className={`p-3 bg-${stat.color}-100 rounded-lg`}>
@@ -329,7 +329,7 @@ export default function InvestorDashboard() {
                   }`} />
                   <div>
                     <p className="font-medium text-gray-900">{account.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-600">
                       {t('investor.initial') || 'Начальный'}: ${account.initial_balance.toFixed(2)}
                     </p>
                   </div>
@@ -346,7 +346,7 @@ export default function InvestorDashboard() {
         ) : (
           <div className="p-12 text-center">
             <Key className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{t('investor.noAccounts') || 'Нет аккаунтов'}</p>
+            <p className="text-gray-600">{t('investor.noAccounts') || 'Нет аккаунтов'}</p>
             <Link
               to="/investor/keys/add"
               className="inline-flex items-center gap-2 mt-4 text-green-600 hover:text-green-700"

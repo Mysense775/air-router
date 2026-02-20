@@ -136,7 +136,7 @@ export default function Docs() {
       </pre>
       <button
         onClick={() => copyToClipboard(code, id)}
-        className="absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 rounded text-gray-400 hover:text-white transition-colors"
+        className="absolute top-2 right-2 p-2 bg-gray-800 hover:bg-gray-700 rounded text-gray-500 hover:text-white transition-colors"
       >
         {copiedCode === id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
       </button>

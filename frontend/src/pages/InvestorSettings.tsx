@@ -83,7 +83,7 @@ export default function InvestorSettings() {
           <Settings className="w-8 h-8 text-green-600" />
           Настройки
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-600 mt-1">
           Управление профилем и предпочтениями
         </p>
       </div>
@@ -122,15 +122,15 @@ export default function InvestorSettings() {
                 Email
               </label>
               <div className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-gray-400" />
+                <Mail className="w-5 h-5 text-gray-500" />
                 <input
                   type="email"
                   value={formData.email}
                   disabled
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Email нельзя изменить</p>
+              <p className="text-xs text-gray-600 mt-1">Email нельзя изменить</p>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function InvestorSettings() {
             <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
               <div>
                 <p className="font-medium text-gray-900">Email уведомления</p>
-                <p className="text-sm text-gray-500">Получать важные уведомления на email</p>
+                <p className="text-sm text-gray-600">Получать важные уведомления на email</p>
               </div>
               <input
                 type="checkbox"
@@ -162,7 +162,7 @@ export default function InvestorSettings() {
             <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
               <div>
                 <p className="font-medium text-gray-900">Низкий баланс</p>
-                <p className="text-sm text-gray-500">Уведомлять когда баланс ключа меньше $20</p>
+                <p className="text-sm text-gray-600">Уведомлять когда баланс ключа меньше $20</p>
               </div>
               <input
                 type="checkbox"
@@ -178,7 +178,7 @@ export default function InvestorSettings() {
             <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
               <div>
                 <p className="font-medium text-gray-900">Выплаты</p>
-                <p className="text-sm text-gray-500">Уведомлять о статусе выплат</p>
+                <p className="text-sm text-gray-600">Уведомлять о статусе выплат</p>
               </div>
               <input
                 type="checkbox"
@@ -194,7 +194,7 @@ export default function InvestorSettings() {
             <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
               <div>
                 <p className="font-medium text-gray-900">Рефералы</p>
-                <p className="text-sm text-gray-500">Уведомлять о новых рефералах</p>
+                <p className="text-sm text-gray-600">Уведомлять о новых рефералах</p>
               </div>
               <input
                 type="checkbox"
@@ -224,13 +224,13 @@ export default function InvestorSettings() {
                   Изменить
                 </button>
               </div>
-              <p className="text-sm text-gray-500">Последнее изменение: никогда</p>
+              <p className="text-sm text-gray-600">Последнее изменение: никогда</p>
             </div>
 
             <label className="flex items-center justify-between p-4 bg-gray-50 rounded-lg cursor-pointer">
               <div>
                 <p className="font-medium text-gray-900">Двухфакторная аутентификация</p>
-                <p className="text-sm text-gray-500">Дополнительный уровень защиты</p>
+                <p className="text-sm text-gray-600">Дополнительный уровень защиты</p>
               </div>
               <input
                 type="checkbox"
@@ -256,7 +256,7 @@ export default function InvestorSettings() {
             </code>
           </div>
           
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4 text-sm text-gray-600">
             <p>Приглашайте друзей и получайте +0.5% от их оборота</p>
           </div>
         </div>

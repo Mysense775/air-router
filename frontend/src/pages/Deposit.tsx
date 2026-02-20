@@ -180,7 +180,7 @@ export default function Deposit() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
-        <p className="text-gray-500 mt-1">Deposit funds via cryptocurrency or AllIn payment system</p>
+        <p className="text-gray-600 mt-1">Deposit funds via cryptocurrency or AllIn payment system</p>
       </div>
 
       {/* Active Payment */}
@@ -212,7 +212,7 @@ export default function Deposit() {
                     aria-live="polite"
                     className="p-2 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" aria-hidden="true" /> : <Copy className="w-5 h-5 text-gray-500" aria-hidden="true" />}
+                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" aria-hidden="true" /> : <Copy className="w-5 h-5 text-gray-600" aria-hidden="true" />}
                   </button>
                 </div>
               </div>
@@ -260,7 +260,7 @@ export default function Deposit() {
                     <div className="text-sm text-gray-600">
                       Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
                     </div>
-                    <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-500'}`} aria-hidden="true" />
+                    <ChevronRight className={`w-5 h-5 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
                   </button>
                 )
               })}
@@ -335,7 +335,7 @@ export default function Deposit() {
                   <p className="text-sm text-blue-600 mt-1">
                     ≈ ${usdEquivalent} USD
                     {exchangeRate && (
-                      <span className="text-gray-400 ml-2">(rate: {exchangeRate.toFixed(2)} ₽/$)</span>
+                      <span className="text-gray-500 ml-2">(rate: {exchangeRate.toFixed(2)} ₽/$)</span>
                     )}
                   </p>
                 )}
@@ -423,7 +423,7 @@ export default function Deposit() {
                   {getStatusIcon(payment.status)}
                   <div>
                     <p className="font-medium text-gray-900">${payment.amount_usd.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500">{new Date(payment.created_at).toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-600">{new Date(payment.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium text-yellow-600">
@@ -448,7 +448,7 @@ export default function Deposit() {
                   {getStatusIcon(payment.status)}
                   <div>
                     <p className="font-medium text-gray-900">${payment.amount_usd.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-600">
                       {payment.completed_at 
                         ? new Date(payment.completed_at).toLocaleDateString()
                         : new Date(payment.created_at).toLocaleDateString()

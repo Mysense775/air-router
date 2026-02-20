@@ -209,7 +209,7 @@ export default function Sidebar() {
         >
           <Globe className="w-5 h-5" aria-hidden="true" />
           <span className="font-medium">{language === 'en' ? 'English' : 'Русский'}</span>
-          <span className="ml-auto text-xs text-gray-500">
+          <span className="ml-auto text-xs text-gray-600">
             {language === 'en' ? 'RU' : 'EN'}
           </span>
         </button>

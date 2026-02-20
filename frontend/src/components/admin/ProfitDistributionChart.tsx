@@ -90,13 +90,13 @@ export default function ProfitDistributionChart() {
           
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">Общая прибыль:</span>
+              <span className="text-sm text-gray-600">Общая прибыль:</span>
               <span className="text-lg font-bold text-gray-900">${totalProfit.toFixed(2)}</span>
             </div>
           </div>
         </>
       ) : (
-        <div className="h-64 flex items-center justify-center text-gray-500">
+        <div className="h-64 flex items-center justify-center text-gray-600">
           Нет данных о прибыли
         </div>
       )}

@@ -70,7 +70,7 @@ export default function AddInvestorKey() {
           <h1 className="text-2xl font-bold text-gray-900">
             {t('investor.addKeyTitle') || 'Добавить ключ'}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-600 mt-1">
             {t('investor.addKeySubtitle') || 'Добавьте ваш OpenRouter API ключ'}
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function AddInvestorKey() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               {t('investor.keyHint') || 'Ключ будет зашифрован и хранится безопасно'}
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function AddInvestorKey() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               {t('investor.minBalanceHint') || 'Минимум $100. Укажите текущий баланс вашего ключа.'}
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function AddInvestorKey() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               {t('investor.thresholdHint') || 'При достижении этого баланса ключ будет отключен. Рекомендуется $50.'}
             </p>
           </div>

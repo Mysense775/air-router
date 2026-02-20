@@ -153,7 +153,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">{user?.name || 'Пользователь'}</h2>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+              <p className="text-sm text-gray-600">{user?.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
               Войти как пользователь
             </button>
             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-gray-600" />
             </button>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
                 className={`flex items-center gap-2 py-3 border-b-2 transition-colors ${
                   activeTab === id
                     ? 'border-purple-600 text-purple-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    : 'border-transparent text-gray-600 hover:text-gray-700'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -236,15 +236,15 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
               {/* User Details */}
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-500">ID</span>
+                  <span className="text-gray-600">ID</span>
                   <span className="font-mono text-sm">{user?.id}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-500">Email</span>
+                  <span className="text-gray-600">Email</span>
                   <span>{user?.email}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-500">Роль</span>
+                  <span className="text-gray-600">Роль</span>
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user?.role || '')}`}>
                       {user?.role}
@@ -256,26 +256,26 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
                       }}
                       className="p-1 hover:bg-gray-200 rounded"
                     >
-                      <Edit3 className="w-4 h-4 text-gray-500" />
+                      <Edit3 className="w-4 h-4 text-gray-600" />
                     </button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-500">Статус</span>
+                  <span className="text-gray-600">Статус</span>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user?.status || '')}`}>
                     {user?.status}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-500">Email подтверждён</span>
+                  <span className="text-gray-600">Email подтверждён</span>
                   <span>{user?.email_verified ? 'Да' : 'Нет'}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-500">Создан</span>
+                  <span className="text-gray-600">Создан</span>
                   <span>{user?.created_at ? new Date(user.created_at).toLocaleString('ru-RU') : '—'}</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-500">Обновлён</span>
+                  <span className="text-gray-600">Обновлён</span>
                   <span>{user?.updated_at ? new Date(user.updated_at).toLocaleString('ru-RU') : '—'}</span>
                 </div>
               </div>
@@ -294,13 +294,13 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
           ) : activeTab === 'keys' ? (
             <div className="space-y-3">
               {data?.api_keys.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">Нет API ключей</p>
+                <p className="text-center text-gray-600 py-8">Нет API ключей</p>
               ) : (
                 data?.api_keys.map((key) => (
                   <div key={key.id} className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
                     <div>
                       <p className="font-medium">{key.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-600">
                         {key.allowed_model || 'Все модели'} • Создан: {new Date(key.created_at).toLocaleDateString('ru-RU')}
                       </p>
                     </div>
@@ -314,10 +314,10 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
           ) : activeTab === 'requests' ? (
             <div className="space-y-2">
               {data?.recent_requests.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">Нет запросов</p>
+                <p className="text-center text-gray-600 py-8">Нет запросов</p>
               ) : (
                 <table className="w-full">
-                  <thead className="text-left text-xs text-gray-500 uppercase">
+                  <thead className="text-left text-xs text-gray-600 uppercase">
                     <tr>
                       <th className="py-2">Дата</th>
                       <th className="py-2">Модель</th>
@@ -347,10 +347,10 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
           ) : (
             <div className="space-y-2">
               {data?.recent_deposits.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">Нет пополнений</p>
+                <p className="text-center text-gray-600 py-8">Нет пополнений</p>
               ) : (
                 <table className="w-full">
-                  <thead className="text-left text-xs text-gray-500 uppercase">
+                  <thead className="text-left text-xs text-gray-600 uppercase">
                     <tr>
                       <th className="py-2">Дата</th>
                       <th className="py-2">Сумма USD</th>
@@ -424,7 +424,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
           <div className="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold">Добавить баланс</h3>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Сумма (USD)</label>
+              <label className="block text-sm text-gray-600 mb-1">Сумма (USD)</label>
               <input
                 type="number"
                 step="0.01"
@@ -436,7 +436,7 @@ export default function UserDetailsModal({ userId, onClose }: UserDetailsModalPr
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">Причина (опционально)</label>
+              <label className="block text-sm text-gray-600 mb-1">Причина (опционально)</label>
               <input
                 type="text"
                 value={balanceReason}

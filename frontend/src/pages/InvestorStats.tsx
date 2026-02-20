@@ -62,7 +62,7 @@ export default function InvestorStats() {
           <BarChart3 className="w-8 h-8 text-green-600" />
           Статистика
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-600 mt-1">
           Детальная статистика использования ваших ключей
         </p>
       </div>
@@ -75,7 +75,7 @@ export default function InvestorStats() {
             <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">{stat.title}</p>
+                  <p className="text-sm text-gray-600">{stat.title}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
                 <div className={`p-3 bg-${stat.color}-100 rounded-lg`}>
@@ -115,7 +115,7 @@ export default function InvestorStats() {
                         day: 'numeric' 
                       })}
                     </p>
-                    <p className="text-sm text-gray-500">{day.requests} запросов</p>
+                    <p className="text-sm text-gray-600">{day.requests} запросов</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -128,7 +128,7 @@ export default function InvestorStats() {
         ) : (
           <div className="p-12 text-center">
             <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Нет данных за выбранный период</p>
+            <p className="text-gray-600">Нет данных за выбранный период</p>
           </div>
         )}
       </div>

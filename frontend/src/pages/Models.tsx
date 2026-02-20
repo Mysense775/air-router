@@ -152,7 +152,7 @@ export default function Models() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-600 mt-1">
             {models.length} AI models available. Choose the best for your task.
           </p>
           <Link 
@@ -176,7 +176,7 @@ export default function Models() {
                 {badge}
               </span>
               <h3 className="font-semibold text-gray-900 mt-4">{model.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-600 mt-1">
                 {formatPrice(model.pricing?.prompt || 0)}
               </p>
               <button
@@ -207,7 +207,7 @@ export default function Models() {
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <input
               type="text"
               placeholder="Search models..."
@@ -219,7 +219,7 @@ export default function Models() {
           
           {/* Provider Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <select
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
@@ -232,12 +232,12 @@ export default function Models() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
           
           {/* Price Filter */}
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <select
               value={priceFilter}
               onChange={(e) => setPriceFilter(e.target.value)}
@@ -248,12 +248,12 @@ export default function Models() {
               <option value="medium">Medium ($1-10/M)</option>
               <option value="expensive">Expensive (&gt; $10/M)</option>
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
         </div>
         
         {/* Results count */}
-        <div className="mt-3 text-sm text-gray-500">
+        <div className="mt-3 text-sm text-gray-600">
           Showing {paginatedModels.length} of {filteredModels.length} models (Page {currentPage} of {totalPages})
         </div>
       </div>
@@ -269,11 +269,11 @@ export default function Models() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <Brain className="w-5 h-5 text-blue-600" />
-                  <span className="text-xs font-medium text-gray-500 uppercase">{provider}</span>
+                  <span className="text-xs font-medium text-gray-600 uppercase">{provider}</span>
                 </div>
                 <button
                   onClick={() => copyToClipboard(model.id)}
-                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   title="Copy model ID"
                 >
                   {copiedId === model.id ? (
@@ -287,7 +287,7 @@ export default function Models() {
               <h3 className="font-semibold text-gray-900 mt-2">{model.name}</h3>
               
               {model.description && (
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                   {model.description}
                 </p>
               )}
@@ -316,7 +316,7 @@ export default function Models() {
 
       {/* Empty state */}
       {filteredModels.length === 0 && (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-gray-500">
           <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No models found</p>
           <p className="text-sm">Try adjusting your filters</p>
@@ -326,7 +326,7 @@ export default function Models() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-600">
             Page {currentPage} of {totalPages}
           </div>
           <div className="flex items-center gap-2">
@@ -378,7 +378,7 @@ export default function Models() {
               Next
             </button>
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-600">
             {filteredModels.length} models total
           </div>
         </div>

@@ -116,7 +116,7 @@ export default function ChangePassword() {
                 autoComplete="new-password"
                 aria-describedby="password-hint"
               />
-              <p id="password-hint" className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+              <p id="password-hint" className="text-xs text-gray-600 mt-1">Minimum 8 characters</p>
             </div>
 
             <div>

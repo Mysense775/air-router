@@ -144,7 +144,7 @@ export default function ReferralRegister() {
                   <span className="text-sm text-indigo-600 font-medium">Регистрация по приглашению</span>
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900">Создать аккаунт</h1>
-                <p className="text-gray-500 mt-2">
+                <p className="text-gray-600 mt-2">
                   Присоединяйтесь к AI Router и получите бонус
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function ReferralRegister() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Имя <span className="text-gray-400">(опционально)</span>
+                    Имя <span className="text-gray-500">(опционально)</span>
                   </label>
                   <input
                     type="text"

@@ -30,7 +30,7 @@ export default function UsagePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Usage Statistics</h1>
-          <p className="text-gray-500">Monitor your API usage and costs</p>
+          <p className="text-gray-600">Monitor your API usage and costs</p>
         </div>
         <select
           value={days}
@@ -51,7 +51,7 @@ export default function UsagePage() {
               <Activity className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Requests</p>
+              <p className="text-sm text-gray-600">Total Requests</p>
               <h3 className="text-2xl font-bold text-gray-900">
                 {usage?.total_requests?.toLocaleString() || 0}
               </h3>
@@ -65,7 +65,7 @@ export default function UsagePage() {
               <TrendingUp className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Cost</p>
+              <p className="text-sm text-gray-600">Total Cost</p>
               <h3 className="text-2xl font-bold text-gray-900">
                 ${usage?.total_cost_usd?.toFixed(2) || '0.00'}
               </h3>
@@ -79,7 +79,7 @@ export default function UsagePage() {
               <Clock className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Period</p>
+              <p className="text-sm text-gray-600">Period</p>
               <h3 className="text-2xl font-bold text-gray-900">{days} days</h3>
             </div>
           </div>
@@ -97,7 +97,7 @@ export default function UsagePage() {
               <div key={model.model} className="px-6 py-4 flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900">{model.model}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600">
                     {model.requests.toLocaleString()} requests • {model.total_tokens.toLocaleString()} tokens
                   </p>
                 </div>
@@ -108,7 +108,7 @@ export default function UsagePage() {
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-400">
+          <div className="p-8 text-center text-gray-500">
             <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No usage data for this period</p>
           </div>
@@ -126,8 +126,8 @@ export default function UsagePage() {
               <div key={day.date} className="px-6 py-3 flex items-center justify-between">
                 <span className="text-gray-600">{day.date}</span>
                 <div className="flex items-center gap-6 text-sm">
-                  <span className="text-gray-500">{day.requests} requests</span>
-                  <span className="text-gray-500">{day.tokens.toLocaleString()} tokens</span>
+                  <span className="text-gray-600">{day.requests} requests</span>
+                  <span className="text-gray-600">{day.tokens.toLocaleString()} tokens</span>
                   <span className="font-medium text-gray-900 w-20 text-right">
                     ${day.cost_usd.toFixed(2)}
                   </span>
@@ -136,7 +136,7 @@ export default function UsagePage() {
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-400">
+          <div className="p-8 text-center text-gray-500">
             <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No daily data available</p>
           </div>

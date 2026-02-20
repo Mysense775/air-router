@@ -68,7 +68,7 @@ export default function InvestorKeys() {
           <h1 className="text-2xl font-bold text-gray-900">
             {t('investor.keysTitle') || 'Мои ключи'}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-600 mt-1">
             {t('investor.keysSubtitle') || 'Управление инвесторскими ключами'}
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function InvestorKeys() {
                     account.status === 'active' ? 'bg-green-100' : 'bg-gray-100'
                   }`}>
                     <Key className={`w-6 h-6 ${
-                      account.status === 'active' ? 'text-green-600' : 'text-gray-500'
+                      account.status === 'active' ? 'text-green-600' : 'text-gray-600'
                     }`} />
                   </div>
                   <div>
@@ -121,7 +121,7 @@ export default function InvestorKeys() {
                         }
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-600 mt-1">
                       ID: {account.id.slice(0, 8)}...{account.id.slice(-4)}
                     </p>
                   </div>
@@ -131,7 +131,7 @@ export default function InvestorKeys() {
                   <p className="text-2xl font-bold text-gray-900">
                     ${account.current_balance.toFixed(2)}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600">
                     {t('investor.of') || 'из'} ${account.initial_balance.toFixed(2)}
                   </p>
                 </div>
@@ -140,19 +140,19 @@ export default function InvestorKeys() {
               {/* Stats */}
               <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
                 <div>
-                  <p className="text-sm text-gray-500">{t('investor.earned') || 'Заработано'}</p>
+                  <p className="text-sm text-gray-600">{t('investor.earned') || 'Заработано'}</p>
                   <p className="text-lg font-semibold text-green-600">
                     +${account.total_earned.toFixed(2)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">{t('investor.spent') || 'Потрачено'}</p>
+                  <p className="text-sm text-gray-600">{t('investor.spent') || 'Потрачено'}</p>
                   <p className="text-lg font-semibold text-gray-900">
                     ${account.total_spent.toFixed(2)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">{t('investor.minThreshold') || 'Мин. порог'}</p>
+                  <p className="text-sm text-gray-600">{t('investor.minThreshold') || 'Мин. порог'}</p>
                   <p className="text-lg font-semibold text-gray-900">
                     ${account.min_threshold.toFixed(2)}
                   </p>
@@ -201,7 +201,7 @@ export default function InvestorKeys() {
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             {t('investor.noKeys') || 'Нет ключей'}
           </h3>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-600 mb-6">
             {t('investor.addKeyDesc') || 'Добавьте ваш первый OpenRouter API ключ'}
           </p>
           <Link

@@ -77,7 +77,7 @@ export default function InvestorPayouts() {
           <Wallet className="w-8 h-8 text-green-600" />
           Выплаты
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-600 mt-1">
           Управление выплатами и вывод средств
         </p>
       </div>
@@ -85,7 +85,7 @@ export default function InvestorPayouts() {
       {/* Balance Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500">Всего заработано</p>
+          <p className="text-sm text-gray-600">Всего заработано</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">
             ${(data?.total_earned || 0).toFixed(2)}
           </p>
@@ -139,7 +139,7 @@ export default function InvestorPayouts() {
                     <p className="font-medium text-gray-900">
                       {new Date(payout.period_start).toLocaleDateString('ru-RU')} - {new Date(payout.period_end).toLocaleDateString('ru-RU')}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-600">
                       {getStatusText(payout.status)} • {payout.method}
                     </p>
                   </div>
@@ -159,8 +159,8 @@ export default function InvestorPayouts() {
         ) : (
           <div className="p-12 text-center">
             <Wallet className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">История выплат пуста</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-gray-600">История выплат пуста</p>
+            <p className="text-sm text-gray-500 mt-1">
               Выплаты будут отображаться здесь после первого вывода
             </p>
           </div>

@@ -58,7 +58,7 @@ export default function RevenueOverviewWidget() {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <div className="flex items-center gap-2 mb-6">
-        <DollarSign className="w-5 h-5 text-gray-500" />
+        <DollarSign className="w-5 h-5 text-gray-600" />
         <h3 className="font-semibold text-gray-900">Доходы платформы</h3>
       </div>
 
@@ -70,7 +70,7 @@ export default function RevenueOverviewWidget() {
               <div className={`inline-flex p-3 rounded-lg bg-${stat.color}-100 mb-2`}>
                 <Icon className={`w-5 h-5 text-${stat.color}-600`} />
               </div>
-              <p className="text-sm text-gray-500">{stat.title}</p>
+              <p className="text-sm text-gray-600">{stat.title}</p>
               <p className="text-xl font-bold text-gray-900">
                 ${stat.value.toFixed(2)}
               </p>

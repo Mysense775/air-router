@@ -135,7 +135,7 @@ export default function Users() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="text-gray-500 mt-1">Manage platform users</p>
+          <p className="text-gray-600 mt-1">Manage platform users</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
@@ -163,13 +163,13 @@ export default function Users() {
           <tbody className="divide-y divide-gray-200">
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-600">
                   Loading...
                 </td>
               </tr>
             ) : users?.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-600">
                   No users found
                 </td>
               </tr>
@@ -198,7 +198,7 @@ export default function Users() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`font-mono font-medium ${
-                      (user.balance_usd || 0) > 0 ? 'text-green-600' : 'text-gray-500'
+                      (user.balance_usd || 0) > 0 ? 'text-green-600' : 'text-gray-600'
                     }`}>
                       ${(user.balance_usd || 0).toFixed(2)}
                     </span>
@@ -241,7 +241,7 @@ export default function Users() {
               <>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Add New User</h2>
-                  <button onClick={closeModal} aria-label="Close modal" className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
+                  <button onClick={closeModal} aria-label="Close modal" className="text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
                     <X className="w-5 h-5" aria-hidden="true" />
                   </button>
                 </div>
@@ -331,18 +331,18 @@ export default function Users() {
                     <Check className="w-6 h-6 text-green-600" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-900">User Created!</h2>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className="text-gray-600 text-sm mt-1">
                     Save this temporary password - it won't be shown again!
                   </p>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <div className="text-sm text-gray-500 mb-1">Email</div>
+                  <div className="text-sm text-gray-600 mb-1">Email</div>
                   <div className="text-gray-900 font-medium">{createdUser.email}</div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <div className="text-sm text-gray-500 mb-1">Temporary Password</div>
+                  <div className="text-sm text-gray-600 mb-1">Temporary Password</div>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 text-green-700 font-mono bg-white border px-3 py-2 rounded">
                       {createdUser.temporary_password}
@@ -377,13 +377,13 @@ export default function Users() {
               <>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Add Balance</h2>
-                  <button onClick={closeBalanceModal} className="text-gray-400 hover:text-gray-600">
+                  <button onClick={closeBalanceModal} className="text-gray-500 hover:text-gray-600">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="text-sm text-gray-500">User</div>
+                  <div className="text-sm text-gray-600">User</div>
                   <div className="text-gray-900 font-medium">{selectedUser.email}</div>
                 </div>
 

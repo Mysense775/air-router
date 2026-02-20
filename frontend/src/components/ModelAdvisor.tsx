@@ -135,14 +135,14 @@ export default function ModelAdvisor() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{t('modelAdvisor.title')}</h2>
-                  <p className="text-sm text-gray-500">{t('modelAdvisor.subtitle')}</p>
+                  <p className="text-sm text-gray-600">{t('modelAdvisor.subtitle')}</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-gray-600" />
               </button>
             </div>
 
@@ -161,7 +161,7 @@ export default function ModelAdvisor() {
                       className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                       maxLength={500}
                     />
-                    <div className="mt-2 text-sm text-gray-500 text-right">
+                    <div className="mt-2 text-sm text-gray-600 text-right">
                       {userTask.length}/500
                     </div>
                   </div>
@@ -237,7 +237,7 @@ export default function ModelAdvisor() {
                     <Layers className="w-5 h-5 text-blue-600" />
                     <h3 className="font-semibold text-gray-900">{t('modelAdvisor.recommendedStack')}</h3>
                   </div>
-                  <p className="text-xs text-gray-500 -mt-4">{t('modelAdvisor.descriptionLang')}</p>
+                  <p className="text-xs text-gray-600 -mt-4">{t('modelAdvisor.descriptionLang')}</p>
 
                   {/* Model Cards */}
                   <div className="space-y-3">
@@ -250,12 +250,12 @@ export default function ModelAdvisor() {
                             </span>
                             <div>
                               <p className="font-semibold text-gray-900">{rec.name}</p>
-                              <p className="text-sm text-gray-500">{rec.task}</p>
+                              <p className="text-sm text-gray-600">{rec.task}</p>
                             </div>
                           </div>
                           <button
                             onClick={() => copyModelId(rec.model)}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           >
                             {copiedModels.has(rec.model) ? (
                               <Check className="w-5 h-5 text-green-600" />
@@ -359,7 +359,7 @@ export default function ModelAdvisor() {
                       </div>
                       <button
                         onClick={() => copyKey(key.key)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
                         title={t('modelAdvisor.copyKey')}
                       >
                         <Copy className="w-4 h-4" />
@@ -369,7 +369,7 @@ export default function ModelAdvisor() {
                       {key.key}
                     </code>
                     {key.allowed_model && (
-                      <p className="text-xs text-gray-500 mt-2">{t('modelAdvisor.model')}: {key.allowed_model}</p>
+                      <p className="text-xs text-gray-600 mt-2">{t('modelAdvisor.model')}: {key.allowed_model}</p>
                     )}
                   </div>
                 ))}

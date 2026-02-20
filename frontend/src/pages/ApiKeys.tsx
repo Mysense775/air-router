@@ -240,7 +240,7 @@ export default function ApiKeysPage() {
               <div key={key.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${key.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    <Key className={`w-5 h-5 ${key.is_active ? 'text-green-600' : 'text-gray-500'}`} aria-hidden="true" />
+                    <Key className={`w-5 h-5 ${key.is_active ? 'text-green-600' : 'text-gray-600'}`} aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{key.name}</p>

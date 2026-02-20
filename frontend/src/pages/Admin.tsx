@@ -323,7 +323,7 @@ export default function Admin() {
                     <td className="px-6 py-4 text-gray-600">
                       ${acc.monthly_used_usd?.toFixed(2)}
                       {acc.monthly_limit_usd && (
-                        <span className="text-xs text-gray-500 ml-1">
+                        <span className="text-xs text-gray-600 ml-1">
                           / ${acc.monthly_limit_usd?.toFixed(0)}
                         </span>
                       )}

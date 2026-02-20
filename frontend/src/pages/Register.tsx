@@ -148,7 +148,7 @@ export default function Register() {
                     className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       formData.role === 'client'
                         ? 'bg-blue-600/30 border-blue-500 text-white'
-                        : 'bg-slate-800/50 border-slate-600 text-gray-400 hover:border-slate-500'
+                        : 'bg-slate-800/50 border-slate-600 text-gray-500 hover:border-slate-500'
                     }`}
                   >
                     <Users className="w-6 h-6" aria-hidden="true" />
@@ -163,7 +163,7 @@ export default function Register() {
                     className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-green-500 ${
                       formData.role === 'investor'
                         ? 'bg-green-600/30 border-green-500 text-white'
-                        : 'bg-slate-800/50 border-slate-600 text-gray-400 hover:border-slate-500'
+                        : 'bg-slate-800/50 border-slate-600 text-gray-500 hover:border-slate-500'
                     }`}
                   >
                     <Key className="w-6 h-6" aria-hidden="true" />
@@ -257,7 +257,7 @@ export default function Register() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-400">
+            <p className="text-gray-500">
               Already have an account?{' '}
               <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
                 Sign in

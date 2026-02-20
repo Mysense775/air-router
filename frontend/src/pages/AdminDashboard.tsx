@@ -528,7 +528,7 @@ export default function Dashboard() {
                       </span>
                     </div>
                   ) : (
-                    <span className="text-gray-500 text-sm">No limit</span>
+                    <span className="text-gray-600 text-sm">No limit</span>
                   )}
                 </td>
                 <td className="px-6 py-4">
@@ -628,7 +628,7 @@ export default function Dashboard() {
                   <td className="px-6 py-4 text-gray-600">{client.name || '-'}</td>
                   <td className="px-6 py-4">
                     <span className={`font-mono font-medium ${
-                      client.balance_usd > 0 ? 'text-green-600' : 'text-gray-500'
+                      client.balance_usd > 0 ? 'text-green-600' : 'text-gray-600'
                     }`}>
                       {formatCurrency(client.balance_usd)}
                     </span>
@@ -654,7 +654,7 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Add Master Account</h2>
-              <button onClick={() => setIsModalOpen(false)} aria-label="Close modal" className="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
+              <button onClick={() => setIsModalOpen(false)} aria-label="Close modal" className="text-gray-600 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded">
                 <X className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>

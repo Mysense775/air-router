@@ -106,20 +106,20 @@ export default function AverageClientSpendChart() {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="h-64 flex items-center justify-center text-gray-500">
+        <div className="h-64 flex items-center justify-center text-gray-600">
           Нет данных о расходах клиентов
         </div>
       )}
       
       {chartData.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between text-sm">
-          <span className="text-gray-500">
+          <span className="text-gray-600">
             Среднее за период: 
             <span className="font-semibold text-gray-900 ml-1">
               ${(chartData.reduce((sum, d) => sum + d.avg_spend, 0) / chartData.length).toFixed(2)}
             </span>
           </span>
-          <span className="text-gray-500">
+          <span className="text-gray-600">
             Всего клиентов (сегодня): 
             <span className="font-semibold text-gray-900 ml-1">
               {chartData[chartData.length - 1]?.client_count || 0}
