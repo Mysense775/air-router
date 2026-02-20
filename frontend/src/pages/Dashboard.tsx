@@ -126,7 +126,7 @@ export default function Dashboard() {
               <div className="h-8 bg-gray-200 rounded w-32 mb-1 animate-pulse" />
               <div className="h-3 bg-gray-200 rounded w-20 animate-pulse" />
             </div>
-            <div className="p-3 rounded-[20px] bg-gray-100">
+            <div className="p-2 rounded-[20px] bg-gray-100">
               <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function Dashboard() {
                   <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
                   <p className="text-xs text-gray-600 mt-1">{stat.trend}</p>
                 </div>
-                <div className={`p-3 rounded-lg ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
+                <div className={`p-2 rounded-[20px] ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
                   <Icon className="w-4 h-4" aria-hidden="true" />
                 </div>
               </div>

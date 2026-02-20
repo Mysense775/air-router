@@ -100,7 +100,7 @@ export default function InvestorKeys() {
             <div key={account.id} className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-lg ${
+                  <div className={`p-2 rounded-[20px] ${
                     account.status === 'active' ? 'bg-green-100' : 'bg-gray-100'
                   }`}>
                     <Key className={`w-4 h-4 ${

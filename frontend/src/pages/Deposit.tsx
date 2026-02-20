@@ -250,7 +250,7 @@ export default function Deposit() {
                       isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent'
                     }`}
                   >
-                    <div className={`p-3 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                    <div className={`p-2 rounded-[20px] ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
                       <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
                     </div>
                     <div className="flex-1 text-left">

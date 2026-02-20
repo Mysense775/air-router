@@ -67,7 +67,7 @@ export default function RevenueOverviewWidget() {
           const Icon = stat.icon
           return (
             <div key={i} className="text-center">
-              <div className={`inline-flex p-3 rounded-lg bg-${stat.color}-100 mb-2`}>
+              <div className={`inline-flex p-2 rounded-[20px] bg-${stat.color}-100 mb-2`}>
                 <Icon className={`w-4 h-4 text-${stat.color}-600`} />
               </div>
               <p className="text-sm text-gray-600">{stat.title}</p>

@@ -260,7 +260,7 @@ export default function Dashboard() {
           return (
             <div key={index} className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-lg ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
+                <div className={`p-2 rounded-[20px] ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
