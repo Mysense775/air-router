@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  support-bot:
+    build: ./ai-router-support-bot
+    container_name: airouter-support-bot
+    environment:
+      - BOT_TOKEN=8549699847:AAE_R4pJyqwDXHfudJPJktDmbWB4GFMhOts
+      - API_BASE_URL=http://backend:8000/v1
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/ai_router
+      - REDIS_URL=redis://redis:6379/1
+      - SUPPORT_GROUP_ID=${SUPPORT_GROUP_ID:-}
+    volumes:
+      - ./ai-router-support-bot:/app
+    depends_on:
+      - backend
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - ai-router-network
+
+networks:
+  ai-router-network:
+    external: true
+    name: ai-router-platform_default

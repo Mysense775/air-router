@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from datetime import datetime, timedelta
@@ -13,27 +13,62 @@ from app.services.billing import BillingService
 router = APIRouter()
 
 
+async def get_user_from_auth(authorization: str = Header(None), db: AsyncSession = Depends(get_db)) -> User:
+    """Get user from API key or JWT token"""
+    from app.api.v1.proxy import validate_api_key
+    from app.core.security import decode_token
+
+    if not authorization:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization required")
+
+    # Try API key first (for support bot)
+    if authorization.startswith(("Bearer sk-", "Bearer air_")):
+        result = await validate_api_key(db, authorization)
+        if result:
+            return result[1]  # Return user
+
+    # Try JWT token (for frontend)
+    if authorization.startswith("Bearer ey"):
+        token = authorization.replace("Bearer ", "")
+        payload = decode_token(token)
+        if payload and payload.get("type") == "access":
+            user_id = payload.get("sub")
+            if user_id:
+                result = await db.execute(
+                    select(User).where(User.id == user_id, User.status == "active")
+                )
+                user = result.scalar_one_or_none()
+                if user:
+                    return user
+
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key or token")
+
+
 @router.get("/balance")
 async def get_balance(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get current user balance"""
+    """Get current user balance (supports JWT or API key auth)"""
     result = await db.execute(
         select(Balance).where(Balance.user_id == current_user.id)
     )
     balance = result.scalar_one_or_none()
-    
+
     if not balance:
         return {
+            "user_id": str(current_user.id),
+            "email": current_user.email,
             "balance_usd": 0.00,
             "lifetime_spent": 0.00,
             "lifetime_earned": 0.00,
             "lifetime_savings": 0.00,
             "currency": "USD"
         }
-    
+
     return {
+        "user_id": str(current_user.id),
+        "email": current_user.email,
         "balance_usd": float(balance.balance_usd),
         "lifetime_spent": float(balance.lifetime_spent),
         "lifetime_earned": float(balance.lifetime_earned),
@@ -46,7 +81,7 @@ async def get_balance(
 @router.get("/usage")
 async def get_usage(
     days: int = 7,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
     """Get usage statistics for the user"""
@@ -57,7 +92,7 @@ async def get_usage(
 @router.get("/usage/daily")
 async def get_daily_usage(
     days: int = 30,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
     """Get daily usage breakdown"""
@@ -96,7 +131,7 @@ async def get_daily_usage(
 @router.get("/models/usage")
 async def get_models_usage(
     days: int = 30,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
     """Get usage statistics by model"""
@@ -139,7 +174,7 @@ async def get_models_usage(
 @router.get("/daily-usage")
 async def get_daily_usage(
     days: int = 30,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
     """Get daily usage statistics for charts"""
@@ -199,7 +234,7 @@ async def get_daily_usage(
 @router.get("/recent-requests")
 async def get_recent_requests(
     limit: int = 50,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
     """Get recent API requests"""
@@ -234,10 +269,10 @@ async def get_recent_requests(
 async def get_request_history(
     page: int = 1,
     limit: int = 20,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_user_from_auth),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get detailed request history with price comparison"""
+    """Get detailed request history with price comparison and totals"""
     offset = (page - 1) * limit
     
     # Get total count
@@ -247,7 +282,27 @@ async def get_request_history(
     )
     total = count_result.scalar()
     
-    # Get requests with details
+    # Get TOTALS for all requests (not just current page)
+    totals_result = await db.execute(
+        select(
+            func.sum(RequestLog.cost_to_client_usd).label("total_spent"),
+            func.sum(RequestLog.openrouter_cost_usd).label("total_openrouter_cost"),
+            func.sum(RequestLog.total_tokens).label("total_tokens"),
+            func.count(RequestLog.id).label("total_requests")
+        )
+        .where(RequestLog.user_id == current_user.id)
+    )
+    totals = totals_result.one()
+    
+    # Calculate total savings
+    total_spent = totals.total_spent or Decimal("0")
+    total_or_cost = totals.total_openrouter_cost or Decimal("0")
+    # Fallback: если openrouter_cost = 0, считаем по скидке 20%
+    if total_or_cost == 0 and total_spent > 0:
+        total_or_cost = total_spent / Decimal("0.8")
+    total_savings = total_or_cost - total_spent
+    
+    # Get requests with details (current page only)
     result = await db.execute(
         select(RequestLog)
         .where(RequestLog.user_id == current_user.id)
@@ -262,6 +317,12 @@ async def get_request_history(
         "page": page,
         "per_page": limit,
         "total_pages": (total + limit - 1) // limit,
+        "summary": {
+            "total_spent": float(total_spent),
+            "total_savings": float(total_savings),
+            "total_tokens": int(totals.total_tokens or 0),
+            "total_requests": int(totals.total_requests or 0)
+        },
         "requests": [
             {
                 "id": str(req.id),

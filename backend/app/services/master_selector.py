@@ -5,7 +5,7 @@ Smart Master Account Selector
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update
 from decimal import Decimal
-from typing import Optional, Tuple, Dict, List
+from typing import Optional, Tuple, Dict, List, Union
 import logging
 
 from app.models import MasterAccount, RequestLog, InvestorAccount
@@ -31,10 +31,10 @@ class MasterAccountSelector:
         self.db = db
     
     async def select_account(
-        self, 
+        self,
         estimated_cost: Decimal = Decimal("0"),
         min_balance: Decimal = Decimal("1.0")
-    ) -> Tuple[MasterAccount, Decimal]:
+    ) -> Tuple[Union[MasterAccount, InvestorAccount], Decimal]:
         """
         Выбирает лучший аккаунт и возвращает ценовой множитель для клиента
         
@@ -297,10 +297,10 @@ class MasterAccountSelector:
 async def select_master_account(
     db: AsyncSession,
     estimated_cost: Decimal = Decimal("0")
-) -> Tuple[MasterAccount, Decimal]:
+) -> Tuple[Union[MasterAccount, InvestorAccount], Decimal]:
     """
     Упрощённая функция для быстрого выбора аккаунта
-    
+
     Example:
         account, price_multiplier = await select_master_account(db, Decimal("0.5"))
     """

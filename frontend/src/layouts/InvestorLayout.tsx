@@ -13,6 +13,7 @@ import {
   BookOpen,
   Menu,
   X,
+  MessageCircle,
 } from 'lucide-react'
 
 interface InvestorLayoutProps {
@@ -33,13 +34,22 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
     return <Navigate to="/dashboard" />
   }
 
-  const menuItems = [
+  interface MenuItem {
+    path?: string
+    href?: string
+    icon: any
+    label: string
+    external?: boolean
+  }
+
+  const menuItems: MenuItem[] = [
     { path: '/investor', icon: LayoutDashboard, label: t('investor.dashboard') || 'Главная' },
     { path: '/investor/flow', icon: BookOpen, label: t('investor.flow') || 'Схема заработка' },
     { path: '/investor/keys', icon: Key, label: t('investor.keys') || 'Мои ключи' },
     { path: '/investor/stats', icon: BarChart3, label: t('investor.stats') || 'Статистика' },
     { path: '/investor/payouts', icon: Wallet, label: t('investor.payouts') || 'Выплаты' },
     { path: '/investor/settings', icon: Settings, label: t('investor.settings') || 'Настройки' },
+    { href: 'https://t.me/ai_router_support_bot', icon: MessageCircle, label: t('navigation.support') || 'Поддержка', external: true },
   ]
 
   return (
@@ -56,7 +66,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <div className="bg-green-600 p-2 rounded-[20px]">
-            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden="true" />
+            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden={true} />
           </div>
           <h2 className="font-bold text-gray-900">AI Router</h2>
         </div>
@@ -75,7 +85,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={closeMobileMenu}
-          aria-hidden="true"
+          aria-hidden={true}
         />
       )}
 
@@ -88,7 +98,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <div className="bg-green-600 p-2 rounded-[20px]">
-              <LayoutDashboard className="w-4 h-4 text-white" aria-hidden="true" />
+              <LayoutDashboard className="w-4 h-4 text-white" aria-hidden={true} />
             </div>
             <div>
               <h2 className="font-bold text-gray-900">AI Router</h2>
@@ -101,20 +111,38 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
         <nav className="flex-1 p-4 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon
-            const isActive = location.pathname === item.path
+            const isActive = item.path ? location.pathname === item.path : false
+            const key = item.path || item.href
+            
+            if (item.external) {
+              return (
+                <a
+                  key={key}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-600 hover:bg-gray-50"
+                >
+                  <Icon className="w-4 h-4" aria-hidden={true} />
+                  <span className="font-medium">{item.label}</span>
+                </a>
+              )
+            }
+            
             return (
               <Link
-                key={item.path}
-                to={item.path}
+                key={key}
+                to={item.path!}
                 onClick={closeMobileMenu}
-                aria-current={isActive ? 'page' : undefined}
+                aria-current={isActive ? 'page' : false}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
                   isActive
                     ? 'bg-green-50 text-green-600'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Icon className="w-4 h-4" aria-hidden="true" />
+                <Icon className="w-4 h-4" aria-hidden={true} />
                 <span className="font-medium">{item.label}</span>
               </Link>
             )
@@ -129,7 +157,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
             aria-label="Переключить язык"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-[20px] text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <Globe className="w-4 h-4" aria-hidden="true" />
+            <Globe className="w-4 h-4" aria-hidden={true} />
             <span>{language === 'ru' ? 'Русский' : 'English'}</span>
           </button>
 
@@ -139,7 +167,7 @@ export default function InvestorLayout({ children }: InvestorLayoutProps) {
             aria-label={t('navigation.logout') || 'Выйти'}
             className="flex items-center gap-2 w-full px-3 py-2 rounded-[20px] text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <LogOut className="w-4 h-4" aria-hidden="true" />
+            <LogOut className="w-4 h-4" aria-hidden={true} />
             <span>{t('navigation.logout') || 'Выйти'}</span>
           </button>
         </div>

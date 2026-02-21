@@ -15,6 +15,7 @@ import {
   Receipt,
   Menu,
   X,
+  MessageCircle,
 } from 'lucide-react'
 
 export default function Sidebar() {
@@ -32,7 +33,7 @@ export default function Sidebar() {
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <div className="bg-blue-600 p-2 rounded-[20px]">
-            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden="true" />
+            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden={true} />
           </div>
           <h2 className="font-bold text-gray-900">AI Router</h2>
         </div>
@@ -51,7 +52,7 @@ export default function Sidebar() {
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={closeMobileMenu}
-          aria-hidden="true"
+          aria-hidden={true}
         />
       )}
 
@@ -62,7 +63,7 @@ export default function Sidebar() {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="bg-blue-600 p-2 rounded-[20px]">
-            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden="true" />
+            <LayoutDashboard className="w-4 h-4 text-white" aria-hidden={true} />
           </div>
           <div>
             <h2 className="font-bold text-gray-900">AI Router</h2>
@@ -85,7 +86,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Shield className="w-4 h-4" aria-hidden="true" />
+              <Shield className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.admin')}</span>
             </Link>
             <Link
@@ -98,7 +99,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Users className="w-4 h-4" aria-hidden="true" />
+              <Users className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.users')}</span>
             </Link>
             <Link
@@ -111,7 +112,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Receipt className="w-4 h-4" aria-hidden="true" />
+              <Receipt className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.transactions')}</span>
             </Link>
           </>
@@ -128,7 +129,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
+              <LayoutDashboard className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.dashboard')}</span>
             </Link>
             <Link
@@ -141,7 +142,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <CreditCard className="w-4 h-4" aria-hidden="true" />
+              <CreditCard className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.deposit')}</span>
             </Link>
             <Link
@@ -154,7 +155,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Key className="w-4 h-4" aria-hidden="true" />
+              <Key className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.apiKeys')}</span>
             </Link>
             <Link
@@ -167,7 +168,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <History className="w-4 h-4" aria-hidden="true" />
+              <History className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.requestHistory')}</span>
             </Link>
             <Link
@@ -180,7 +181,7 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Brain className="w-4 h-4" aria-hidden="true" />
+              <Brain className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.models')}</span>
             </Link>
             <Link
@@ -193,9 +194,19 @@ export default function Sidebar() {
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Book className="w-4 h-4" aria-hidden="true" />
+              <Book className="w-4 h-4" aria-hidden={true} />
               <span className="font-medium">{t('navigation.docs')}</span>
             </Link>
+            <a
+              href="https://t.me/ai_router_support_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-50"
+            >
+              <MessageCircle className="w-4 h-4" aria-hidden={true} />
+              <span className="font-medium">{t('navigation.support') || 'Поддержка'}</span>
+            </a>
           </>
         )}
       </nav>
@@ -207,7 +218,7 @@ export default function Sidebar() {
           aria-label="Переключить язык"
           className="flex items-center gap-2 w-full px-3 py-2 rounded-[20px] text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <Globe className="w-4 h-4" aria-hidden="true" />
+          <Globe className="w-4 h-4" aria-hidden={true} />
           <span className="font-medium">{language === 'en' ? 'English' : 'Русский'}</span>
           <span className="ml-auto text-xs text-gray-600">
             {language === 'en' ? 'RU' : 'EN'}

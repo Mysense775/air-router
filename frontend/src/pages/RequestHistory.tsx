@@ -31,11 +31,27 @@ interface Request {
   created_at: string
 }
 
+interface Summary {
+  total_spent: number
+  total_savings: number
+  total_tokens: number
+  total_requests: number
+}
+
+interface RequestHistoryResponse {
+  total: number
+  page: number
+  per_page: number
+  total_pages: number
+  summary: Summary
+  requests: Request[]
+}
+
 export default function RequestHistory() {
   const [page, setPage] = useState(1)
   const perPage = 20
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<RequestHistoryResponse>({
     queryKey: ['requestHistory', page],
     queryFn: async () => {
       const res = await api.get(`/client/request-history?page=${page}&limit=${perPage}`)
@@ -46,6 +62,12 @@ export default function RequestHistory() {
   const requests: Request[] = data?.requests || []
   const totalPages = data?.total_pages || 1
   const totalRequests = data?.total || 0
+  
+  // Use summary totals from API (all requests), not just current page
+  const summary: Summary = data?.summary || { total_spent: 0, total_savings: 0, total_tokens: 0, total_requests: 0 }
+  const totalSpent = summary.total_spent || 0
+  const totalSavings = summary.total_savings || 0
+  const totalTokens = summary.total_tokens || 0
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -73,11 +95,6 @@ export default function RequestHistory() {
     if (ms < 1000) return `${ms}ms`
     return `${(ms / 1000).toFixed(1)}s`
   }
-
-  // Calculate totals for current page
-  const totalSavings = requests.reduce((sum, req) => sum + (req.savings_usd || 0), 0)
-  const totalSpent = requests.reduce((sum, req) => sum + req.client_cost_usd, 0)
-  const totalTokens = requests.reduce((sum, req) => sum + req.total_tokens, 0)
 
   if (isLoading) {
     return (

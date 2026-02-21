@@ -5,17 +5,15 @@ import json
 import time
 import logging
 from decimal import Decimal
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.services.billing import BillingService, PricingService
 from app.services.master_selector import MasterAccountSelector, NoAvailableAccountError
 from app.models import ApiKey, User, MasterAccount, Balance, InvestorAccount
-from typing import Union
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
-from decimal import Decimal
 from datetime import datetime
 
 router = APIRouter()
@@ -23,7 +21,10 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
-async def get_master_account_with_pricing(db: AsyncSession, estimated_cost: Decimal = Decimal("0")) -> Tuple[Union[MasterAccount, InvestorAccount], str, Decimal]:
+async def get_master_account_with_pricing(
+    db: AsyncSession, 
+    estimated_cost: Decimal = Decimal("0")
+) -> Tuple[Union[MasterAccount, InvestorAccount], str, Decimal]:
     """
     Get master account using priority queue and calculate pricing
     
@@ -62,7 +63,7 @@ async def validate_api_key(
     
     key = authorization.replace("Bearer ", "").strip()
     
-    # Hash the key for lookup (in production, use proper hashing with salt)
+    # Hash the key for lookup
     import hashlib
     key_hash = hashlib.sha256(key.encode()).hexdigest()
     
@@ -77,7 +78,7 @@ async def validate_api_key(
     )
     row = result.one_or_none()
     if row:
-        return row[0], row[1]  # api_key, user
+        return row[0], row[1]
     return None
 
 
@@ -124,27 +125,39 @@ async def chat_completions(
     
     model = requested_model
     
-    # Get model pricing for cost estimation
-    pricing = await PricingService.get_model_pricing(db, model)
+    # ЛЕНИВАЯ ЗАГРУЗКА: Получаем цену из кэша или OpenRouter API
+    pricing, was_fetched = await PricingService.get_or_fetch_model_pricing(db, model)
+    if not pricing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error": "Model not found",
+                "message": f"No pricing available for model: {model}",
+                "model": model
+            }
+        )
     
-    # Estimate max cost (will be adjusted after actual usage)
+    if was_fetched:
+        logger.info(f"Fresh pricing fetched from OpenRouter for {model}")
+    else:
+        logger.debug(f"Using cached pricing for {model}")
+    
+    # Get master account with priority queue
+    account, master_key, price_multiplier = await get_master_account_with_pricing(db)
+    
+    # Calculate cost with account type using NEW method
     estimated_tokens = body.get("max_tokens", 1000)
-    estimated_cost = BillingService.calculate_cost(
+    
+    # For initial reservation, use basic calculation (no base fee for platform requests)
+    base_cost = BillingService.calculate_cost(
         model, 
         len(body.get("messages", [])),
         estimated_tokens,
         pricing
     )
+    estimated_client_cost = base_cost["real_cost_usd"] * price_multiplier
     
-    # Получаем мастер-аккаунт с учетом приоритетной очереди
-    # и ценовым множителем (0.8 для discounted, 1.10 для investor/regular)
-    account, master_key, price_multiplier = await get_master_account_with_pricing(
-        db, 
-        estimated_cost["real_cost_usd"]
-    )
-    
-    # Рассчитываем стоимость для клиента с учетом типа аккаунта
-    estimated_client_cost = estimated_cost["real_cost_usd"] * price_multiplier
+    logger.info(f"Estimated cost for {model}: ${estimated_client_cost:.6f}")
     
     # Reserve balance BEFORE making the request
     reserved = await BillingService.reserve_balance(
@@ -186,34 +199,59 @@ async def chat_completions(
             prompt_tokens = usage.get("prompt_tokens", 0)
             completion_tokens = usage.get("completion_tokens", 0)
             
-            # Calculate actual cost from upstream
-            cost_breakdown = BillingService.calculate_cost(
-                model,
-                prompt_tokens,
-                completion_tokens,
-                pricing
-            )
+            # Get ACTUAL cost from OpenRouter response
+            actual_openrouter_cost = Decimal(str(usage.get("cost", 0)))
             
-            # Наши реальные затраты (зависят от типа аккаунта)
-            our_cost = cost_breakdown["real_cost_usd"] * account.cost_basis
+            # Use actual cost from OpenRouter if available, otherwise fall back to calculation
+            if actual_openrouter_cost > 0:
+                cost_breakdown = BillingService.calculate_cost_from_openrouter_actual(
+                    actual_openrouter_cost,
+                    account
+                )
+                logger.info(
+                    f"Using actual OpenRouter cost for {model}: "
+                    f"OR cost=${actual_openrouter_cost:.8f}, "
+                    f"Client=${cost_breakdown['client_cost_usd']:.8f}"
+                )
+            else:
+                # Fallback to token-based calculation if OpenRouter doesn't provide cost
+                cost_breakdown = BillingService.calculate_cost_with_account(
+                    model,
+                    prompt_tokens,
+                    completion_tokens,
+                    account,
+                    pricing
+                )
+                logger.warning(
+                    f"OpenRouter cost not provided for {model}, using calculated cost: "
+                    f"${cost_breakdown['client_cost_usd']:.8f}"
+                )
             
-            # Стоимость для клиента (с наценкой/скидкой)
-            actual_client_cost = cost_breakdown["real_cost_usd"] * price_multiplier
+            actual_client_cost = cost_breakdown["client_cost_usd"]
+            our_cost = cost_breakdown["our_cost_usd"]
+            profit = cost_breakdown["profit_usd"]
+            savings = cost_breakdown["savings_usd"]
+            account_type = cost_breakdown["account_type"]
             
-            # Прибыль
-            profit = actual_client_cost - our_cost
+            # Log cost comparison for monitoring
+            if actual_openrouter_cost > 0:
+                logger.info(
+                    f"Cost breakdown for {model} - "
+                    f"OR actual: ${actual_openrouter_cost:.8f}, "
+                    f"Client: ${actual_client_cost:.8f}, "
+                    f"Our cost: ${our_cost:.8f}, "
+                    f"Profit: ${profit:.8f}"
+                )
             
             # Handle billing: refund difference if actual < estimated
             if reserved_amount > actual_client_cost:
                 refund_amount = reserved_amount - actual_client_cost
                 await BillingService.release_balance(db, user_id, refund_amount)
-                logger.info(f"Refunded {refund_amount} USD to user {user_id} (reserved: {reserved_amount}, actual: {actual_client_cost})")
+                logger.info(f"Refunded {refund_amount} USD to user {user_id}")
             
-            # Если фактическая стоимость выше резерва — списываем дополнительно
+            # If actual cost > reserved, charge extra
             if actual_client_cost > reserved_amount:
                 extra_charge = actual_client_cost - reserved_amount
-                # Используем прямой update (как в reserve), чтобы НЕ обновлять lifetime_spent здесь
-                # (он обновится целиком ниже, чтобы избежать двойного учета extra_charge)
                 await db.execute(
                     update(Balance)
                     .where(
@@ -227,8 +265,7 @@ async def chat_completions(
                 )
                 await db.commit()
             
-            # Update lifetime_spent напрямую (не через deduct_balance чтобы не списать дважды)
-            # Это единственное место, где обновляется статистика расходов за запрос
+            # Update lifetime_spent
             result = await db.execute(
                 select(Balance).where(Balance.user_id == user_id)
             )
@@ -238,21 +275,26 @@ async def chat_completions(
                 await db.flush()
                 await db.commit()
             
-            # Рассчитываем сбережения клиента (сколько сэкономил vs OpenRouter)
-            savings = cost_breakdown["real_cost_usd"] - actual_client_cost
+            # Add savings if positive
             if savings > 0:
-                # Добавляем сбережения к lifetime_savings
-                result_savings = await db.execute(select(Balance).where(Balance.user_id == user_id))
+                result_savings = await db.execute(
+                    select(Balance).where(Balance.user_id == user_id)
+                )
                 balance_savings = result_savings.scalar_one_or_none()
                 if balance_savings:
                     balance_savings.lifetime_savings += savings
                     await db.commit()
             
-            # Спишем с баланса мастер-аккаунта
-            account.balance_usd -= our_cost
+            # Deduct from master account balance
+            if isinstance(account, InvestorAccount):
+                # For investor accounts, track total spent
+                account.total_spent = (account.total_spent or Decimal("0")) + our_cost
+                # Commission is calculated in cost_breakdown
+            else:
+                account.balance_usd -= our_cost
             await db.commit()
             
-            # Log request
+            # Log request with account_type
             await BillingService.log_request(
                 db=db,
                 user_id=user_id,
@@ -262,31 +304,15 @@ async def chat_completions(
                 endpoint="/chat/completions",
                 prompt_tokens=prompt_tokens,
                 completion_tokens=completion_tokens,
-                cost_breakdown={
-                    "real_cost_usd": cost_breakdown["real_cost_usd"],
-                    "our_cost_usd": our_cost,
-                    "client_cost_usd": actual_client_cost,
-                    "profit_usd": profit
-                },
+                cost_breakdown=cost_breakdown,
                 duration_ms=duration_ms,
                 status="success" if response.status_code == 200 else "error",
-                status_code=response.status_code
+                status_code=response.status_code,
+                account_type_used=account_type
             )
             
-            # Дополнительно сохраним тип аккаунта в лог (для аналитики)
-            # TODO: добавить поле account_type_used в RequestLog
-            
             # Add cost info to response
-            # Handle both MasterAccount and InvestorAccount
-            if isinstance(account, InvestorAccount):
-                account_type_str = "investor"
-                pricing_str = "investor (+10%)"
-            else:
-                account_type_str = account.account_type
-                if account.account_type == "discounted":
-                    pricing_str = "discounted (-20%)"
-                else:
-                    pricing_str = "regular (+10%)"
+            pricing_str = BillingService.get_account_type_description(account_type)
             
             response_data["cost"] = {
                 "prompt_tokens": prompt_tokens,
@@ -294,19 +320,18 @@ async def chat_completions(
                 "total_tokens": prompt_tokens + completion_tokens,
                 "cost_usd": float(actual_client_cost),
                 "currency": "USD",
-                "account_type": account_type_str,
-                "pricing": pricing_str
+                "account_type": account_type,
+                "pricing": pricing_str,
+                "savings_usd": float(savings) if savings > 0 else 0.0
             }
             
             return response_data
             
         except httpx.TimeoutException:
-            # Refund reserved amount on timeout
             if reserved_amount:
                 await BillingService.release_balance(db, user_id, reserved_amount)
-                logger.warning(f"Refunded {reserved_amount} USD to user {user_id} due to timeout")
+                logger.warning(f"Refunded {reserved_amount} USD due to timeout")
             
-            # Log timeout
             await BillingService.log_request(
                 db=db,
                 user_id=user_id,
@@ -320,22 +345,21 @@ async def chat_completions(
                     "real_cost_usd": Decimal("0"),
                     "our_cost_usd": Decimal("0"),
                     "client_cost_usd": Decimal("0"),
-                    "profit_usd": Decimal("0")
+                    "profit_usd": Decimal("0"),
+                    "account_type": "timeout"
                 },
                 duration_ms=int((time.time() - start_time) * 1000),
                 status="timeout",
-                error_message="Upstream timeout"
+                error_message="Upstream timeout",
+                account_type_used="timeout"
             )
             raise HTTPException(504, "Upstream timeout")
             
         except Exception as e:
-            # Refund reserved amount on any error
             if reserved_amount:
                 await BillingService.release_balance(db, user_id, reserved_amount)
-                logger.warning(f"Refunded {reserved_amount} USD to user {user_id} due to error: {e}")
+                logger.warning(f"Refunded {reserved_amount} USD due to error: {e}")
             
-            # Log error
-            logger.error(f"Upstream error for user {user_id}: {type(e).__name__}: {e}")
             await BillingService.log_request(
                 db=db,
                 user_id=user_id,
@@ -349,11 +373,13 @@ async def chat_completions(
                     "real_cost_usd": Decimal("0"),
                     "our_cost_usd": Decimal("0"),
                     "client_cost_usd": Decimal("0"),
-                    "profit_usd": Decimal("0")
+                    "profit_usd": Decimal("0"),
+                    "account_type": "error"
                 },
                 duration_ms=int((time.time() - start_time) * 1000),
                 status="error",
-                error_message=str(e)
+                error_message=str(e),
+                account_type_used="error"
             )
             raise HTTPException(502, f"Upstream error: {str(e)}")
 

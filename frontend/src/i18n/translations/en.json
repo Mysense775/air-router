@@ -32,7 +32,8 @@
     "transactions": "Transactions",
     "logout": "Logout",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "support": "Support"
   },
   "docs": {
     "title": "Documentation",
@@ -122,6 +123,7 @@
     "stats": "Statistics",
     "payouts": "Payouts",
     "settings": "Settings",
+    "support": "Support",
     "dashboardTitle": "Investor Dashboard",
     "dashboardSubtitle": "Manage your investments and track earnings",
     "addKey": "Add Key",
