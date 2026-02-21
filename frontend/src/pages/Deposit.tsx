@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CreditCard, Bitcoin, ChevronRight, Loader2, Clock, CheckCircle, XCircle, Copy, Wallet, QrCode, AlertTriangle } from 'lucide-react'
+import { CreditCard, Bitcoin, Loader2, Clock, CheckCircle, Copy, Wallet, QrCode, AlertTriangle, Shield, Zap } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { adminApi, allinApi, clientApi } from '../api/client'
 
@@ -11,24 +11,19 @@ interface PaymentMethod {
   minAmount: number
 }
 
-// Custom ruble icon component
-const RubleIcon = () => (
-  <span className="text-xl font-bold" aria-label="Russian Ruble">₽</span>
-);
-
 const paymentMethods: PaymentMethod[] = [
   {
     id: 'crypto',
     name: 'Cryptocurrency',
     icon: Bitcoin,
-    description: 'USDT, BTC, ETH via NowPayments',
+    description: 'USDT, BTC, ETH, LTC',
     minAmount: 10
   },
   {
     id: 'allin',
-    name: 'AllIn',
-    icon: RubleIcon as any,
-    description: 'Pay via AllIn payment system (Cards, SBP) - Amount in RUB',
+    name: 'Card / SBP',
+    icon: CreditCard,
+    description: 'Visa, MasterCard, SBP (RUB)',
     minAmount: 300
   }
 ]
@@ -173,21 +168,6 @@ export default function Deposit() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-      case 'finished':
-      case 'confirmed':
-        return <CheckCircle className="w-4 h-4 text-green-500" />
-      case 'pending':
-      case 'waiting':
-      case 'confirming':
-        return <Clock className="w-4 h-4 text-yellow-500" />
-      default:
-        return <XCircle className="w-4 h-4 text-red-500" />
-    }
-  }
-
   const getStatusText = (status: string) => {
     const statusMap: Record<string, string> = {
       'completed': 'Completed',
@@ -223,118 +203,170 @@ export default function Deposit() {
 
       {/* Active Payment */}
       {activePayment && (
-        <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-6">
-          <h3 className="font-semibold text-blue-900 mb-4">Active Payment</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Amount:</span>
-              <span className="font-bold text-lg">${activePayment.amount_usd.toFixed(2)}</span>
+        <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-[20px] p-6 text-white shadow-lg">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Clock className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Active Payment</h3>
+                <p className="text-white/80 text-sm">Waiting for your transfer</p>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Status:</span>
-              <span className="flex items-center gap-2">
-                {getStatusIcon(activePayment.status)}
-                {getStatusText(activePayment.status)}
-              </span>
-            </div>
-            {activePayment.metadata?.pay_address && (
-              <div className="bg-white rounded-[20px] p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm text-gray-600">
-                    Send <strong>{activePayment.metadata.pay_amount} {activePayment.metadata.pay_currency?.toUpperCase()}</strong> to:
-                  </p>
-                  <button
-                    onClick={() => setShowQR(!showQR)}
-                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
-                  >
-                    <QrCode className="w-4 h-4" />
-                    {showQR ? 'Hide QR' : 'Show QR'}
-                  </button>
+            <span className="px-4 py-2 bg-white/20 rounded-full text-sm font-medium">
+              {getStatusText(activePayment.status)}
+            </span>
+          </div>
+
+          {/* Amount Block */}
+          <div className="bg-white/10 rounded-[16px] p-4 mb-6 text-center">
+            <p className="text-white/80 text-sm mb-1">Amount to send</p>
+            <p className="text-3xl font-bold">${activePayment.amount_usd.toFixed(2)}</p>
+            <p className="text-white/60 text-sm mt-1">USD</p>
+          </div>
+
+          {activePayment.metadata?.pay_address && (
+            <div className="bg-white rounded-[20px] p-5 text-gray-900">
+              {/* Currency info */}
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Bitcoin className="w-5 h-5 text-orange-600" />
                 </div>
+                <div className="text-center">
+                  <p className="font-semibold text-lg">{activePayment.metadata.pay_amount} {activePayment.metadata.pay_currency?.toUpperCase()}</p>
+                  <p className="text-sm text-gray-500">Send exact amount</p>
+                </div>
+              </div>
 
-                {/* QR Code */}
-                {showQR && (
-                  <div className="flex justify-center mb-4 p-4 bg-white rounded-[20px] border-2 border-dashed border-gray-300">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(activePayment.metadata.pay_address)}`}
-                      alt="Payment QR Code"
-                      className="w-48 h-48"
-                    />
-                  </div>
-                )}
+              {/* QR Toggle */}
+              <div className="flex justify-center mb-4">
+                <button
+                  onClick={() => setShowQR(!showQR)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium transition-colors"
+                >
+                  <QrCode className="w-4 h-4" />
+                  {showQR ? 'Hide QR Code' : 'Show QR Code'}
+                </button>
+              </div>
 
-                {/* Address with copy */}
+              {/* QR Code */}
+              {showQR && (
+                <div className="flex justify-center mb-4 p-6 bg-gray-50 rounded-[16px]">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(activePayment.metadata.pay_address)}`}
+                    alt="Payment QR Code"
+                    className="w-48 h-48 rounded-[12px]"
+                  />
+                </div>
+              )}
+
+              {/* Address */}
+              <div className="bg-gray-50 rounded-[16px] p-4">
+                <p className="text-sm text-gray-500 mb-2">Deposit Address</p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-gray-100 p-3 rounded-[20px] text-sm break-all font-mono">
+                  <code className="flex-1 bg-white border border-gray-200 p-3 rounded-[12px] text-sm break-all font-mono text-gray-700">
                     {activePayment.metadata.pay_address}
                   </code>
                   <button
                     onClick={() => copyToClipboard(activePayment.metadata?.pay_address || '')}
                     aria-label={copied ? "Address copied" : "Copy address to clipboard"}
                     aria-live="polite"
-                    className="p-3 hover:bg-gray-200 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`p-3 rounded-[12px] transition-all ${
+                      copied 
+                        ? 'bg-green-100 text-green-600' 
+                        : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                    }`}
                   >
-                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" aria-hidden="true" /> : <Copy className="w-5 h-5 text-gray-600" aria-hidden="true" />}
+                    {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Tap to copy or scan QR code with your wallet app
-                </p>
               </div>
-            )}
-            <button
-              onClick={() => setActivePayment(null)}
-              className="text-blue-600 hover:text-blue-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-            >
-              Create new payment
-            </button>
-          </div>
+
+              {/* Help text */}
+              <p className="text-xs text-gray-500 mt-3 text-center">
+                Scan QR code with your wallet app or tap copy button
+              </p>
+            </div>
+          )}
+
+          {/* Create new button */}
+          <button
+            onClick={() => setActivePayment(null)}
+            className="w-full mt-4 py-3 bg-white/10 hover:bg-white/20 rounded-[12px] text-sm font-medium transition-colors"
+          >
+            Create New Payment
+          </button>
         </div>
       )}
 
       {/* New Payment Form */}
       {!activePayment && (
         <>
-          {/* Payment Method */}
-          <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="font-semibold text-gray-900">Payment Method</h2>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {paymentMethods.map((method) => {
-                const Icon = method.icon
-                const isSelected = selectedMethod === method.id
-                
-                return (
-                  <button
-                    key={method.id}
-                    onClick={() => setSelectedMethod(method.id)}
-                    aria-pressed={isSelected}
-                    aria-label={`Select ${method.name} payment method`}
-                    className={`w-full px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      isSelected ? 'bg-blue-50 border-l-4 border-blue-600' : 'border-l-4 border-transparent'
-                    }`}
-                  >
-                    <div className={`p-2 rounded-[20px] ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                      <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
+          {/* Step indicator */}
+          <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+            <span className="font-medium text-blue-600">Step 1 of 3</span>
+            <span>•</span>
+            <span>Choose payment method</span>
+          </div>
+
+          {/* Payment Method Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {paymentMethods.map((method) => {
+              const Icon = method.icon
+              const isSelected = selectedMethod === method.id
+              
+              return (
+                <button
+                  key={method.id}
+                  onClick={() => setSelectedMethod(method.id)}
+                  aria-pressed={isSelected}
+                  aria-label={`Select ${method.name} payment method`}
+                  className={`relative p-6 rounded-[20px] border-2 text-left transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isSelected 
+                      ? 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-500 shadow-md' 
+                      : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                  }`}
+                >
+                  {/* Selected indicator */}
+                  {isSelected && (
+                    <div className="absolute top-4 right-4 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-white" aria-hidden="true" />
                     </div>
-                    <div className="flex-1 text-left">
-                      <h3 className="font-medium text-gray-900">{method.name}</h3>
-                      <p className="text-sm text-gray-600">{method.description}</p>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
-                    </div>
-                    <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-gray-600'}`} aria-hidden="true" />
-                  </button>
-                )
-              })}
-            </div>
+                  )}
+                  
+                  <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center mb-4 ${
+                    isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    <Icon className="w-6 h-6" aria-hidden="true" />
+                  </div>
+                  
+                  <h3 className={`font-semibold text-lg mb-1 ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
+                    {method.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-3">{method.description}</p>
+                  
+                  <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                    isSelected ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
+                  </div>
+                </button>
+              )
+            })}
           </div>
 
           {/* Payment Details - only shown when method is selected */}
           {selectedMethod && (
             <>
+              {/* Step 2 indicator */}
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-6 mb-2">
+                <span className="font-medium text-blue-600">Step 2 of 3</span>
+                <span>•</span>
+                <span>Enter amount</span>
+              </div>
+
               {/* Currency Selection - only for crypto */}
               {selectedMethod === 'crypto' && (
                 <div className="bg-white rounded-[20px] border border-gray-200 p-6">
@@ -345,7 +377,7 @@ export default function Deposit() {
                     id="currency-select"
                     value={selectedCurrency}
                     onChange={(e) => setSelectedCurrency(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                   >
                     {currencies.map((curr: any) => (
                       <option key={curr.code} value={curr.code}>
@@ -358,94 +390,121 @@ export default function Deposit() {
 
               {/* AllIn Info - only for allin */}
               {selectedMethod === 'allin' && (
-                <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-6">
-                  <h3 className="font-medium text-blue-900 mb-2">AllIn Payment</h3>
-                  <p className="text-sm text-blue-700 mb-2">
-                    You will be redirected to AllIn payment page to complete your payment via card or SBP.
-                  </p>
-                  {exchangeRate ? (
-                    <p className="text-sm text-blue-600">
-                      Current exchange rate: <strong>{exchangeRate.toFixed(2)} ₽/$</strong> (CBR)
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-600">Loading exchange rate...</p>
-                  )}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-[20px] p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-blue-900">Card / SBP Payment</h3>
+                      <p className="text-sm text-blue-600">Secure payment via AllIn</p>
+                    </div>
+                  </div>
+                  <div className="bg-white/60 rounded-[12px] p-3">
+                    {exchangeRate ? (
+                      <p className="text-sm text-blue-800">
+                        Exchange rate: <strong className="text-blue-900">{exchangeRate.toFixed(2)} ₽/$</strong>
+                        <span className="text-blue-600 ml-2">(CBR official)</span>
+                      </p>
+                    ) : (
+                      <p className="text-sm text-blue-600">Loading exchange rate...</p>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {/* Amount */}
+              {/* Amount Input with better styling */}
               <div className="bg-white rounded-[20px] border border-gray-200 p-6">
-                <label htmlFor="amount-input" className="block text-sm font-medium text-gray-700 mb-2">
-                  {selectedMethod === 'allin' ? 'Amount (RUB)' : 'Amount (USD)'}
+                <label htmlFor="amount-input" className="block text-sm font-medium text-gray-700 mb-3">
+                  Enter Amount
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" aria-hidden="true">
-                    {selectedMethod === 'allin' ? '₽' : '$'}
-                  </span>
+                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-[12px] ${
+                    validationError ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    <span className="text-lg font-bold">{selectedMethod === 'allin' ? '₽' : '$'}</span>
+                  </div>
                   <input
                     id="amount-input"
                     type="number"
                     min={selectedPayment?.minAmount || 10}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className={`w-full pl-8 pr-4 py-3 border rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg transition-colors ${
-                      validationError ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    className={`w-full pl-16 pr-4 py-4 border-2 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-2xl font-semibold transition-all duration-200 ${
+                      validationError ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                     }`}
                     placeholder={selectedMethod === 'allin' ? '1000' : '50'}
-                    aria-describedby={validationError ? "amount-error" : "amount-min"}
+                    aria-describedby={validationError ? "amount-error" : "amount-hint"}
                     aria-invalid={validationError ? "true" : "false"}
                   />
                 </div>
+                
                 {validationError ? (
-                  <p id="amount-error" className="text-sm text-red-600 mt-2 flex items-center gap-1">
-                    <AlertTriangle className="w-4 h-4" aria-hidden="true" />
-                    {validationError}
-                  </p>
+                  <div id="amount-error" className="mt-3 p-3 bg-red-50 border border-red-200 rounded-[12px] flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" aria-hidden="true" />
+                    <span className="text-sm text-red-700 font-medium">{validationError}</span>
+                  </div>
                 ) : (
-                  <p id="amount-min" className="text-sm text-gray-600 mt-2">
-                    Minimum: {selectedMethod === 'allin' ? '₽' : '$'}{selectedPayment?.minAmount || 10}
-                  </p>
-                )}
-                {selectedMethod === 'allin' && usdEquivalent && !validationError && (
-                  <p className="text-sm text-blue-600 mt-1">
-                    ≈ ${usdEquivalent} USD
-                    {exchangeRate && (
-                      <span className="text-gray-500 ml-2">(rate: {exchangeRate.toFixed(2)} ₽/$)</span>
+                  <div id="amount-hint" className="mt-3 flex items-center gap-4">
+                    <span className="text-sm text-gray-500">
+                      Min: <strong className="text-gray-700">{selectedMethod === 'allin' ? '₽' : '$'}{selectedPayment?.minAmount || 10}</strong>
+                    </span>
+                    {selectedMethod === 'allin' && usdEquivalent && (
+                      <span className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                        ≈ <strong>${usdEquivalent}</strong> USD
+                      </span>
                     )}
-                  </p>
+                  </div>
                 )}
               </div>
 
-              {/* Summary */}
-              <div className="bg-gray-50 rounded-[20px] p-6">
-                <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+              {/* Step 3 indicator */}
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-4 mb-2">
+                <span className="font-medium text-blue-600">Step 3 of 3</span>
+                <span>•</span>
+                <span>Confirm and pay</span>
+              </div>
+
+              {/* Enhanced Summary Card */}
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-[20px] p-6 border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  Order Summary
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Deposit amount</span>
-                    <span className="font-medium">
+                    <span className="font-semibold text-lg">
                       {selectedMethod === 'allin' ? `₽${numAmount.toFixed(2)}` : `$${numAmount.toFixed(2)}`}
                     </span>
                   </div>
+                  
                   {selectedMethod === 'allin' && usdEquivalent && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">≈ USD equivalent</span>
+                    <div className="flex justify-between items-center py-2 border-t border-gray-200/50">
+                      <span className="text-gray-500 text-sm">USD equivalent</span>
                       <span className="font-medium text-blue-600">${usdEquivalent}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm">
+                  
+                  <div className="flex justify-between items-center py-2 border-t border-gray-200/50">
                     <span className="text-gray-600">Payment method</span>
-                    <span className="font-medium">{selectedPayment?.name}</span>
+                    <div className="flex items-center gap-2">
+                      {selectedMethod === 'crypto' ? <Bitcoin className="w-4 h-4 text-orange-500" /> : <CreditCard className="w-4 h-4 text-blue-500" />}
+                      <span className="font-medium">{selectedPayment?.name}</span>
+                    </div>
                   </div>
-                  <div className="border-t border-gray-200 pt-2 mt-2">
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-gray-900">Total</span>
-                      <span className="font-bold text-xl text-gray-900">
+                  
+                  <div className="border-t-2 border-gray-300 pt-3 mt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-gray-900 text-lg">Total</span>
+                      <span className="font-bold text-2xl text-blue-600">
                         {selectedMethod === 'allin' ? `₽${numAmount.toFixed(2)}` : `$${numAmount.toFixed(2)}`}
                       </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
           {/* Submit */}
           {(createPaymentMutation.isError || createAllinPaymentMutation.isError) && (
@@ -456,24 +515,48 @@ export default function Deposit() {
             </div>
           )}
 
+          {/* Trust Indicators */}
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="p-3 bg-green-50 rounded-[16px] border border-green-100">
+              <div className="w-8 h-8 mx-auto mb-2 bg-green-100 rounded-full flex items-center justify-center">
+                <Shield className="w-4 h-4 text-green-600" />
+              </div>
+              <p className="text-xs text-green-800 font-medium">Secure SSL</p>
+            </div>
+            <div className="p-3 bg-blue-50 rounded-[16px] border border-blue-100">
+              <div className="w-8 h-8 mx-auto mb-2 bg-blue-100 rounded-full flex items-center justify-center">
+                <Zap className="w-4 h-4 text-blue-600" />
+              </div>
+              <p className="text-xs text-blue-800 font-medium">2-5 min avg</p>
+            </div>
+            <div className="p-3 bg-purple-50 rounded-[16px] border border-purple-100">
+              <div className="w-8 h-8 mx-auto mb-2 bg-purple-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-4 h-4 text-purple-600" />
+              </div>
+              <p className="text-xs text-purple-800 font-medium">Guaranteed</p>
+            </div>
+          </div>
+
+          {/* Enhanced Submit Button */}
           <button
             onClick={handleCreatePayment}
-            disabled={!selectedMethod || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
+            disabled={!selectedMethod || !!validationError || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
             aria-label={createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? 'Creating payment' : 'Create payment'}
             aria-busy={createPaymentMutation.isPending || createAllinPaymentMutation.isPending}
-            className="w-full bg-blue-600 text-white py-4 rounded-[20px] font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-5 rounded-[20px] font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
             {createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-                Creating payment...
+                <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                Processing...
               </>
             ) : (
               <>
+                <CreditCard className="w-5 h-5" />
                 {selectedMethod === 'allin' ? (
-                  <>Create Payment ₽{numAmount.toFixed(2)}</>
+                  <>Pay ₽{numAmount.toFixed(2)}</>
                 ) : selectedMethod === 'crypto' ? (
-                  <>Create Payment ${numAmount.toFixed(2)}</>
+                  <>Pay ${numAmount.toFixed(2)}</>
                 ) : (
                   <>Select payment method</>
                 )}
@@ -487,21 +570,26 @@ export default function Deposit() {
 
       {/* Pending Payments */}
       {pendingPayments.length > 0 && (
-        <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-900">Pending Payments</h2>
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-[20px] border border-yellow-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-yellow-200 bg-yellow-100/50">
+            <h2 className="font-semibold text-yellow-900 flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              Pending Payments ({pendingPayments.length})
+            </h2>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-yellow-200/50">
             {pendingPayments.map((payment) => (
-              <div key={payment.id} className="px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(payment.status)}
+              <div key={payment.id} className="px-6 py-4 flex items-center justify-between hover:bg-yellow-100/30 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-yellow-600" />
+                  </div>
                   <div>
-                    <p className="font-medium text-gray-900">${payment.amount_usd.toFixed(2)}</p>
-                    <p className="text-sm text-gray-600">{new Date(payment.created_at).toLocaleDateString()}</p>
+                    <p className="font-semibold text-gray-900">${payment.amount_usd.toFixed(2)}</p>
+                    <p className="text-sm text-gray-500">{new Date(payment.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <span className="text-sm font-medium text-yellow-600">
+                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
                   {getStatusText(payment.status)}
                 </span>
               </div>
@@ -513,17 +601,19 @@ export default function Deposit() {
       {/* Payment History */}
       {completedPayments.length > 0 && (
         <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h2 className="font-semibold text-gray-900">Payment History</h2>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-100">
             {completedPayments.slice(0, 5).map((payment) => (
-              <div key={payment.id} className="px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(payment.status)}
+              <div key={payment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  </div>
                   <div>
-                    <p className="font-medium text-gray-900">${payment.amount_usd.toFixed(2)}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-semibold text-gray-900">${payment.amount_usd.toFixed(2)}</p>
+                    <p className="text-sm text-gray-500">
                       {payment.completed_at 
                         ? new Date(payment.completed_at).toLocaleDateString()
                         : new Date(payment.created_at).toLocaleDateString()
@@ -531,12 +621,19 @@ export default function Deposit() {
                     </p>
                   </div>
                 </div>
-                <span className="text-sm font-medium text-green-600">
+                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                   {getStatusText(payment.status)}
                 </span>
               </div>
             ))}
           </div>
+          {completedPayments.length > 5 && (
+            <div className="px-6 py-3 bg-gray-50 text-center">
+              <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                View all {completedPayments.length} payments
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
