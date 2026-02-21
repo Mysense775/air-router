@@ -259,10 +259,10 @@ export default function Models() {
                   copiedId === model.id
                     ? 'bg-green-600 text-white'
                     : color === 'green'
-                      ? 'bg-gray-200 text-gray-700 hover:bg-emerald-500 hover:text-white'
+                      ? 'bg-gradient-to-r from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600 hover:shadow-lg hover:scale-[1.02]'
                       : color === 'purple'
-                        ? 'bg-gray-200 text-gray-700 hover:bg-violet-500 hover:text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white'
+                        ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700 hover:shadow-lg hover:scale-[1.02]'
+                        : 'bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:from-blue-500 hover:to-blue-700 hover:shadow-lg hover:scale-[1.02]'
                 }`}
               >
                 {copiedId === model.id ? (
