@@ -298,7 +298,7 @@ export default function ModelAdvisor() {
                     <button
                       onClick={() => createKeysMutation.mutate(analyzeMutation.data!.recommendations.map(r => r.model))}
                       disabled={createKeysMutation.isPending}
-                      className="flex-1 py-3 bg-blue-600 text-white rounded-[20px] font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-3 bg-white/80 backdrop-blur-md border border-blue-200 text-blue-700 rounded-[20px] font-medium transition-all duration-300 hover:bg-blue-50/90 hover:border-blue-300 hover:shadow-[0_4px_20px_rgba(59,130,246,0.2)] hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {createKeysMutation.isPending ? (
                         <>

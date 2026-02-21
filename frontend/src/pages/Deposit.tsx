@@ -299,7 +299,7 @@ export default function Deposit() {
           {/* Create new button */}
           <button
             onClick={() => setActivePayment(null)}
-            className="w-full mt-4 py-3 bg-white/10 hover:bg-white/20 rounded-[12px] text-sm font-medium transition-colors"
+            className="w-full mt-4 py-3 bg-white/80 backdrop-blur-md border border-blue-200 text-blue-700 rounded-[20px] text-sm font-medium transition-all duration-300 hover:bg-blue-50/90 hover:border-blue-300 hover:shadow-[0_4px_20px_rgba(59,130,246,0.2)] hover:scale-[1.02]"
           >
             Create New Payment
           </button>
@@ -564,7 +564,7 @@ export default function Deposit() {
             disabled={!selectedMethod || !!validationError || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
             aria-label={createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? 'Creating payment' : 'Create payment'}
             aria-busy={createPaymentMutation.isPending || createAllinPaymentMutation.isPending}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-[20px] font-semibold text-base hover:from-blue-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md hover:shadow-lg"
+            className="w-full bg-white/80 backdrop-blur-md border border-blue-200 text-blue-700 py-3 rounded-[20px] font-semibold text-base transition-all duration-300 hover:bg-blue-50/90 hover:border-blue-300 hover:shadow-[0_4px_20px_rgba(59,130,246,0.2)] hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? (
               <>

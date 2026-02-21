@@ -234,11 +234,11 @@ export default function ApiKeysPage() {
             onClick={() => createMutation.mutate()}
             disabled={createMutation.isPending}
             aria-busy={createMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md border border-blue-200 text-blue-700 rounded-[20px] transition-all duration-300 hover:bg-blue-50/90 hover:border-blue-300 hover:shadow-[0_4px_20px_rgba(59,130,246,0.2)] hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {createMutation.isPending ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
+                <div className="w-4 h-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" aria-hidden="true" />
                 <span>Creating...</span>
               </>
             ) : (
