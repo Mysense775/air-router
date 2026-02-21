@@ -259,28 +259,40 @@ export default function Models() {
         </div>
       )}
 
-      {/* Filters */}
-      <div className="bg-white rounded-[20px] p-4 border border-gray-200 shadow-sm">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search models..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          
+      {/* Search & Filters */}
+      <div className="bg-white rounded-[20px] p-4 border border-gray-200 shadow-sm space-y-4">
+        {/* Search - Full width prominent */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search models by name, provider, or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 text-base border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <span className="sr-only">Clear search</span>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Filters row */}
+        <div className="flex flex-col sm:flex-row gap-3">
           {/* Provider Filter */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <select
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[160px]"
+              className="w-full sm:w-auto pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[160px]"
             >
               <option value="all">All Providers</option>
               {providers.filter(p => p !== 'all').map(provider => (
@@ -291,14 +303,14 @@ export default function Models() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
-          
+
           {/* Price Filter */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial">
             <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <select
               value={priceFilter}
               onChange={(e) => setPriceFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[160px]"
+              className="w-full sm:w-auto pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[160px]"
             >
               <option value="all">All Prices</option>
               <option value="cheap">Cheap (&lt; $1/M)</option>
@@ -307,15 +319,15 @@ export default function Models() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
-          
+
           {/* Sort */}
-          <div className="flex gap-2">
-            <div className="relative">
+          <div className="flex gap-2 flex-1 sm:flex-initial">
+            <div className="relative flex-1 sm:flex-initial">
               <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[140px]"
+                className="w-full pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[180px]"
               >
                 <option value="date">Sort by Release Date</option>
                 <option value="name">Sort by Name</option>
@@ -324,7 +336,7 @@ export default function Models() {
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
             </div>
-            
+
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="px-3 py-2 border border-gray-300 rounded-[20px] hover:bg-gray-50 transition-colors"
