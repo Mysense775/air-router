@@ -255,14 +255,14 @@ export default function Models() {
               </p>
               <button
                 onClick={() => copyToClipboard(model.id)}
-                className={`mt-3 w-full py-2 rounded-[20px] text-sm font-medium transition-all duration-200 ${
+                className={`mt-3 w-full py-2 rounded-[20px] text-sm font-medium transition-all duration-300 ${
                   copiedId === model.id
                     ? 'bg-green-600 text-white'
                     : color === 'green'
-                      ? 'bg-gradient-to-r from-emerald-400 to-green-500 text-white hover:from-emerald-500 hover:to-green-600 hover:shadow-lg hover:scale-[1.02]'
+                      ? 'bg-white/80 backdrop-blur-md border border-emerald-200 text-emerald-700 hover:bg-emerald-50/90 hover:border-emerald-300 hover:shadow-[0_4px_20px_rgba(16,185,129,0.2)] hover:scale-[1.02]'
                       : color === 'purple'
-                        ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700 hover:shadow-lg hover:scale-[1.02]'
-                        : 'bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:from-blue-500 hover:to-blue-700 hover:shadow-lg hover:scale-[1.02]'
+                        ? 'bg-white/80 backdrop-blur-md border border-violet-200 text-violet-700 hover:bg-violet-50/90 hover:border-violet-300 hover:shadow-[0_4px_20px_rgba(139,92,246,0.2)] hover:scale-[1.02]'
+                        : 'bg-white/80 backdrop-blur-md border border-blue-200 text-blue-700 hover:bg-blue-50/90 hover:border-blue-300 hover:shadow-[0_4px_20px_rgba(59,130,246,0.2)] hover:scale-[1.02]'
                 }`}
               >
                 {copiedId === model.id ? (
