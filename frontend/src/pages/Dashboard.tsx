@@ -214,7 +214,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.recentActivity')}</h3>
           {usage.by_model.length > 0 ? (
             <div className="space-y-3">
-              {usage.by_model.slice(0, 5).map((model) => (
+              {usage.by_model.slice(0, 2).map((model) => (
                 <div
                   key={model.model}
                   className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0"
