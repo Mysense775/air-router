@@ -132,6 +132,11 @@ export default function Models() {
     return filteredModels.slice(startIndex, startIndex + itemsPerPage)
   }, [filteredModels, currentPage])
 
+  // Reset animation flag when paginated models change
+  useEffect(() => {
+    hasAnimated.current = false
+  }, [paginatedModels])
+
   // GSAP stagger animation for model cards
   useEffect(() => {
     if (!modelsGridRef.current || hasAnimated.current || paginatedModels.length === 0 || isLoading) return
@@ -142,13 +147,18 @@ export default function Models() {
       return
     }
 
-    const cards = modelsGridRef.current.children
-    if (cards.length === 0) return
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      if (!modelsGridRef.current) return
+      
+      const cards = modelsGridRef.current.children
+      if (cards.length === 0) return
 
-    gsap.fromTo(
-      cards,
-      { y: 30, opacity: 0 },
-      {
+      // Set initial state
+      gsap.set(cards, { y: 30, opacity: 0 })
+
+      // Animate
+      gsap.to(cards, {
         y: 0,
         opacity: 1,
         duration: 0.5,
@@ -157,12 +167,13 @@ export default function Models() {
         onComplete: () => {
           hasAnimated.current = true
         },
-      }
-    )
+      })
+    }, 100)
 
     return () => {
-      if (!hasAnimated.current) {
-        gsap.killTweensOf(cards)
+      clearTimeout(timer)
+      if (!hasAnimated.current && modelsGridRef.current) {
+        gsap.killTweensOf(modelsGridRef.current.children)
       }
     }
   }, [paginatedModels, isLoading])
