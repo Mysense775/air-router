@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { CreditCard, Bitcoin, ChevronRight, Loader2, Clock, CheckCircle, XCircle, Copy } from 'lucide-react'
+import { CreditCard, Bitcoin, ChevronRight, Loader2, Clock, CheckCircle, XCircle, Copy, Wallet, QrCode, AlertTriangle } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { adminApi, allinApi } from '../api/client'
+import { adminApi, allinApi, clientApi } from '../api/client'
 
 interface PaymentMethod {
   id: string
@@ -54,6 +54,8 @@ export default function Deposit() {
   const [activePayment, setActivePayment] = useState<Payment | null>(null)
   const [copied, setCopied] = useState(false)
   const [exchangeRate, setExchangeRate] = useState<number | null>(null)
+  const [validationError, setValidationError] = useState<string>('')
+  const [showQR, setShowQR] = useState(false)
 
   // Fetch payment history
   const { data: historyData, refetch: refetchHistory } = useQuery({
@@ -106,6 +108,12 @@ export default function Deposit() {
     }
   })
 
+  // Fetch current balance
+  const { data: balanceData } = useQuery({
+    queryKey: ['balance'],
+    queryFn: () => clientApi.getBalance(),
+  })
+
   // Create AllIn payment mutation
   const createAllinPaymentMutation = useMutation({
     mutationFn: () => allinApi.createPayment(parseFloat(amount), 'RUB'),
@@ -130,8 +138,26 @@ export default function Deposit() {
     ? (numAmount / exchangeRate).toFixed(2)
     : null
 
+  // Real-time validation
+  useEffect(() => {
+    if (!amount) {
+      setValidationError('')
+      return
+    }
+    const num = parseFloat(amount)
+    if (isNaN(num)) {
+      setValidationError('Please enter a valid number')
+    } else if (num < (selectedPayment?.minAmount || 10)) {
+      setValidationError(`Minimum amount is ${selectedMethod === 'allin' ? '₽' : '$'}${selectedPayment?.minAmount || 10}`)
+    } else if (num > 10000) {
+      setValidationError('Maximum amount is $10,000')
+    } else {
+      setValidationError('')
+    }
+  }, [amount, selectedMethod, selectedPayment])
+
   const handleCreatePayment = () => {
-    if (numAmount < (selectedPayment?.minAmount || 10)) {
+    if (validationError || numAmount < (selectedPayment?.minAmount || 10)) {
       return
     }
     if (selectedMethod === 'allin') {
@@ -176,11 +202,23 @@ export default function Deposit() {
     return statusMap[status] || status
   }
 
+  const currentBalance = balanceData?.data?.balance_usd || 0
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
-        <p className="text-gray-600 mt-1">Deposit funds via cryptocurrency or AllIn payment system</p>
+      {/* Header with Balance */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
+          <p className="text-gray-600 mt-1">Deposit funds via cryptocurrency or AllIn payment system</p>
+        </div>
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-[20px] p-4 text-white min-w-[200px]">
+          <div className="flex items-center gap-2 mb-1">
+            <Wallet className="w-4 h-4" aria-hidden="true" />
+            <span className="text-sm opacity-90">Current Balance</span>
+          </div>
+          <div className="text-2xl font-bold">${currentBalance.toFixed(2)}</div>
+        </div>
       </div>
 
       {/* Active Payment */}
@@ -201,20 +239,47 @@ export default function Deposit() {
             </div>
             {activePayment.metadata?.pay_address && (
               <div className="bg-white rounded-[20px] p-4">
-                <p className="text-sm text-gray-600 mb-2">Send {activePayment.metadata.pay_amount} {activePayment.metadata.pay_currency?.toUpperCase()} to:</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm text-gray-600">
+                    Send <strong>{activePayment.metadata.pay_amount} {activePayment.metadata.pay_currency?.toUpperCase()}</strong> to:
+                  </p>
+                  <button
+                    onClick={() => setShowQR(!showQR)}
+                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    <QrCode className="w-4 h-4" />
+                    {showQR ? 'Hide QR' : 'Show QR'}
+                  </button>
+                </div>
+
+                {/* QR Code */}
+                {showQR && (
+                  <div className="flex justify-center mb-4 p-4 bg-white rounded-[20px] border-2 border-dashed border-gray-300">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(activePayment.metadata.pay_address)}`}
+                      alt="Payment QR Code"
+                      className="w-48 h-48"
+                    />
+                  </div>
+                )}
+
+                {/* Address with copy */}
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-gray-100 p-2 rounded text-sm break-all">
+                  <code className="flex-1 bg-gray-100 p-3 rounded-[20px] text-sm break-all font-mono">
                     {activePayment.metadata.pay_address}
                   </code>
                   <button
                     onClick={() => copyToClipboard(activePayment.metadata?.pay_address || '')}
                     aria-label={copied ? "Address copied" : "Copy address to clipboard"}
                     aria-live="polite"
-                    className="p-2 hover:bg-gray-200 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-3 hover:bg-gray-200 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {copied ? <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" /> : <Copy className="w-4 h-4 text-gray-600" aria-hidden="true" />}
+                    {copied ? <CheckCircle className="w-5 h-5 text-green-500" aria-hidden="true" /> : <Copy className="w-5 h-5 text-gray-600" aria-hidden="true" />}
                   </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Tap to copy or scan QR code with your wallet app
+                </p>
               </div>
             )}
             <button
@@ -323,15 +388,25 @@ export default function Deposit() {
                     min={selectedPayment?.minAmount || 10}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                    className={`w-full pl-8 pr-4 py-3 border rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg transition-colors ${
+                      validationError ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
                     placeholder={selectedMethod === 'allin' ? '1000' : '50'}
-                    aria-describedby="amount-min"
+                    aria-describedby={validationError ? "amount-error" : "amount-min"}
+                    aria-invalid={validationError ? "true" : "false"}
                   />
                 </div>
-                <p id="amount-min" className="text-sm text-gray-600 mt-2">
-                  Minimum: {selectedMethod === 'allin' ? '₽' : '$'}{selectedPayment?.minAmount || 10}
-                </p>
-                {selectedMethod === 'allin' && usdEquivalent && (
+                {validationError ? (
+                  <p id="amount-error" className="text-sm text-red-600 mt-2 flex items-center gap-1">
+                    <AlertTriangle className="w-4 h-4" aria-hidden="true" />
+                    {validationError}
+                  </p>
+                ) : (
+                  <p id="amount-min" className="text-sm text-gray-600 mt-2">
+                    Minimum: {selectedMethod === 'allin' ? '₽' : '$'}{selectedPayment?.minAmount || 10}
+                  </p>
+                )}
+                {selectedMethod === 'allin' && usdEquivalent && !validationError && (
                   <p className="text-sm text-blue-600 mt-1">
                     ≈ ${usdEquivalent} USD
                     {exchangeRate && (
