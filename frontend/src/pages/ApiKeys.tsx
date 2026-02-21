@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Key, Copy, Plus, Trash2, Brain, AlertCircle, MessageCircle } from 'lucide-react'
 import { apiKeysApi, api } from '../api/client'
 import { ApiKey } from '../types'
+import { AnimatedModal, AnimatedCheckmark } from '../components/AnimatedModal'
+import { gsap } from 'gsap'
 
 interface Model {
   id: string
@@ -17,6 +19,7 @@ export default function ApiKeysPage() {
   const [newKeyModel, setNewKeyModel] = useState<string | null>(null)
   const [newKeySupportOnly, setNewKeySupportOnly] = useState(false)
   const queryClient = useQueryClient()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Load models for selection with retry logic
   const { data: modelsData, error: modelsError, isError: isModelsError } = useQuery({
@@ -77,6 +80,19 @@ export default function ApiKeysPage() {
     },
     onError: (error: any) => {
       setCreateError(error.response?.data?.detail || 'Failed to create API key. Please try again.')
+      // Shake animation on error
+      if (inputRef.current) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (!prefersReducedMotion) {
+          gsap.to(inputRef.current, {
+            x: "+=10",
+            duration: 0.1,
+            repeat: 5,
+            yoyo: true,
+            ease: 'power2.inOut',
+          })
+        }
+      }
     },
     retry: 0, // We handle retry manually
   })
@@ -119,47 +135,49 @@ export default function ApiKeysPage() {
       )}
 
       {/* New Key Modal/Form */}
-      {showNewKey && (
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-[20px] p-6 text-white">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold mb-2">New API Key Created!</h3>
-              <p className="text-sm opacity-90 mb-4">
-                Copy this key now. You won't be able to see it again.
-              </p>
-              <div className="flex items-center gap-2 bg-white/10 rounded-[20px] p-3 mb-3">
-                <code className="font-mono text-sm break-all flex-1">{showNewKey}</code>
-                <button
-                  onClick={() => copyToClipboard(showNewKey)}
-                  aria-label="Copy API key to clipboard"
-                  className="p-2 hover:bg-white/10 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-                >
-                  <Copy className="w-4 h-4" aria-hidden="true" />
-                </button>
-              </div>
-              {newKeyModel && (
-                <div className="flex items-center gap-2 text-sm bg-white/10 rounded-[20px] p-2">
-                  <Brain className="w-4 h-4" aria-hidden="true" />
-                  <span>Restricted to model: <strong>{newKeyModel}</strong></span>
-                </div>
-              )}
-              {newKeySupportOnly && (
-                <div className="flex items-center gap-2 text-sm bg-white/10 rounded-[20px] p-2">
-                  <MessageCircle className="w-4 h-4" aria-hidden="true" />
-                  <span><strong>Support only</strong> - cannot be used for API requests</span>
-                </div>
-              )}
-            </div>
+      <AnimatedModal
+        isOpen={!!showNewKey}
+        onClose={() => setShowNewKey(null)}
+        className="bg-white rounded-[20px] p-6 max-w-lg w-full shadow-2xl"
+      >
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <AnimatedCheckmark size={80} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">API Key Created!</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Copy this key now. You won't be able to see it again.
+          </p>
+          <div className="flex items-center gap-2 bg-gray-100 rounded-[20px] p-3 mb-3">
+            <code className="font-mono text-sm break-all flex-1 text-left">{showNewKey}</code>
             <button
-              onClick={() => setShowNewKey(null)}
-              aria-label="Close new key notification"
-              className="text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50 rounded"
+              onClick={() => copyToClipboard(showNewKey!)}
+              aria-label="Copy API key to clipboard"
+              className="p-2 hover:bg-gray-200 rounded-[20px] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              ✕
+              <Copy className="w-4 h-4 text-gray-600" aria-hidden="true" />
             </button>
           </div>
+          {newKeyModel && (
+            <div className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 rounded-[20px] p-2 mb-2">
+              <Brain className="w-4 h-4" aria-hidden="true" />
+              <span>Restricted to model: <strong>{newKeyModel}</strong></span>
+            </div>
+          )}
+          {newKeySupportOnly && (
+            <div className="flex items-center gap-2 text-sm bg-purple-50 text-purple-700 rounded-[20px] p-2 mb-4">
+              <MessageCircle className="w-4 h-4" aria-hidden="true" />
+              <span><strong>Support only</strong> - cannot be used for API requests</span>
+            </div>
+          )}
+          <button
+            onClick={() => setShowNewKey(null)}
+            className="w-full py-3 bg-blue-600 text-white rounded-[20px] font-medium hover:bg-blue-700 transition-colors"
+          >
+            Got it
+          </button>
         </div>
-      )}
+      </AnimatedModal>
 
       {/* Create New Key */}
       <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
@@ -172,6 +190,7 @@ export default function ApiKeysPage() {
           )}
           <div className="flex gap-4">
             <input
+              ref={inputRef}
               id="key-name"
               type="text"
               value={newKeyName}
