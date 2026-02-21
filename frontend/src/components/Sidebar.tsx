@@ -227,11 +227,11 @@ export default function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-gray-200">
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-[20px] p-4 text-white">
+        <div className="bg-white/80 backdrop-blur-md border border-blue-200 rounded-[20px] p-4 text-blue-700 transition-all duration-300 hover:bg-blue-50/90 hover:border-blue-300 hover:shadow-[0_4px_20px_rgba(59,130,246,0.15)]">
           <p className="text-sm font-medium mb-1">
             {user?.role === 'admin' ? 'Admin Panel' : 'Client Portal'}
           </p>
-          <p className="text-xs opacity-90">v1.2.0</p>
+          <p className="text-xs text-blue-600/80">v1.2.0</p>
         </div>
       </div>
     </aside>
