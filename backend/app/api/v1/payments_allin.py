@@ -15,6 +15,7 @@ from app.models import User, Deposit, Balance
 from app.api.v1.auth import get_current_active_user
 from app.services.allin import allin_service
 from app.services.exchange import exchange_service
+from app.services.notifications import notify_balance_deposited, notify_large_deposit
 from app.core.config import get_settings
 
 router = APIRouter()
@@ -247,6 +248,27 @@ async def allin_webhook(
                 balance.last_deposit_at = datetime.utcnow()
                 await db.flush()
                 logger.info(f"✅ Balance updated: ${old_balance} -> ${balance.balance_usd}")
+                
+                # Send Telegram notification
+                result_user = await db.execute(select(User).where(User.id == deposit.user_id))
+                user = result_user.scalar_one_or_none()
+                if user:
+                    await notify_balance_deposited(
+                        email=user.email,
+                        user_id=str(user.id),
+                        amount=float(deposit.amount_usd),
+                        currency="USD",
+                        payment_method="allin"
+                    )
+                    
+                    # Alert for large deposits
+                    if deposit.amount_usd >= 500:
+                        await notify_large_deposit(
+                            email=user.email,
+                            user_id=str(user.id),
+                            amount=float(deposit.amount_usd),
+                            currency="USD"
+                        )
             else:
                 logger.error(f"❌ Balance record not found for user {deposit.user_id}")
                 
