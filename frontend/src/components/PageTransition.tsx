@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef, ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
 import { gsap } from 'gsap'
 
 interface PageTransitionProps {
@@ -7,7 +6,6 @@ interface PageTransitionProps {
 }
 
 export function PageTransition({ children }: PageTransitionProps) {
-  const location = useLocation()
   const pageRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
@@ -26,11 +24,10 @@ export function PageTransition({ children }: PageTransitionProps) {
     gsap.to(pageRef.current, {
       opacity: 1,
       y: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      delay: 0.1
+      duration: 0.4,
+      ease: 'power2.out'
     })
-  }, [location.pathname])
+  }, [])
 
   return (
     <div ref={pageRef}>

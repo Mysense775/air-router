@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import Sidebar from './Sidebar'
 import Header from './Header'
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuthStore()
+  const location = useLocation()
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -24,7 +26,7 @@ export default function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex flex-col">
         <Header user={user} onLogout={logout} />
         <main id="main-content" className="flex-1 p-6 overflow-auto lg:pt-6 pt-16" tabIndex={-1}>
-          <PageTransition>
+          <PageTransition key={location.pathname}>
             {children}
           </PageTransition>
         </main>
