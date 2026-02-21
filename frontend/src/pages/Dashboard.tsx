@@ -24,6 +24,7 @@ import {
 } from 'recharts'
 import { AnimatedNumber } from '../components/AnimatedNumber'
 import { HoverStatCard } from '../components/HoverCard'
+import { AnimatedChartContainer } from '../hooks/useChartAnimations.tsx'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -299,7 +300,7 @@ export default function Dashboard() {
           {isLoadingDaily ? (
             <ChartSkeleton />
           ) : dailyData.length > 0 ? (
-            <div className="h-64">
+            <AnimatedChartContainer type="line" dataLength={dailyData.length} className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -329,7 +330,7 @@ export default function Dashboard() {
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
+            </AnimatedChartContainer>
           ) : (
             <div className="h-64 bg-gray-50 rounded-[20px] flex items-center justify-center">
               <p className="text-gray-600">{t('common.noData')}</p>
@@ -343,7 +344,7 @@ export default function Dashboard() {
           {isLoadingModels ? (
             <ChartSkeleton />
           ) : modelsData.length > 0 ? (
-            <div className="h-64">
+            <AnimatedChartContainer type="bar" dataLength={modelsData.length} className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={modelsData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
@@ -368,14 +369,14 @@ export default function Dashboard() {
                     }}
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                   />
-                  <Bar 
-                    dataKey="cost_usd" 
+                  <Bar
+                    dataKey="cost_usd"
                     fill="#3b82f6"
                     radius={[0, 4, 4, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            </AnimatedChartContainer>
           ) : (
             <div className="h-64 bg-gray-50 rounded-[20px] flex items-center justify-center">
               <p className="text-gray-600">{t('common.noData')}</p>
