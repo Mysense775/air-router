@@ -147,18 +147,35 @@ export default function Models() {
   // Get top recommended models
   const recommendedModels = useMemo(() => {
     const recommendations = []
+    const usedIds = new Set<string>()
     
     // Best value (cheap + good)
     const bestValue = models.find(m => m.id === 'openai/gpt-4o-mini')
-    if (bestValue) recommendations.push({ model: bestValue, badge: '💰 Best Value', color: 'green' })
+    if (bestValue) {
+      recommendations.push({ model: bestValue, badge: '💰 Best Value', color: 'green' })
+      usedIds.add(bestValue.id)
+    }
     
-    // Best quality
-    const bestQuality = models.find(m => m.id === 'openai/gpt-4o') || models.find(m => m.id.includes('claude-3-5'))
-    if (bestQuality) recommendations.push({ model: bestQuality, badge: '🏆 Best Quality', color: 'purple' })
+    // Long context (any model with large context, prefer different from bestValue)
+    const longContext = models.find(m => 
+      !usedIds.has(m.id) && 
+      m.context_length && 
+      m.context_length > 100000
+    ) || models.find(m => m.context_length && m.context_length > 100000)
+    if (longContext) {
+      recommendations.push({ model: longContext, badge: '📚 Long Context', color: 'blue' })
+      usedIds.add(longContext.id)
+    }
     
-    // Long context
-    const longContext = models.find(m => m.id.includes('claude-3-5') && m.context_length && m.context_length > 100000)
-    if (longContext) recommendations.push({ model: longContext, badge: '📚 Long Context', color: 'blue' })
+    // Best quality (not same as already used)
+    const bestQuality = models.find(m => 
+      !usedIds.has(m.id) && 
+      (m.id === 'openai/gpt-4o' || m.id.includes('claude-3-5-sonnet') || m.id.includes('claude-3-opus'))
+    ) || models.find(m => !usedIds.has(m.id) && m.id.includes('claude-3'))
+    if (bestQuality) {
+      recommendations.push({ model: bestQuality, badge: '🏆 Best Quality', color: 'purple' })
+      usedIds.add(bestQuality.id)
+    }
     
     return recommendations
   }, [models])
