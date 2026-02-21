@@ -34,6 +34,7 @@ interface Model {
   top_provider?: {
     context_length?: number
   }
+  created_at?: string
 }
 
 export default function Models() {
@@ -43,8 +44,8 @@ export default function Models() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
   const [selectedProvider, setSelectedProvider] = useState<string>(searchParams.get('provider') || 'all')
   const [priceFilter, setPriceFilter] = useState<string>(searchParams.get('price') || 'all')
-  const [sortBy, setSortBy] = useState<string>(searchParams.get('sort') || 'name')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(searchParams.get('order') as 'asc' | 'desc' || 'asc')
+  const [sortBy, setSortBy] = useState<string>(searchParams.get('sort') || 'date')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(searchParams.get('order') as 'asc' | 'desc' || 'desc')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 20
@@ -97,6 +98,11 @@ export default function Models() {
     result.sort((a, b) => {
       let comparison = 0
       switch (sortBy) {
+        case 'date':
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
+          comparison = dateA - dateB
+          break
         case 'price':
           comparison = (a.pricing?.prompt || 0) - (b.pricing?.prompt || 0)
           break
@@ -127,7 +133,7 @@ export default function Models() {
     if (searchQuery) params.set('search', searchQuery)
     if (selectedProvider !== 'all') params.set('provider', selectedProvider)
     if (priceFilter !== 'all') params.set('price', priceFilter)
-    if (sortBy !== 'name') params.set('sort', sortBy)
+    if (sortBy !== 'date') params.set('sort', sortBy)
     if (sortOrder !== 'asc') params.set('order', sortOrder)
     setSearchParams(params)
     setCurrentPage(1)
@@ -311,6 +317,7 @@ export default function Models() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[140px]"
               >
+                <option value="date">Sort by Release Date</option>
                 <option value="name">Sort by Name</option>
                 <option value="price">Sort by Price</option>
                 <option value="context">Sort by Context</option>
@@ -340,14 +347,14 @@ export default function Models() {
               <span className="text-blue-600"> (filtered from {models.length})</span>
             )}
           </span>
-          {(searchQuery || selectedProvider !== 'all' || priceFilter !== 'all') && (
+          {(searchQuery || selectedProvider !== 'all' || priceFilter !== 'all' || sortBy !== 'date' || sortOrder !== 'desc') && (
             <button
               onClick={() => {
                 setSearchQuery('')
                 setSelectedProvider('all')
                 setPriceFilter('all')
-                setSortBy('name')
-                setSortOrder('asc')
+                setSortBy('date')
+                setSortOrder('desc')
               }}
               className="text-sm text-blue-600 hover:text-blue-800 font-medium"
             >
@@ -438,8 +445,8 @@ export default function Models() {
               setSearchQuery('')
               setSelectedProvider('all')
               setPriceFilter('all')
-              setSortBy('name')
-              setSortOrder('asc')
+              setSortBy('date')
+              setSortOrder('desc')
             }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors font-medium"
           >
