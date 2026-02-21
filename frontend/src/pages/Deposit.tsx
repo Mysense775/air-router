@@ -192,12 +192,12 @@ export default function Deposit() {
           <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
           <p className="text-gray-600 mt-1">Deposit funds via cryptocurrency or AllIn payment system</p>
         </div>
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-[20px] p-4 text-white min-w-[200px]">
+        <div className="bg-white border border-gray-200 rounded-[20px] p-4 min-w-[200px] shadow-sm">
           <div className="flex items-center gap-2 mb-1">
-            <Wallet className="w-4 h-4" aria-hidden="true" />
-            <span className="text-sm opacity-90">Current Balance</span>
+            <Wallet className="w-4 h-4 text-green-500" aria-hidden="true" />
+            <span className="text-sm text-gray-500">Current Balance</span>
           </div>
-          <div className="text-2xl font-bold">${currentBalance.toFixed(2)}</div>
+          <div className="text-2xl font-bold text-gray-900">${currentBalance.toFixed(2)}</div>
         </div>
       </div>
 
