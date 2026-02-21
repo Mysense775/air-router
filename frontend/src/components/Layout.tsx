@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { useAuthStore } from '../store/authStore'
 import Sidebar from './Sidebar'
 import Header from './Header'
+import { PageTransition } from './PageTransition'
 
 interface LayoutProps {
   children: ReactNode
@@ -23,7 +24,9 @@ export default function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex flex-col">
         <Header user={user} onLogout={logout} />
         <main id="main-content" className="flex-1 p-6 overflow-auto lg:pt-6 pt-16" tabIndex={-1}>
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </main>
       </div>
     </div>
