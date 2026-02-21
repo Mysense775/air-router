@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
 import { 
   Search, 
   Filter, 
@@ -11,7 +12,11 @@ import {
   Sparkles,
   BarChart3,
   Book,
-  ExternalLink
+  ExternalLink,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  HelpCircle
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
@@ -32,9 +37,14 @@ interface Model {
 }
 
 export default function Models() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedProvider, setSelectedProvider] = useState<string>('all')
-  const [priceFilter, setPriceFilter] = useState<string>('all')
+  const [searchParams, setSearchParams] = useSearchParams()
+  
+  // Read filters from URL
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
+  const [selectedProvider, setSelectedProvider] = useState<string>(searchParams.get('provider') || 'all')
+  const [priceFilter, setPriceFilter] = useState<string>(searchParams.get('price') || 'all')
+  const [sortBy, setSortBy] = useState<string>(searchParams.get('sort') || 'name')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(searchParams.get('order') as 'asc' | 'desc' || 'asc')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 20
@@ -59,9 +69,9 @@ export default function Models() {
     return ['all', ...Array.from(providerSet).sort()]
   }, [models])
 
-  // Filter models
+  // Filter and sort models
   const filteredModels = useMemo(() => {
-    return models.filter(model => {
+    let result = models.filter(model => {
       // Search filter
       const searchLower = searchQuery.toLowerCase()
       const matchesSearch = 
@@ -82,7 +92,27 @@ export default function Models() {
       
       return matchesSearch && matchesProvider && matchesPrice
     })
-  }, [models, searchQuery, selectedProvider, priceFilter])
+    
+    // Sort
+    result.sort((a, b) => {
+      let comparison = 0
+      switch (sortBy) {
+        case 'price':
+          comparison = (a.pricing?.prompt || 0) - (b.pricing?.prompt || 0)
+          break
+        case 'context':
+          comparison = getContextLength(a) - getContextLength(b)
+          break
+        case 'name':
+        default:
+          comparison = a.name.localeCompare(b.name)
+          break
+      }
+      return sortOrder === 'asc' ? comparison : -comparison
+    })
+    
+    return result
+  }, [models, searchQuery, selectedProvider, priceFilter, sortBy, sortOrder])
 
   // Pagination
   const totalPages = Math.ceil(filteredModels.length / itemsPerPage)
@@ -91,10 +121,22 @@ export default function Models() {
     return filteredModels.slice(startIndex, startIndex + itemsPerPage)
   }, [filteredModels, currentPage])
 
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (searchQuery) params.set('search', searchQuery)
+    if (selectedProvider !== 'all') params.set('provider', selectedProvider)
+    if (priceFilter !== 'all') params.set('price', priceFilter)
+    if (sortBy !== 'name') params.set('sort', sortBy)
+    if (sortOrder !== 'asc') params.set('order', sortOrder)
+    setSearchParams(params)
+    setCurrentPage(1)
+  }, [searchQuery, selectedProvider, priceFilter, sortBy, sortOrder])
+
   // Reset to first page when filters change
   useMemo(() => {
     setCurrentPage(1)
-  }, [searchQuery, selectedProvider, priceFilter])
+  }, [searchQuery, selectedProvider, priceFilter, sortBy, sortOrder])
 
   // Get top recommended models
   const recommendedModels = useMemo(() => {
@@ -149,20 +191,29 @@ export default function Models() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Available Models</h1>
           <p className="text-gray-600 mt-1">
             {models.length} AI models available. Choose the best for your task.
           </p>
-          <Link 
-            to="/docs" 
-            className="inline-flex items-center gap-2 mt-3 text-sm text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <Book className="w-4 h-4" />
-            <span>Как подключить к n8n, Make, Zapier</span>
-            <ExternalLink className="w-3 h-3" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 mt-3">
+            <Link 
+              to="/docs" 
+              className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 px-3 py-1.5 rounded-full"
+            >
+              <Book className="w-4 h-4" />
+              <span>How to connect to n8n, Make, Zapier</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+            <Link 
+              to="/docs/models" 
+              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>Which model to choose?</span>
+            </Link>
+          </div>
         </div>
         <ModelAdvisor />
       </div>
@@ -204,7 +255,7 @@ export default function Models() {
 
       {/* Filters */}
       <div className="bg-white rounded-[20px] p-4 border border-gray-200 shadow-sm">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
@@ -223,7 +274,7 @@ export default function Models() {
             <select
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[160px]"
             >
               <option value="all">All Providers</option>
               {providers.filter(p => p !== 'all').map(provider => (
@@ -241,7 +292,7 @@ export default function Models() {
             <select
               value={priceFilter}
               onChange={(e) => setPriceFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[160px]"
             >
               <option value="all">All Prices</option>
               <option value="cheap">Cheap (&lt; $1/M)</option>
@@ -250,11 +301,59 @@ export default function Models() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
+          
+          {/* Sort */}
+          <div className="flex gap-2">
+            <div className="relative">
+              <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="pl-10 pr-8 py-2 border border-gray-300 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-[140px]"
+              >
+                <option value="name">Sort by Name</option>
+                <option value="price">Sort by Price</option>
+                <option value="context">Sort by Context</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            </div>
+            
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="px-3 py-2 border border-gray-300 rounded-[20px] hover:bg-gray-50 transition-colors"
+              title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortOrder === 'asc' ? (
+                <ArrowUp className="w-4 h-4 text-gray-600" />
+              ) : (
+                <ArrowDown className="w-4 h-4 text-gray-600" />
+              )}
+            </button>
+          </div>
         </div>
         
         {/* Results count */}
-        <div className="mt-3 text-sm text-gray-600">
-          Showing {paginatedModels.length} of {filteredModels.length} models (Page {currentPage} of {totalPages})
+        <div className="mt-3 text-sm text-gray-600 flex items-center justify-between">
+          <span>
+            Showing <strong>{paginatedModels.length}</strong> of <strong>{filteredModels.length}</strong> models 
+            {filteredModels.length !== models.length && (
+              <span className="text-blue-600"> (filtered from {models.length})</span>
+            )}
+          </span>
+          {(searchQuery || selectedProvider !== 'all' || priceFilter !== 'all') && (
+            <button
+              onClick={() => {
+                setSearchQuery('')
+                setSelectedProvider('all')
+                setPriceFilter('all')
+                setSortBy('name')
+                setSortOrder('asc')
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       </div>
 
@@ -265,7 +364,7 @@ export default function Models() {
           const contextLength = getContextLength(model)
           
           return (
-            <div key={model.id} className="bg-white rounded-[20px] border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all">
+            <div key={model.id} className="bg-white rounded-[20px] border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col h-full min-h-[200px]">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <Brain className="w-4 h-4 text-blue-600" />
@@ -287,7 +386,7 @@ export default function Models() {
               <h3 className="font-semibold text-gray-900 mt-2">{model.name}</h3>
               
               {model.description && (
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2 flex-grow">
                   {model.description}
                 </p>
               )}
@@ -303,12 +402,24 @@ export default function Models() {
                 </div>
               </div>
               
-              {model.pricing && model.pricing.prompt < 0.000001 && (
-                <div className="mt-3 flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Great value</span>
-                </div>
-              )}
+              <div className="mt-3 flex items-center justify-between">
+                {model.pricing && model.pricing.prompt < 0.000001 ? (
+                  <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Great value</span>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+                <Link 
+                  to={`/docs?model=${encodeURIComponent(model.id)}`}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                  title="How to use this model"
+                >
+                  <HelpCircle className="w-3 h-3" />
+                  <span>How to use</span>
+                </Link>
+              </div>
             </div>
           )
         })}
@@ -316,10 +427,28 @@ export default function Models() {
 
       {/* Empty state */}
       {filteredModels.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>No models found</p>
-          <p className="text-sm">Try adjusting your filters</p>
+        <div className="text-center py-12 bg-gray-50 rounded-[20px] border border-gray-200">
+          <Brain className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No models found</h3>
+          <p className="text-gray-600 mb-4 max-w-md mx-auto">
+            We couldn't find any models matching your current filters. Try adjusting your search or filters.
+          </p>
+          <button
+            onClick={() => {
+              setSearchQuery('')
+              setSelectedProvider('all')
+              setPriceFilter('all')
+              setSortBy('name')
+              setSortOrder('asc')
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors font-medium"
+          >
+            <Filter className="w-4 h-4" />
+            Clear all filters
+          </button>
+          <div className="mt-6 text-sm text-gray-500">
+            <p>Total available models: <strong>{models.length}</strong></p>
+          </div>
         </div>
       )}
 
