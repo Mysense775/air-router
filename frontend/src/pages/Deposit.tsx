@@ -11,6 +11,11 @@ interface PaymentMethod {
   minAmount: number
 }
 
+// Custom ruble icon
+const RubleIcon = () => (
+  <span className="text-xl font-bold">₽</span>
+);
+
 const paymentMethods: PaymentMethod[] = [
   {
     id: 'crypto',
@@ -22,7 +27,7 @@ const paymentMethods: PaymentMethod[] = [
   {
     id: 'allin',
     name: 'Card / SBP',
-    icon: CreditCard,
+    icon: RubleIcon as any,
     description: 'Visa, MasterCard, SBP (RUB)',
     minAmount: 300
   }
@@ -323,21 +328,31 @@ export default function Deposit() {
                   onClick={() => setSelectedMethod(method.id)}
                   aria-pressed={isSelected}
                   aria-label={`Select ${method.name} payment method`}
-                  className={`relative p-6 rounded-[20px] border-2 text-left transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`relative p-6 rounded-[20px] border-2 text-left transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 ${
                     isSelected 
-                      ? 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-500 shadow-md' 
-                      : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      ? method.id === 'crypto'
+                        ? 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-500 shadow-md focus:ring-orange-500'
+                        : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-500 shadow-md focus:ring-blue-500'
+                      : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm focus:ring-blue-500'
                   }`}
                 >
                   {/* Selected indicator */}
                   {isSelected && (
-                    <div className="absolute top-4 right-4 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className={`absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center ${
+                      method.id === 'crypto' ? 'bg-orange-500' : 'bg-blue-500'
+                    }`}>
                       <CheckCircle className="w-4 h-4 text-white" aria-hidden="true" />
                     </div>
                   )}
                   
                   <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center mb-3 ${
-                    isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
+                    isSelected 
+                      ? method.id === 'crypto' 
+                        ? 'bg-orange-500 text-white' 
+                        : 'bg-blue-500 text-white'
+                      : method.id === 'crypto'
+                        ? 'bg-orange-100 text-orange-600'
+                        : 'bg-blue-100 text-blue-600'
                   }`}>
                     <Icon className="w-5 h-5" aria-hidden="true" />
                   </div>
@@ -348,7 +363,13 @@ export default function Deposit() {
                   <p className="text-sm text-gray-500 mb-2">{method.description}</p>
                   
                   <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                    isSelected ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+                    isSelected 
+                      ? method.id === 'crypto'
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'bg-blue-100 text-blue-700'
+                      : method.id === 'crypto'
+                        ? 'bg-orange-50 text-orange-600'
+                        : 'bg-blue-50 text-blue-600'
                   }`}>
                     Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
                   </div>
