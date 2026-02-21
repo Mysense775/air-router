@@ -17,6 +17,7 @@ from app.db.session import get_db
 from app.models import User, Deposit, Balance
 from app.api.v1.auth import get_current_active_user
 from app.core.config import get_settings
+from app.services.notifications import notify_balance_deposited, notify_large_deposit
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -345,6 +346,28 @@ async def payment_webhook(
             
             await db.commit()
             logger.info(f"Payment {payment_id} completed, balance updated")
+            
+            # Send Telegram notification
+            # Get user email
+            result = await db.execute(select(User).where(User.id == deposit.user_id))
+            user = result.scalar_one_or_none()
+            if user:
+                await notify_balance_deposited(
+                    email=user.email,
+                    user_id=str(user.id),
+                    amount=float(deposit.amount_usd),
+                    currency="USD",
+                    payment_method="crypto"
+                )
+                
+                # Alert for large deposits
+                if deposit.amount_usd >= 500:
+                    await notify_large_deposit(
+                        email=user.email,
+                        user_id=str(user.id),
+                        amount=float(deposit.amount_usd),
+                        currency="USD"
+                    )
             
         elif status in ["failed", "expired"]:
             deposit.status = status

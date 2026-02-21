@@ -16,6 +16,7 @@ from app.core.security import (
 )
 from app.models import User, Balance, ApiKey
 from app.services.referral import ReferralService
+from app.services.notifications import notify_new_user_registered
 
 router = APIRouter()
 security = HTTPBearer(auto_error=False)
@@ -234,6 +235,14 @@ async def register(
         await referral_service.get_or_create_code(str(user.id))
     
     await db.commit()
+    
+    # Send Telegram notification
+    await notify_new_user_registered(
+        email=user.email,
+        user_id=str(user.id),
+        role=user_role,
+        referral_code=data.referral_code
+    )
     
     message = "Registration successful. You can now log in."
     if welcome_bonus > 0:
@@ -520,6 +529,14 @@ async def register_via_referral(
     )
     db.add(balance)
     await db.commit()
+    
+    # Send Telegram notification
+    await notify_new_user_registered(
+        email=user.email,
+        user_id=str(user.id),
+        role="client",
+        referral_code=data.referral_code
+    )
     
     return RegisterResponse(
         message="Registration successful with referral bonus. You received $5!",
