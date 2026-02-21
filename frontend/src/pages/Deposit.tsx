@@ -336,16 +336,16 @@ export default function Deposit() {
                     </div>
                   )}
                   
-                  <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center mb-4 ${
+                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center mb-3 ${
                     isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
                   }`}>
-                    <Icon className="w-6 h-6" aria-hidden="true" />
+                    <Icon className="w-5 h-5" aria-hidden="true" />
                   </div>
                   
-                  <h3 className={`font-semibold text-lg mb-1 ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
+                  <h3 className={`font-semibold text-base mb-1 ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
                     {method.name}
                   </h3>
-                  <p className="text-sm text-gray-500 mb-3">{method.description}</p>
+                  <p className="text-sm text-gray-500 mb-2">{method.description}</p>
                   
                   <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
                     isSelected ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
@@ -419,10 +419,10 @@ export default function Deposit() {
                   Enter Amount
                 </label>
                 <div className="relative">
-                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-[12px] ${
+                  <div className={`absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-[10px] ${
                     validationError ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
                   }`}>
-                    <span className="text-lg font-bold">{selectedMethod === 'allin' ? '₽' : '$'}</span>
+                    <span className="text-base font-bold">{selectedMethod === 'allin' ? '₽' : '$'}</span>
                   </div>
                   <input
                     id="amount-input"
@@ -430,7 +430,7 @@ export default function Deposit() {
                     min={selectedPayment?.minAmount || 10}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className={`w-full pl-16 pr-4 py-4 border-2 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-2xl font-semibold transition-all duration-200 ${
+                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-[20px] focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xl font-semibold transition-all duration-200 ${
                       validationError ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                     }`}
                     placeholder={selectedMethod === 'allin' ? '1000' : '50'}
@@ -543,7 +543,7 @@ export default function Deposit() {
             disabled={!selectedMethod || !!validationError || createPaymentMutation.isPending || createAllinPaymentMutation.isPending || numAmount < (selectedPayment?.minAmount || 10)}
             aria-label={createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? 'Creating payment' : 'Create payment'}
             aria-busy={createPaymentMutation.isPending || createAllinPaymentMutation.isPending}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-5 rounded-[20px] font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-[20px] font-semibold text-base hover:from-blue-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md hover:shadow-lg"
           >
             {createPaymentMutation.isPending || createAllinPaymentMutation.isPending ? (
               <>
