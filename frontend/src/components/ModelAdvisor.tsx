@@ -114,10 +114,13 @@ export default function ModelAdvisor() {
 
   return (
     <>
-      {/* Trigger Button */}
+      {/* Trigger Button - Glassmorphism */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-[20px] font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+        className="flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-md border border-white/30 text-white rounded-[20px] font-medium transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:shadow-[0_8px_32px_rgba(99,102,241,0.3)] hover:scale-[1.02]"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+        }}
       >
         <Sparkles className="w-4 h-4" />
         <span>{t('modelAdvisor.button')}</span>
