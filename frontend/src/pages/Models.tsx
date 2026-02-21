@@ -151,19 +151,17 @@ export default function Models() {
     const timer = setTimeout(() => {
       if (!modelsGridRef.current) return
       
-      const cards = modelsGridRef.current.children
+      const cards = modelsGridRef.current.querySelectorAll('.model-card')
       if (cards.length === 0) return
 
-      // Set initial state
-      gsap.set(cards, { y: 30, opacity: 0 })
-
-      // Animate
+      // Animate from initial hidden state
       gsap.to(cards, {
         y: 0,
         opacity: 1,
         duration: 0.5,
         stagger: 0.05,
         ease: 'power2.out',
+        clearProps: 'transform',
         onComplete: () => {
           hasAnimated.current = true
         },
@@ -173,7 +171,7 @@ export default function Models() {
     return () => {
       clearTimeout(timer)
       if (!hasAnimated.current && modelsGridRef.current) {
-        gsap.killTweensOf(modelsGridRef.current.children)
+        gsap.killTweensOf(modelsGridRef.current.querySelectorAll('.model-card'))
       }
     }
   }, [paginatedModels, isLoading])
@@ -455,7 +453,7 @@ export default function Models() {
           const contextLength = getContextLength(model)
           
           return (
-            <div key={model.id} className="bg-white rounded-[20px] border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col h-full min-h-[200px]">
+            <div key={model.id} className="model-card bg-white rounded-[20px] border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col h-full min-h-[200px]" style={{ opacity: 0, transform: 'translateY(30px)' }}>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <Brain className="w-4 h-4 text-blue-600" />
