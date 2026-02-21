@@ -138,18 +138,18 @@ export default function ApiKeysPage() {
       <AnimatedModal
         isOpen={!!showNewKey}
         onClose={() => setShowNewKey(null)}
-        className="bg-white rounded-[20px] p-6 max-w-lg w-full shadow-2xl"
+        className="bg-white rounded-[20px] p-5 max-w-md w-[90%] mx-auto shadow-2xl"
       >
         <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <AnimatedCheckmark size={80} animate={!!showNewKey} />
+          <div className="flex justify-center mb-3">
+            <AnimatedCheckmark size={64} animate={!!showNewKey} />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">API Key Created!</h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">API Key Created!</h3>
+          <p className="text-xs text-gray-600 mb-3">
             Copy this key now. You won't be able to see it again.
           </p>
-          <div className="flex items-center gap-2 bg-gray-100 rounded-[20px] p-3 mb-3">
-            <code className="font-mono text-sm break-all flex-1 text-left">{showNewKey}</code>
+          <div className="flex items-center gap-2 bg-gray-100 rounded-[20px] p-2 mb-2">
+            <code className="font-mono text-xs break-all flex-1 text-left">{showNewKey}</code>
             <button
               onClick={() => copyToClipboard(showNewKey!)}
               aria-label="Copy API key to clipboard"
@@ -159,20 +159,20 @@ export default function ApiKeysPage() {
             </button>
           </div>
           {newKeyModel && (
-            <div className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 rounded-[20px] p-2 mb-2">
-              <Brain className="w-4 h-4" aria-hidden="true" />
-              <span>Restricted to model: <strong>{newKeyModel}</strong></span>
+            <div className="flex items-center gap-2 text-xs bg-blue-50 text-blue-700 rounded-[20px] p-2 mb-2">
+              <Brain className="w-3 h-3" aria-hidden="true" />
+              <span>Restricted to: <strong>{newKeyModel}</strong></span>
             </div>
           )}
           {newKeySupportOnly && (
-            <div className="flex items-center gap-2 text-sm bg-purple-50 text-purple-700 rounded-[20px] p-2 mb-4">
-              <MessageCircle className="w-4 h-4" aria-hidden="true" />
-              <span><strong>Support only</strong> - cannot be used for API requests</span>
+            <div className="flex items-center gap-2 text-xs bg-purple-50 text-purple-700 rounded-[20px] p-2 mb-3">
+              <MessageCircle className="w-3 h-3" aria-hidden="true" />
+              <span><strong>Support only</strong></span>
             </div>
           )}
           <button
             onClick={() => setShowNewKey(null)}
-            className="w-full py-3 bg-blue-600 text-white rounded-[20px] font-medium hover:bg-blue-700 transition-colors"
+            className="w-full py-2 bg-blue-600 text-white rounded-[20px] font-medium hover:bg-blue-700 transition-colors text-sm"
           >
             Got it
           </button>
