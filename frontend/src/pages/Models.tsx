@@ -152,8 +152,11 @@ export default function Models() {
     const timer = setTimeout(() => {
       if (!modelsGridRef.current) return
       
-      const cards = modelsGridRef.current.querySelectorAll('.model-card')
+      const cards = modelsGridRef.current.querySelectorAll('.model-card-content')
       if (cards.length === 0) return
+
+      // Set initial state
+      gsap.set(cards, { y: 30, opacity: 0 })
 
       // Animate from initial hidden state
       gsap.to(cards, {
@@ -162,7 +165,6 @@ export default function Models() {
         duration: 0.5,
         stagger: 0.05,
         ease: 'power2.out',
-        clearProps: 'transform',
         onComplete: () => {
           hasAnimated.current = true
         },
@@ -172,7 +174,7 @@ export default function Models() {
     return () => {
       clearTimeout(timer)
       if (!hasAnimated.current && modelsGridRef.current) {
-        gsap.killTweensOf(modelsGridRef.current.querySelectorAll('.model-card'))
+        gsap.killTweensOf(modelsGridRef.current.querySelectorAll('.model-card-content'))
       }
     }
   }, [paginatedModels, isLoading])
@@ -454,27 +456,28 @@ export default function Models() {
           const contextLength = getContextLength(model)
           
           return (
-            <HoverCard key={model.id} className="model-card bg-white rounded-[20px] border border-gray-200 p-4 flex flex-col h-full min-h-[200px]" glowColor="rgba(59, 130, 246, 0.2)">
-              <div style={{ opacity: 0, transform: 'translateY(30px)' }} className="h-full flex flex-col">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-blue-600" />
-                  <span className="text-xs font-medium text-gray-600 uppercase">{provider}</span>
-                </div>
-                <button
-                  onClick={() => copyToClipboard(model.id)}
-                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-[20px] transition-colors"
-                  title="Copy model ID"
-                >
-                  {copiedId === model.id ? (
-                    <Check className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-              
-              <h3 className="font-semibold text-gray-900 mt-2">{model.name}</h3>
+            <div key={model.id} className="model-card-wrapper">
+              <HoverCard className="bg-white rounded-[20px] border border-gray-200 p-4 flex flex-col h-full min-h-[200px]" glowColor="rgba(59, 130, 246, 0.2)">
+                <div className="model-card-content h-full flex flex-col">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-4 h-4 text-blue-600" />
+                      <span className="text-xs font-medium text-gray-600 uppercase">{provider}</span>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(model.id)}
+                      className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-[20px] transition-colors"
+                      title="Copy model ID"
+                    >
+                      {copiedId === model.id ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+
+                  <h3 className="font-semibold text-gray-900 mt-2">{model.name}</h3>
               
               {model.description && (
                 <p className="text-sm text-gray-600 mt-1 line-clamp-2 flex-grow">
@@ -502,17 +505,18 @@ export default function Models() {
                 ) : (
                   <div></div>
                 )}
-                <Link
-                  to={`/docs?model=${encodeURIComponent(model.id)}`}
-                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
-                  title="How to use this model"
-                >
-                  <HelpCircle className="w-3 h-3" />
-                  <span>How to use</span>
-                </Link>
+                  <Link
+                    to={`/docs?model=${encodeURIComponent(model.id)}`}
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                    title="How to use this model"
+                  >
+                    <HelpCircle className="w-3 h-3" />
+                    <span>How to use</span>
+                  </Link>
+                </div>
               </div>
-              </div>
-            </HoverCard>
+              </HoverCard>
+            </div>
           )
         })}
       </div>
