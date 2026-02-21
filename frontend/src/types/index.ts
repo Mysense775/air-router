@@ -21,6 +21,7 @@ export interface ApiKey {
   key?: string  // Only present on creation
   allowed_model?: string | null  // If set, key only works with this model
   is_active: boolean
+  is_support_only?: boolean  // If true, key only works for support bot
   last_used_at: string | null
   created_at: string
 }

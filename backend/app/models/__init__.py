@@ -40,17 +40,18 @@ class User(Base):
 
 class ApiKey(Base):
     __tablename__ = "api_keys"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     key_hash = Column(String(255), unique=True, nullable=False, index=True)
     name = Column(String(100), default="Default")
     allowed_model = Column(String(100), nullable=True)  # Если NULL - любая модель
     is_active = Column(Boolean, default=True)
+    is_support_only = Column(Boolean, default=False)  # True = только для support bot
     last_used_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     expires_at = Column(DateTime(timezone=True))
-    
+
     # Relationships
     user = relationship("User", back_populates="api_keys")
     request_logs = relationship("RequestLog", back_populates="api_key")

@@ -46,7 +46,8 @@ async def get_master_account_with_pricing(
     
     # Decrypt API key (works for both MasterAccount and InvestorAccount)
     try:
-        api_key = base64.b64decode(account.api_key_encrypted).decode()
+        from app.core.security import decrypt_master_api_key
+        api_key = decrypt_master_api_key(account.api_key_encrypted)
         return account, api_key, price_multiplier
     except Exception as e:
         logger.error(f"Failed to decrypt master key: {e}")
@@ -91,19 +92,25 @@ async def chat_completions(
     """
     Proxy chat completions to OpenRouter with billing
     """
-    start_time = time.time()
-    reserved_amount = None
-    user_id = None
-    api_key_id = None
-    
     # Validate API key
     validation_result = await validate_api_key(db, authorization)
     if not validation_result:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API key"
+            detail="Invalid or expired API key"
         )
+
     api_key, user = validation_result
+
+    # Check if key is support-only
+    if api_key.is_support_only:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This API key is for support only and cannot be used for chat completions"
+        )
+
+    start_time = time.time()
+    reserved_amount = None
     user_id = str(user.id)
     api_key_id = str(api_key.id)
     

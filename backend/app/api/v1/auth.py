@@ -67,6 +67,7 @@ class UserResponse(BaseModel):
 class ApiKeyCreateRequest(BaseModel):
     name: str = "Default"
     model_id: Optional[str] = None  # Если указано - ключ только для этой модели
+    is_support_only: bool = False  # Если True - ключ только для support bot
 
 
 class ApiKeyResponse(BaseModel):
@@ -75,6 +76,7 @@ class ApiKeyResponse(BaseModel):
     key: str  # Only shown once on creation
     allowed_model: Optional[str] = None  # Разрешенная модель (None = любая)
     is_active: bool
+    is_support_only: bool = False
     created_at: str
 
 
@@ -83,6 +85,7 @@ class ApiKeyListResponse(BaseModel):
     name: str
     allowed_model: Optional[str] = None
     is_active: bool
+    is_support_only: bool = False
     last_used_at: Optional[str]
     created_at: str
 
@@ -366,7 +369,7 @@ async def create_api_key(
     raw_key = generate_api_key()
     import hashlib
     key_hash = hashlib.sha256(raw_key.encode()).hexdigest()
-    
+
     # Create API key record
     api_key = ApiKey(
         id=uuid4(),
@@ -374,18 +377,20 @@ async def create_api_key(
         key_hash=key_hash,
         name=data.name,
         allowed_model=data.model_id,  # Привязка к конкретной модели
-        is_active=True
+        is_active=True,
+        is_support_only=data.is_support_only  # Ключ только для support bot
     )
     db.add(api_key)
     await db.commit()
     await db.refresh(api_key)
-    
+
     return ApiKeyResponse(
         id=str(api_key.id),
         name=api_key.name,
         key=raw_key,  # Only shown once!
         allowed_model=api_key.allowed_model,
         is_active=api_key.is_active,
+        is_support_only=api_key.is_support_only,
         created_at=api_key.created_at.isoformat() if api_key.created_at else None
     )
 
@@ -409,6 +414,7 @@ async def list_api_keys(
             name=key.name,
             allowed_model=key.allowed_model,
             is_active=key.is_active,
+            is_support_only=key.is_support_only,
             last_used_at=key.last_used_at.isoformat() if key.last_used_at else None,
             created_at=key.created_at.isoformat() if key.created_at else None
         )

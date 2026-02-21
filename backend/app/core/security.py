@@ -56,3 +56,40 @@ def generate_api_key() -> str:
     """Generate random API key"""
     import secrets
     return "air_" + secrets.token_urlsafe(32)
+
+
+# Master API Key Encryption (Fernet)
+from cryptography.fernet import Fernet
+import base64
+import hashlib
+
+
+def _get_fernet() -> Fernet:
+    """Get Fernet instance from SECRET_KEY"""
+    # Derive 32-byte key from SECRET_KEY using SHA256
+    key = hashlib.sha256(settings.SECRET_KEY.encode()).digest()
+    # Encode to base64 for Fernet
+    fernet_key = base64.urlsafe_b64encode(key)
+    return Fernet(fernet_key)
+
+
+def encrypt_master_api_key(api_key: str) -> str:
+    """Encrypt master API key using Fernet (AES-128-CBC + HMAC)"""
+    f = _get_fernet()
+    encrypted = f.encrypt(api_key.encode())
+    return encrypted.decode()
+
+
+def decrypt_master_api_key(encrypted_key: str) -> str:
+    """Decrypt master API key using Fernet"""
+    try:
+        f = _get_fernet()
+        decrypted = f.decrypt(encrypted_key.encode())
+        return decrypted.decode()
+    except Exception:
+        # Fallback: try old base64 decoding for backward compatibility
+        try:
+            import base64 as b64
+            return b64.b64decode(encrypted_key.encode()).decode()
+        except Exception:
+            raise ValueError("Failed to decrypt API key")

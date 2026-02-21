@@ -78,13 +78,15 @@ class PayoutResponse(BaseModel):
 
 # Helper functions
 def encrypt_api_key(api_key: str) -> str:
-    """Шифруем API ключ (простое base64 для MVP, в проде использовать Fernet)"""
-    return base64.b64encode(api_key.encode()).decode()
+    """Encrypt investor API key using Fernet (AES-128-CBC + HMAC)"""
+    from app.core.security import encrypt_master_api_key
+    return encrypt_master_api_key(api_key)
 
 
 def decrypt_api_key(encrypted_key: str) -> str:
-    """Дешифруем API ключ"""
-    return base64.b64decode(encrypted_key.encode()).decode()
+    """Decrypt investor API key"""
+    from app.core.security import decrypt_master_api_key
+    return decrypt_master_api_key(encrypted_key)
 
 
 async def verify_openrouter_key(api_key: str) -> dict:

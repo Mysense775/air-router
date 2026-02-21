@@ -207,10 +207,10 @@ async def create_master_account(
     
     # Get parameters based on account type
     params = data.get_account_params()
-    
-    # Simple encryption (in production use proper encryption)
-    import base64
-    api_key_encrypted = base64.b64encode(data.api_key.encode()).decode()
+
+    # Encrypt master API key using Fernet (AES-128-CBC + HMAC)
+    from app.core.security import encrypt_master_api_key
+    api_key_encrypted = encrypt_master_api_key(data.api_key)
     
     account = MasterAccount(
         id=uuid4(),
@@ -277,7 +277,8 @@ async def sync_master_account_balance(
     
     # Decrypt API key
     try:
-        api_key = base64.b64decode(account.api_key_encrypted).decode()
+        from app.core.security import decrypt_master_api_key
+        api_key = decrypt_master_api_key(account.api_key_encrypted)
     except Exception as e:
         logger.error(f"Failed to decrypt API key: {e}")
         raise HTTPException(

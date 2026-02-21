@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Key, Copy, Plus, Trash2, Brain, AlertCircle } from 'lucide-react'
+import { Key, Copy, Plus, Trash2, Brain, AlertCircle, MessageCircle } from 'lucide-react'
 import { apiKeysApi, api } from '../api/client'
 import { ApiKey } from '../types'
 
@@ -12,8 +12,10 @@ interface Model {
 export default function ApiKeysPage() {
   const [newKeyName, setNewKeyName] = useState('')
   const [selectedModel, setSelectedModel] = useState<string>('')
+  const [isSupportOnly, setIsSupportOnly] = useState(false)
   const [showNewKey, setShowNewKey] = useState<string | null>(null)
   const [newKeyModel, setNewKeyModel] = useState<string | null>(null)
+  const [newKeySupportOnly, setNewKeySupportOnly] = useState(false)
   const queryClient = useQueryClient()
 
   // Load models for selection with retry logic
@@ -49,7 +51,7 @@ export default function ApiKeysPage() {
       let lastError
       for (let i = 0; i < 3; i++) {
         try {
-          const response = await apiKeysApi.createApiKey(newKeyName || 'New Key', selectedModel || undefined)
+          const response = await apiKeysApi.createApiKey(newKeyName || 'New Key', selectedModel || undefined, isSupportOnly)
           return response
         } catch (error: any) {
           lastError = error
@@ -66,8 +68,10 @@ export default function ApiKeysPage() {
     onSuccess: (response) => {
       setShowNewKey(response.data.key)
       setNewKeyModel(response.data.allowed_model)
+      setNewKeySupportOnly(response.data.is_support_only)
       setNewKeyName('')
       setSelectedModel('')
+      setIsSupportOnly(false)
       setCreateError('')
       queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
     },
@@ -139,6 +143,12 @@ export default function ApiKeysPage() {
                   <span>Restricted to model: <strong>{newKeyModel}</strong></span>
                 </div>
               )}
+              {newKeySupportOnly && (
+                <div className="flex items-center gap-2 text-sm bg-white/10 rounded-[20px] p-2">
+                  <MessageCircle className="w-4 h-4" aria-hidden="true" />
+                  <span><strong>Support only</strong> - cannot be used for API requests</span>
+                </div>
+              )}
             </div>
             <button
               onClick={() => setShowNewKey(null)}
@@ -199,6 +209,27 @@ export default function ApiKeysPage() {
             </p>
           </div>
 
+          {/* Support Only Checkbox */}
+          <div className="flex items-start gap-3 p-3 bg-purple-50 border border-purple-200 rounded-[20px]">
+            <input
+              id="support-only"
+              type="checkbox"
+              checked={isSupportOnly}
+              onChange={(e) => setIsSupportOnly(e.target.checked)}
+              className="mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+            />
+            <div>
+              <label htmlFor="support-only" className="flex items-center gap-2 font-medium text-purple-900 cursor-pointer">
+                <MessageCircle className="w-4 h-4" aria-hidden="true" />
+                Support only key
+              </label>
+              <p className="text-sm text-purple-700 mt-1">
+                This key will only work with the Telegram support bot and cannot be used for API requests.
+                Recommended for sharing with support team.
+              </p>
+            </div>
+          </div>
+
           <button
             onClick={() => createMutation.mutate()}
             disabled={createMutation.isPending}
@@ -252,6 +283,12 @@ export default function ApiKeysPage() {
                           {key.allowed_model}
                         </span>
                       )}
+                      {key.is_support_only && (
+                        <span className="flex items-center gap-1 text-purple-700 bg-purple-50 px-2 py-0.5 rounded">
+                          <MessageCircle className="w-3 h-3" aria-hidden="true" />
+                          Support only
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -281,16 +318,29 @@ export default function ApiKeysPage() {
         )}
       </div>
 
-      {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4 flex items-start gap-3">
-        <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
-        <div className="text-sm text-blue-800">
-          <p className="font-medium mb-1">Model Restriction</p>
-          <p>
-            You can create API keys restricted to specific models. 
-            If a key is restricted, it will only work with that model and return an error for others. 
-            Keys without restriction work with any model.
-          </p>
+      {/* Info Boxes */}
+      <div className="space-y-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-[20px] p-4 flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-sm text-blue-800">
+            <p className="font-medium mb-1">Model Restriction</p>
+            <p>
+              You can create API keys restricted to specific models.
+              If a key is restricted, it will only work with that model and return an error for others.
+              Keys without restriction work with any model.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-purple-50 border border-purple-200 rounded-[20px] p-4 flex items-start gap-3">
+          <MessageCircle className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-sm text-purple-800">
+            <p className="font-medium mb-1">Support Only Keys</p>
+            <p>
+              Support-only keys work only with the Telegram support bot (@ai_router_support_bot) and cannot be used for API requests.
+              This is useful when you need to share a key with the support team without giving them access to your API credits.
+            </p>
+          </div>
         </div>
       </div>
     </div>

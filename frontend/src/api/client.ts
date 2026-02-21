@@ -110,7 +110,7 @@ export const clientApi = {
 // API Keys API
 export const apiKeysApi = {
   getApiKeys: () => api.get('/auth/api-keys'),
-  createApiKey: (name: string, modelId?: string) => api.post('/auth/api-keys', { name, model_id: modelId }),
+  createApiKey: (name: string, modelId?: string, isSupportOnly?: boolean) => api.post('/auth/api-keys', { name, model_id: modelId, is_support_only: isSupportOnly }),
   revokeApiKey: (keyId: string) => api.delete(`/auth/api-keys/${keyId}`),
 }
 
