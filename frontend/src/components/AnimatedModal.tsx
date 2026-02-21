@@ -22,44 +22,26 @@ export function AnimatedModal({ children, isOpen, onClose, className = '' }: Ani
       document.body.style.overflow = 'hidden'
 
       if (prefersReducedMotion) {
-        gsap.set(overlayRef.current, { opacity: 1, display: 'flex' })
-        gsap.set(modalRef.current, { opacity: 1, scale: 1 })
+        gsap.set(overlayRef.current, { opacity: 1 })
+        gsap.set(modalRef.current, { opacity: 1, scale: 1, y: 0 })
         return
       }
 
-      // Animate in
-      gsap.set(overlayRef.current, { display: 'flex' })
-      gsap.fromTo(overlayRef.current, 
-        { opacity: 0 }, 
-        { opacity: 1, duration: 0.3 }
-      )
-      gsap.fromTo(modalRef.current,
-        { opacity: 0, scale: 0.95, y: 20 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'power2.out', delay: 0.1 }
-      )
-    } else {
-      document.body.style.overflow = ''
-
-      if (prefersReducedMotion) {
-        gsap.set(overlayRef.current, { display: 'none' })
-        return
-      }
-
-      // Animate out
-      gsap.to(modalRef.current, {
-        opacity: 0,
-        scale: 0.95,
-        y: 10,
-        duration: 0.2,
-        ease: 'power2.in',
-      })
+      // Animate in - overlay first
       gsap.to(overlayRef.current, {
-        opacity: 0,
-        duration: 0.2,
-        delay: 0.1,
-        onComplete: () => {
-          gsap.set(overlayRef.current, { display: 'none' })
-        },
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      })
+
+      // Then modal with scale
+      gsap.to(modalRef.current, {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.4,
+        ease: 'power2.out',
+        delay: 0.1
       })
     }
 
@@ -74,12 +56,13 @@ export function AnimatedModal({ children, isOpen, onClose, className = '' }: Ani
     <div
       ref={overlayRef}
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      style={{ display: 'none' }}
+      style={{ opacity: 0 }}
       onClick={onClose}
     >
       <div
         ref={modalRef}
         className={className}
+        style={{ opacity: 0, transform: 'scale(0.95) translateY(20px)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -89,11 +72,11 @@ export function AnimatedModal({ children, isOpen, onClose, className = '' }: Ani
 }
 
 // Success checkmark animation
-export function AnimatedCheckmark({ size = 64 }: { size?: number }) {
+export function AnimatedCheckmark({ size = 64, animate = true }: { size?: number; animate?: boolean }) {
   const checkRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
-    if (!checkRef.current) return
+    if (!checkRef.current || !animate) return
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -101,13 +84,13 @@ export function AnimatedCheckmark({ size = 64 }: { size?: number }) {
     const path = checkRef.current.querySelector('.check-path')
 
     if (prefersReducedMotion) {
-      gsap.set([circle, path], { opacity: 1, strokeDashoffset: 0 })
+      gsap.set([circle, path], { opacity: 1, strokeDashoffset: 0, scale: 1 })
       return
     }
 
-    // Initial state
+    // Reset initial state
     gsap.set(circle, { opacity: 0, scale: 0 })
-    gsap.set(path, { opacity: 0 })
+    gsap.set(path, { opacity: 0, strokeDashoffset: 50 })
 
     // Animate circle first
     gsap.to(circle, {
@@ -115,6 +98,7 @@ export function AnimatedCheckmark({ size = 64 }: { size?: number }) {
       scale: 1,
       duration: 0.4,
       ease: 'back.out(2)',
+      delay: 0.3
     })
 
     // Then animate check path
@@ -125,10 +109,10 @@ export function AnimatedCheckmark({ size = 64 }: { size?: number }) {
         strokeDashoffset: 0,
         duration: 0.5,
         ease: 'power2.out',
-        delay: 0.2,
+        delay: 0.5,
       })
     }
-  }, [])
+  }, [animate])
 
   return (
     <svg

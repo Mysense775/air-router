@@ -142,7 +142,7 @@ export default function ApiKeysPage() {
       >
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <AnimatedCheckmark size={80} />
+            <AnimatedCheckmark size={80} animate={!!showNewKey} />
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">API Key Created!</h3>
           <p className="text-sm text-gray-600 mb-4">
