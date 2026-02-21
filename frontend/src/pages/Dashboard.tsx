@@ -22,6 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { AnimatedNumber } from '../components/AnimatedNumber'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -87,28 +88,35 @@ export default function Dashboard() {
   const stats = [
     {
       title: t('dashboard.currentBalance'),
-      value: `$${balance.balance_usd.toFixed(5)}`,
+      value: balance.balance_usd,
+      prefix: '$',
+      decimals: 5,
       icon: Wallet,
       color: 'blue',
       trend: t('dashboard.availableForApiCalls'),
     },
     {
       title: t('dashboard.totalSpent'),
-      value: `$${balance.lifetime_spent.toFixed(5)}`,
+      value: balance.lifetime_spent,
+      prefix: '$',
+      decimals: 5,
       icon: TrendingUp,
       color: 'green',
       trend: t('dashboard.lifetimeSpending'),
     },
     {
       title: t('dashboard.yourSavings'),
-      value: `$${balance.lifetime_savings.toFixed(5)}`,
+      value: balance.lifetime_savings,
+      prefix: '$',
+      decimals: 5,
       icon: PiggyBank,
       color: 'pink',
       trend: t('dashboard.vsOpenRouterDirect'),
     },
     {
       title: t('dashboard.activeApiKeys'),
-      value: activeKeys.toString(),
+      value: activeKeys,
+      decimals: 0,
       icon: Key,
       color: 'orange',
       trend: `${apiKeys.length} ${t('common.total') || 'total'}`,
@@ -160,12 +168,19 @@ export default function Dashboard() {
           return (
             <div
               key={stat.title}
-              className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm"
+              className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    <AnimatedNumber
+                      value={stat.value}
+                      prefix={stat.prefix || ''}
+                      decimals={stat.decimals}
+                      duration={1.5}
+                    />
+                  </h3>
                   <p className="text-xs text-gray-600 mt-1">{stat.trend}</p>
                 </div>
                 <div className={`p-2 rounded-[20px] ${colorClasses[stat.color as keyof typeof colorClasses]}`}>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { 
@@ -21,6 +21,7 @@ import {
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import ModelAdvisor from '../components/ModelAdvisor'
+import { gsap } from 'gsap'
 
 interface Model {
   id: string
@@ -39,7 +40,7 @@ interface Model {
 
 export default function Models() {
   const [searchParams, setSearchParams] = useSearchParams()
-  
+
   // Read filters from URL
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
   const [selectedProvider, setSelectedProvider] = useState<string>(searchParams.get('provider') || 'all')
@@ -48,6 +49,10 @@ export default function Models() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(searchParams.get('order') as 'asc' | 'desc' || 'desc')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+
+  // GSAP stagger animation ref - will be set after data loads
+  const modelsGridRef = useRef<HTMLDivElement>(null)
+  const hasAnimated = useRef(false)
   const itemsPerPage = 20
 
   const { data, isLoading, error } = useQuery({
@@ -126,6 +131,41 @@ export default function Models() {
     const startIndex = (currentPage - 1) * itemsPerPage
     return filteredModels.slice(startIndex, startIndex + itemsPerPage)
   }, [filteredModels, currentPage])
+
+  // GSAP stagger animation for model cards
+  useEffect(() => {
+    if (!modelsGridRef.current || hasAnimated.current || paginatedModels.length === 0 || isLoading) return
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      hasAnimated.current = true
+      return
+    }
+
+    const cards = modelsGridRef.current.children
+    if (cards.length === 0) return
+
+    gsap.fromTo(
+      cards,
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.05,
+        ease: 'power2.out',
+        onComplete: () => {
+          hasAnimated.current = true
+        },
+      }
+    )
+
+    return () => {
+      if (!hasAnimated.current) {
+        gsap.killTweensOf(cards)
+      }
+    }
+  }, [paginatedModels, isLoading])
 
   // Update URL when filters change
   useEffect(() => {
@@ -398,7 +438,7 @@ export default function Models() {
       </div>
 
       {/* Models Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div ref={modelsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {paginatedModels.map((model) => {
           const provider = model.id.split('/')[0]
           const contextLength = getContextLength(model)
