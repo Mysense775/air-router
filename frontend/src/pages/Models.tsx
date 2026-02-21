@@ -228,7 +228,7 @@ export default function Models() {
       {recommendedModels.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {recommendedModels.map(({ model, badge, color }) => (
-            <div key={model.id} className={`bg-${color}-50 border border-${color}-200 rounded-xl p-4 relative`}>
+            <div key={model.id} className={`bg-${color}-50 border border-${color}-200 rounded-[20px] p-4 relative`}>
               <span className={`absolute top-2 right-2 text-xs font-medium bg-${color}-100 text-${color}-700 px-2 py-1 rounded-full`}>
                 {badge}
               </span>
@@ -238,10 +238,14 @@ export default function Models() {
               </p>
               <button
                 onClick={() => copyToClipboard(model.id)}
-                className={`mt-3 w-full py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`mt-3 w-full py-2 rounded-[20px] text-sm font-medium transition-all duration-200 ${
                   copiedId === model.id
                     ? 'bg-green-600 text-white'
-                    : `bg-${color}-600 text-white hover:bg-${color}-700`
+                    : color === 'green'
+                      ? 'bg-gray-200 text-gray-700 hover:bg-emerald-500 hover:text-white'
+                      : color === 'purple'
+                        ? 'bg-gray-200 text-gray-700 hover:bg-violet-500 hover:text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white'
                 }`}
               >
                 {copiedId === model.id ? (
