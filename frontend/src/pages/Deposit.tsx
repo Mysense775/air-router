@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { CreditCard, Bitcoin, Loader2, Clock, CheckCircle, Copy, Wallet, QrCode, AlertTriangle, Shield, Zap } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { adminApi, allinApi, clientApi } from '../api/client'
+import { HoverPaymentCard } from '../components/HoverButton'
 
 interface PaymentMethod {
   id: string
@@ -323,17 +324,19 @@ export default function Deposit() {
               const isSelected = selectedMethod === method.id
               
               return (
-                <button
+                <HoverPaymentCard
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
+                  isSelected={isSelected}
+                  color={method.id === 'crypto' ? 'orange' : 'blue'}
                   aria-pressed={isSelected}
                   aria-label={`Select ${method.name} payment method`}
-                  className={`relative p-6 rounded-[20px] border-2 text-left transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 ${
-                    isSelected 
+                  className={`relative p-6 rounded-[20px] border-2 text-left transition-all duration-200 focus:outline-none focus:ring-2 ${
+                    isSelected
                       ? method.id === 'crypto'
                         ? 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-500 shadow-md focus:ring-orange-500'
                         : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-500 shadow-md focus:ring-blue-500'
-                      : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm focus:ring-blue-500'
+                      : 'bg-white border-gray-200 hover:border-gray-300 focus:ring-blue-500'
                   }`}
                 >
                   {/* Selected indicator */}
@@ -373,7 +376,7 @@ export default function Deposit() {
                   }`}>
                     Min: {method.id === 'allin' ? '₽' : '$'}{method.minAmount}
                   </div>
-                </button>
+                </HoverPaymentCard>
               )
             })}
           </div>

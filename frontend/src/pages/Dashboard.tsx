@@ -25,6 +25,7 @@ import {
 import { AnimatedNumber } from '../components/AnimatedNumber'
 import { HoverStatCard } from '../components/HoverCard'
 import { AnimatedChartContainer } from '../hooks/useChartAnimations.tsx'
+import { HoverButton } from '../components/HoverButton'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -201,10 +202,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions')}</h3>
           <div className="grid grid-cols-2 gap-4">
-            <button 
+            <HoverButton
               onClick={() => navigate('/deposit')}
+              glowColor="rgba(59, 130, 246, 0.2)"
               aria-label={t('dashboard.topUpBalance')}
-              className="flex items-center gap-3 p-4 rounded-[20px] border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex items-center gap-3 p-4 rounded-[20px] border border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             >
               <div className="p-2 bg-blue-100 rounded-[20px]">
                 <Wallet className="w-4 h-4 text-blue-600" aria-hidden="true" />
@@ -212,11 +214,12 @@ export default function Dashboard() {
               <div>
                 <p className="font-medium text-gray-900">{t('dashboard.topUpBalance')}</p>
               </div>
-            </button>
-            <button 
+            </HoverButton>
+            <HoverButton
               onClick={() => navigate('/api-keys')}
+              glowColor="rgba(168, 85, 247, 0.2)"
               aria-label={t('dashboard.createKey')}
-              className="flex items-center gap-3 p-4 rounded-[20px] border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="flex items-center gap-3 p-4 rounded-[20px] border border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
             >
               <div className="p-2 bg-purple-100 rounded-[20px]">
                 <Key className="w-4 h-4 text-purple-600" aria-hidden="true" />
@@ -224,7 +227,7 @@ export default function Dashboard() {
               <div>
                 <p className="font-medium text-gray-900">{t('dashboard.createKey')}</p>
               </div>
-            </button>
+            </HoverButton>
           </div>
         </div>
 
