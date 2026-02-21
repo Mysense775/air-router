@@ -23,6 +23,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { AnimatedNumber } from '../components/AnimatedNumber'
+import { HoverStatCard } from '../components/HoverCard'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -166,9 +167,10 @@ export default function Dashboard() {
           }
 
           return (
-            <div
+            <HoverStatCard
               key={stat.title}
-              className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              color={stat.color as 'blue' | 'green' | 'pink' | 'orange' | 'purple'}
+              className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -187,7 +189,7 @@ export default function Dashboard() {
                   <Icon className="w-4 h-4" aria-hidden="true" />
                 </div>
               </div>
-            </div>
+            </HoverStatCard>
           )
         })}
       </div>

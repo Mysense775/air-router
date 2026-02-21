@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import ModelAdvisor from '../components/ModelAdvisor'
 import { gsap } from 'gsap'
+import { HoverCard } from '../components/HoverCard'
 
 interface Model {
   id: string
@@ -453,7 +454,8 @@ export default function Models() {
           const contextLength = getContextLength(model)
           
           return (
-            <div key={model.id} className="model-card bg-white rounded-[20px] border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all flex flex-col h-full min-h-[200px]" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+            <HoverCard key={model.id} className="model-card bg-white rounded-[20px] border border-gray-200 p-4 flex flex-col h-full min-h-[200px]" glowColor="rgba(59, 130, 246, 0.2)">
+              <div style={{ opacity: 0, transform: 'translateY(30px)' }} className="h-full flex flex-col">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <Brain className="w-4 h-4 text-blue-600" />
@@ -500,7 +502,7 @@ export default function Models() {
                 ) : (
                   <div></div>
                 )}
-                <Link 
+                <Link
                   to={`/docs?model=${encodeURIComponent(model.id)}`}
                   className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
                   title="How to use this model"
@@ -509,7 +511,8 @@ export default function Models() {
                   <span>How to use</span>
                 </Link>
               </div>
-            </div>
+              </div>
+            </HoverCard>
           )
         })}
       </div>
