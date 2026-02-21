@@ -568,67 +568,102 @@ export default function Deposit() {
         </>
       )}
 
-      {/* Pending Payments */}
+      {/* Pending Payments - Table Style */}
       {pendingPayments.length > 0 && (
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-[20px] border border-yellow-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-yellow-200 bg-yellow-100/50">
-            <h2 className="font-semibold text-yellow-900 flex items-center gap-2">
-              <Clock className="w-5 h-5" />
+        <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-yellow-500" />
               Pending Payments ({pendingPayments.length})
             </h2>
           </div>
-          <div className="divide-y divide-yellow-200/50">
-            {pendingPayments.map((payment) => (
-              <div key={payment.id} className="px-6 py-4 flex items-center justify-between hover:bg-yellow-100/30 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">${payment.amount_usd.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500">{new Date(payment.created_at).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
-                  {getStatusText(payment.status)}
-                </span>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">Amount</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">State</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {pendingPayments.map((payment) => (
+                  <tr key={payment.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <Clock className="w-4 h-4 text-yellow-500" />
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {new Date(payment.created_at).toLocaleString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right font-semibold text-gray-900">
+                      ${payment.amount_usd.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                        {getStatusText(payment.status)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
-      {/* Payment History */}
+      {/* Payment History - Table Style */}
       {completedPayments.length > 0 && (
         <div className="bg-white rounded-[20px] border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h2 className="font-semibold text-gray-900">Payment History</h2>
           </div>
-          <div className="divide-y divide-gray-100">
-            {completedPayments.slice(0, 5).map((payment) => (
-              <div key={payment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">${payment.amount_usd.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500">
-                      {payment.completed_at 
-                        ? new Date(payment.completed_at).toLocaleDateString()
-                        : new Date(payment.created_at).toLocaleDateString()
-                      }
-                    </p>
-                  </div>
-                </div>
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                  {getStatusText(payment.status)}
-                </span>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">Amount</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">State</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {completedPayments.slice(0, 5).map((payment) => (
+                  <tr key={payment.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {(payment.completed_at || payment.created_at) && new Date(payment.completed_at || payment.created_at).toLocaleString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right font-semibold text-gray-900">
+                      ${payment.amount_usd.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        {getStatusText(payment.status)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
           {completedPayments.length > 5 && (
-            <div className="px-6 py-3 bg-gray-50 text-center">
+            <div className="px-6 py-3 bg-gray-50 text-center border-t border-gray-200">
               <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                 View all {completedPayments.length} payments
               </button>
