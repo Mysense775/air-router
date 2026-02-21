@@ -1,4 +1,4 @@
-import { useEffect, useRef, ReactNode } from 'react'
+import { useLayoutEffect, useRef, ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import { gsap } from 'gsap'
 
@@ -9,26 +9,31 @@ interface PageTransitionProps {
 export function PageTransition({ children }: PageTransitionProps) {
   const location = useLocation()
   const pageRef = useRef<HTMLDivElement>(null)
-  const prevLocation = useRef(location.pathname)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!pageRef.current) return
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (prefersReducedMotion) return
+    if (prefersReducedMotion) {
+      gsap.set(pageRef.current, { opacity: 1 })
+      return
+    }
+
+    // Set initial state immediately (before paint)
+    gsap.set(pageRef.current, { opacity: 0, y: 20 })
 
     // Animate entrance
-    gsap.fromTo(
-      pageRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
-    )
-
-    prevLocation.current = location.pathname
+    gsap.to(pageRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+      delay: 0.1
+    })
   }, [location.pathname])
 
   return (
-    <div ref={pageRef} style={{ opacity: 0 }}>
+    <div ref={pageRef}>
       {children}
     </div>
   )
